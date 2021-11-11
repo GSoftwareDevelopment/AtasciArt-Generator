@@ -64,10 +64,12 @@ Czas zapisywany jest w postaci liczby całkowitej zawierającej część ułamko
 
 | `score` | `precision` | rezultat |
 | ------- | ----------- | -------- |
-| 5       | 5 (1/5s)    | 00s.2    |
-| 55      | 5           | 10s.2    |
-| 5       | 50 (1/50s)  | 00s.02   |
-| 55      | 50          | 01s.02   |
+| 1       | 5 (1/5s)    | 00s.20   |
+| 5       |             | 01s.00   |
+| 51      |             | 10s.20   |
+| 1       | 50 (1/50s)  | 00s.02   |
+| 5       |             | 00s.10   |
+| 55      |             | 01s.10   |
 
 Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące atrybuty w opcji `score`:
 
