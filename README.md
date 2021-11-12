@@ -1,95 +1,153 @@
-# Configuration file
+# Plik konfiguracyjny
 
-The configuration file is a JSON formatted file.
+Plik konfiguracyjny to plik w formacie JSON.
 
-    It is important to note that the attribute names and their values are case sensitive!
+    Ważne, aby pamiętać, że wielkość liter w nazwach atrybutów oraz ich wartościach MA ZNACZENIE!
 
-Its first level, defines template properties such as:
+Jego pierwszy poziom, definiuje właściwości szablonu takie jak:
 
-- `width`, `height` - total width and height in characters. **These attributes are required!**
-- `colors` - an array representing color settings (values for registers 708 to 712)
-- `encodeAs` - a way to encode the score lines
-- `scoreList` - an array of objects describing the appearance of individual score lines. **This attribute is required.**
-- \* `screenFile` - a binary file with the contents of the screen
-- \* `screenData` - an array of text strings describing the screen content (hex data).
+- `width`, `height` - szerokość i wysokość całkowita w znakach. **Te atrybuty są wymagne!**
+- `colors` - tablica reprezentująca ustawienia kolorów (wartości dla rejestrów od 708 do 712)
+- `encodeAs` - sposób kodowania linii wyników
+- `layout` - tablica obiektów opisująca wygląd poszczególnych linii wyników. **Ten atrybut jest wymagany.**
+- \* `screenFile` - plik binarny z zawartością ekranu
+- \* `screenData` - tablica ciągów tekstowych opisująca zawartość ekranu (dane heksadecymalne)
 
-_\* One of the two attributes MUST be specified in the file._
+_\* Jeden z dwóch atrybutów MUSI być określony w pliku._
 
-It is important to consider the `screenFile` and `screenData` attributes. The `screenData` attribute is considered first, and if it is not specified then data is taken from the file described in `screenFile`. If both attributes are defined, the `screenData` attribute will take priority!
+Istotną kwestią jest rozpatrywanie atrybutów `screenFile` i `screenData`. W pierwszej kolejności brany jest pod uwagę atrybut `screenData`, a jeżeli nie jest określony to pobierane są dane z pliku opisanego w `screenFile`. Jeżeli są zdefiniowane oba atrybuty, priorytet będzie miał atrybut `screenData`!
 
-## Description of the result list. An array of `scoreList` objects
+## Opis listy wyników. Tablica objektów `Layout`
 
-Each score line is described by a separate object. To understand the essence of objecthood, it is best to use a graphic:
+Każda linia wyniku opisana jest osobnym obiektem. Aby zrozumieć istotę objektowosci, najlepiej posłużyć się grafiką:
 
-![figure](./AtasciArt-objects.png)
+![rysunek](./AtasciArt-objects.png)
 
-The following attributes are required in an object:
+W obiekcie wymagane są następujące atrybuty:
 
-- `x` and `y` - specifying the initial position of the result line.
-- The `width` - the width of the result line.
+- `x` i `y` - określające początkowe położenie linii wyniku.
+- `width` - szerokość linii wyniku.
 
-Options are used to describe the content of the score line:
+Do opisu zawartości linii wyniku stosuje się opcje:
 
-- `place` - generates a place
-- `nick` - generates a player name (his nickname)
-- `score` - generates a score.
-- `date` - generates the date of the score registration.
+- `place` - generuje miejsce
+- `nick` - generuje nazwę gracza (jego nick)
+- `score` - generuje osiągnięty wynik.
+- `date` - generuje datę rejestracji wyniku.
 
-A special option is the `inversLine` attribute, which if set to `true` generates text in inverted colors (XOR operation on the 7th bit of each line character)
+Specjalną opcją jest atrybut `inversLine`, który ustawiony na `true` generuje tekst w odwróconych kolorach (operacja XOR na 7 bicie każdego znaku linii)
 
-The above options are objects and each MUST have attributes included:
+Powyższe opcje to obiekty i każdy z nich MUSI mieć zawarte atrybuty:
 
-- `shift` - offset relative to the beginning of the line (in characters).
-- `width` - the width of the generated value (in characters).
+- `shift` - przesunięcie względem początku linii (w znakach)
+- `width` - szerokość generowanej wartości (w znakach)
 
-Optionally, each object can have the attributes:
+Opcjonalnie, każdy z objektów może posiadać atrybuty:
 
-- `align` - justification of the content relative to the specified width of the object (`width` attribute) Possible values are: `left`, `center`, `right`. The `right` value is the default.
-- `fillChar` - the character that will be used to fill the object across its width. The default value is #32 (space)
-- `uppercase` - (set to `true`) converts alphabetic characters to uppercase. Default value is `false`.
-- `lowercase` - (set to `true`) converts alphabetic characters to lowercase. Defaults to `false`.
-- `limitChars` - contains the character set that is accepted for display. Its description is a value of string type, containing all wanted characters. Paired with this attribute is the `replaceOutsideChars` attribute. By default, all characters are accepted.
-- `replaceOutsideChars` - this attribute specifies the character that will be inserted when an object character is not in the range specified in the `limitChars` attribute. The default value is #32 (space)
-- `invert` - works the same as the `inversLine` attribute in the `scoreList` section except that it is applied only to the generated object.
+- `align` - justowanie zawartości względem podanej szerokości objektu (atrybut `width`) Możliwe wartości to: `left`, `center`, `right`. Wartość `right` jest domyślna.
+- `fillChar` - znak, jakim będzie wypełniony objekt na całej jego szerokości. Domyślną wartością jest znak #32 (spacja)
+- `uppercase` - (ustawiony na wartość `true`) konwertuje znaki alfabetu na wielkie. Domyślnie ustawiony na `false`
+- `lowercase` - (ustawiony na wartość `true`) konwertuje znaki alfabetu na małe. Domyślnie ustawiony na `false`
+- `limitChars` - zawiera zestaw znaków, jaki jest akceptowany przy wyświetlaniu. Jego opis to wartość typu string, zawierająca wszystkie chciane znaki. W parze z tym atrybutem jest atrybut `replaceOutsideChars`. Domyślnie akceptowane są wszystkie znaki.
+- `replaceOutsideChars` - ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak objektu nie należy do zakresu określnego w atrybucie `limitChars`. Domyślną wartością jest #32 (spacja)
+- `invert` - działa tak samo jak atrybut `inversLine` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego objektu.
 
-## Additional option attributes
+## Dodatkowe atrybuty opcji
 
-The `score` and `date` options have additional attributes that extend the interpretation of the values.
+Opcje `score` i `date` posiadają dodatkowe atrybuty, które rozszerzają interpretację wartości.
 
-### Attributes for the `score` option.
+### Atrybuty dla opcji `score`
 
-The score option is interpreted, by default, as a 32-bit integer type value (representing the point score achieved by the player). It can also be represented as a time.
+Opcja wyniku domyślnie interpretowana jest, jako wartość 32-bitowa typu całkowitego (przedstawiająca wynik punktowy osiągnięty przez gracza). Może być też przedstawiona jako czas.
 
-The time is stored as an integer containing a fractional part, the precision of which is specified by the `precision` attribute in the range 2 to 100. The `precision` value should be understood as a fraction of a second 1/n. This is best understood by presenting it in a table:
+Czas zapisywany jest w postaci liczby całkowitej zawierającej część ułamkową, której dokładność określa atrybut `precision` w zakresie od 2 do 100. Wartośc `precision` należy rozumieć jako część sekundy 1/n. Najlepiej będzie to zrozumieć, przedstawiając to w tabeli:
 
-| `score` | `precision` | result |
-| ------- | ----------- | ------ |
-| 1       | 5 (1/5s)    | 00s.20 |
-| 5       |             | 01s.00 |
-| 51      |             | 10s.20 |
-| 1       | 50 (1/50s)  | 00s.02 |
-| 5       |             | 00s.10 |
-| 55      |             | 01s.10 |
+| `score` | `precision` | rezultat |
+| ------- | ----------- | -------- |
+| 1       | 5 (1/5s)    | 00s.20   |
+| 5       |             | 01s.00   |
+| 51      |             | 10s.20   |
+| 1       | 50 (1/50s)  | 00s.02   |
+| 5       |             | 00s.10   |
+| 55      |             | 01s.10   |
 
-To convert the score to time format, define the following attributes in the `score` option:
+Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące atrybuty w opcji `score`:
 
-- `showScoreAs` - specify the value of this attribute as `time`.
-- `precision` - specify the precision with which the result value will be interpreted (1/n parts of a second)
-- `formatTime` - describe the format that will be applied to the score.
+- `showScoreAs` - wartość tego atrybutu określ jako `time`
+- `precision` - określ dokładność z jaką będzie interpretowana wartość wyniku (1/n części sekundy)
+- `formatTime` - opisz format, który będzie zastosowany w wyniku.
 
-The `formatTime` is a string that describes what parts of time will be displayed. The meaning of the characters in this string is as follows:
+`formatTime` jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
 
-- `h` - number of hours (without leading zero)
-- `Hn` - number of hours, where `n` specifies the number of leading zeros (one digit)
-- `m` - number of minutes (with a leading zero)
-- `s` - number of seconds (with leading zeroes)
-- `f` -fraction of a second (two digits)
-- `Fn` - as above, only n specifies the number of decimal places.
+- `h` - ilość godzin (bez zera wiodącego)
+- `Hn` - ilość godzin, gdzie `n` określa ilość zer wiodących (jedna cyra)
+- `m` - ilość minut (z zerem wiodącym)
+- `s` - ilość sekund (z zerem wiodącym)
+- `f` - część ułamkowa sekundy (dwie cyfry)
+- `Fn` - j.w. tylko n określa ilość miejsc po przecinku.
 
-Unrecognized characters in the format string will be shown as they are.
+Nierozpoznane znaki w ciągu formatu zostaną przedstawione bez zmian.
 
-### Attributes for the `date` option.
+### Atrybuty dla opcji `date`
 
-An attribute that extends the `date` options is `formatDate`. This is a string describing how the result date is to be interpreted. By default, the format `Y.m.d` is used.
+Atrybutem rozszerzającym opcje `date` jest `formatDate`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
 
-The function that formats the time is the PHP language function `date()`. Its description can be found [here](https://www.php.net/manual/en/function.date.php), and possible formatting options [here](https://www.php.net/manual/en/datetime.format.php).
+Funkcją formatującą czas jest funkcja języka PHP `date()`. Jej opis znajdziesz [tu](https://www.php.net/manual/en/function.date.php), a możliwe opcje formatowania [tu](https://www.php.net/manual/en/datetime.format.php).
+
+## Schematy definicji linii
+
+Aby ułatwić projektowanie schematu oraz zwiększyć czytelność pliku konfiguracyjnego, można stosować **schematy definicji linii**.
+
+Ich definicje opisuje się na najwyższym poziome pliku koniguracyjnego, tworząc tablicę objektów `schemes`.
+Każdy schemat jest obiektem i musi być nazwany, np:
+
+```JSON
+{
+  ...
+  "schemes": [
+    "my_schema": {
+      ...
+    }
+  ],
+  ...
+}
+```
+
+W definicji schematu można stosować wszystkie objekty i ich atrybuty, które zostały wymienione w sekcji [Opis listy wyników. Tablica objektów `Layout`](#opis-listy-wyników.-tablica-objektów-Layout).
+
+Użycie schematu jest banalnie proste. W definicji linii wyniku wstawiamy atrybut `useSchema` któremu przypisujemy nazwę zdefiniowanego schematu (wielkość liter ma znaczenie!)
+
+```JSON
+{
+  ...
+  "schemas": [
+    "my_schema": {
+      "x": 5,
+      "width": 20,
+      "place": {
+        "shift": 1,
+        "width": 2
+        "align": right
+      },
+      ...
+      "invertLine": false
+    }
+  ],
+  "layout": [
+    {
+      "y": 5,
+      "useSchema": "my_schema",
+      "invertLine": true
+    },
+    {
+      "y": 7,
+      "useSchema": "my_schema"
+    }
+    ...
+  ]
+}
+```
+
+Obiekty i atrybuty zdefiniowane w linii wyniku, mają priorytet nad schematem, dzięki czemu, można nadpisywać ustawiane przez schemat cechy.
+
+Już prościej się (chyba) nie da ;) Znaczy się, da, tylko to już jest przerost formy nad treścią.
