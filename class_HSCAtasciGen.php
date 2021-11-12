@@ -4,6 +4,9 @@ class AtasciGen {
 	private $screenDef='';
 	private $isScreenDefined=false;
 	private $config;
+	protected $currentLineData;
+	private $elParams;
+	private $schemes;
 
 	function __construct($fn) {
 		return $this->loadConfig($fn);
@@ -35,7 +38,8 @@ class AtasciGen {
 		if (!$this->isScreenDefined) throw new Exception("No screen file or data definition");
 
 		// Score list definition is required
-		if (@!$this->config['scoreList']) throw new Exception("No score list definition");
+		if (@!$this->config['layout']) throw new Exception("No score list definition");
+		if (@$this->config['schemes']) $this->schemes=$this->config['schemes'];
 	}
 
 	function getScoreboardEntry($place) {
@@ -43,87 +47,91 @@ class AtasciGen {
 	}
 
 	public function generate() {
-		foreach ($this->config['scoreList'] as $lineIndex => $lineDef) {
+		foreach ($this->config['layout'] as $lineIndex => $lineDef) {
+			$currentSchema=[];
+
+			// build schema
+			if ( @isset($lineDef['useSchema']) ) {
+				$schemaName=$lineDef['useSchema'];
+				if ( @isset($this->schemes[$schemaName]) ) {
+					$currentSchema=$this->schemes[$schemaName];
+				} else {
+					throw new Exception("Schema '".$schemaName."' is not defined!");
+				}
+			}
+			$currentSchema=$lineDef+$currentSchema;
+
 			// Checking required parameters
-			if ( !isset($lineDef['x']) || // No column defined
-					 !isset($lineDef['y']) || // No row defined
-					 !isset($lineDef['width']) )
-				throw new Exception("Parameters 'x', 'y' and 'width' are required in line definition");
+			if ( !isset($currentSchema['x']) || // No column defined
+					 !isset($currentSchema['y']) || // No row defined
+					 !isset($currentSchema['width']) )
+				throw new Exception("Parameters 'x', 'y' and 'width' are required in object definition");
 
-			$scoreLine=str_pad('',$lineDef['width'],!isset($lineDef['fillChar'])?' ':$lineDef['fillChar']);
+			['x'=>$lineX,'y'=>$lineY,'width'=>$lineWidth]=$currentSchema;
 
-			unset($elements);
-			$elements=[]; // list of line definition elements
+			$place=$lineIndex+1;
 
-			// Checking for the occurrence of an element and adding it to the list of elements
-			if (@$lineDef['place']) { $elements[]='place'; }
-			if (@$lineDef['nick']) { $elements[]='nick'; }
-			if (@$lineDef['score']) { $elements[]='score'; }
-			if (@$lineDef['date']) { $elements[]='date'; }
+			$this->currentLineData=str_pad('',$lineWidth,!isset($currentSchema['fillChar'])?' ':$currentSchema['fillChar']);
 
-			// Processing line definition elements
-			if (count($elements)>0) {
-				$place=$lineIndex+1;
-				$scoreEntry=$this->getScoreboardEntry($place);
-
-				// parse elements
-				foreach ($elements as $elIndex => $element) {
-					$elementDef=$lineDef[$element];
-
-					switch ($element) {
-						case "place": $val=$scoreEntry['place']; break;
-						case "nick": $val=$scoreEntry['nick']; break;
-						case "score": $val=$this->parseScore($scoreEntry['score'],$elementDef); break;
-						case "date": $val=$this->parseDate($scoreEntry['date'],$elementDef); break;
-					}
-
-					// Create a string based on definition parameters
-					$str=$this->makeStr($val,$elementDef);
-
-					// clip string
-					$str=substr($str,0,$elementDef['width']);
-
-					// Paste the created string into a string representing the defined line.
-					$this->putStr($str,$scoreLine,$elementDef['shift']);
-				}
-
-				// Optional parameter
-				if (@$lineDef['inversLine']) { $this->strInvert($scoreLine); }
-
-				// Conversion of entry lines into ANTIC codes (if specified in the configuration)
-				switch ($this->config['encodeAs']) {
-					case 'antic': $this->strASCII2ANTIC($scoreLine); break;
-				}
-
-				// Paste the finished score line into the screen definition.
-				$this->putStr($scoreLine,$this->screenDef,$lineDef['x']+$lineDef['y']*$this->config['width']);
-			} else {
-				// empty line
+			// parse elements
+			foreach ($currentSchema as $elType => $this->elParams) {
+				$this->parseElement($elType,$this->getScoreboardEntry($place));
 			}
 
+			// general parameters
+			if (@$currentSchema['inversLine']) { $this->strInvert($this->currentLineData); }
+
+			// global parameters
+			// Conversion of entry lines into ANTIC codes (if specified in the configuration)
+			switch ($this->config['encodeAs']) {
+				case 'antic': $this->strASCII2ANTIC($this->currentLineData); break;
+			}
+
+			// Paste the finished score line into the screen definition.
+			$screenOffset=$lineX+$lineY*$this->config['width'];
+			$this->putStr($this->currentLineData,$this->screenDef,$screenOffset);
 		}
 
 		return $this->screenDef;
 	}
 
+	protected function parseElement(string $elType,array $scoreEntry) {
+		switch ($elType) {
+			case "place": $this->createElement($scoreEntry['place']); break;
+			case "nick": $this->createElement($scoreEntry['nick']); break;
+			case "score": $this->createElement($this->parseScore($scoreEntry['score'])); break;
+			case "date": $this->createElement($this->parseDate($scoreEntry['date'])); break;
+		}
+	}
+
+	private function createElement($val) {
+		// Create a string based on definition parameters
+		$str=$this->makeStr($val);
+
+		// clip string
+		$str=substr($str,0,$this->elParams['width']);
+
+		// Paste the created string into a string representing the defined line.
+		$this->putStr($str,$this->currentLineData,$this->elParams['shift']);
+	}
 //
 //
 //
 
-	private function parseScore($val,$elementDef) {
+	private function parseScore($val) {
 		if ( is_int($val) ) {
-			if (isset($elementDef['showScoreAs'])) {
-				switch ($elementDef['showScoreAs']) {
+			if (isset($this->elParams['showScoreAs'])) {
+				switch ($this->elParams['showScoreAs']) {
 					case 'time':
-						if ( isset($elementDef['precision']) ) {
-							$precision=$elementDef['precision'];
+						if ( isset($this->elParams['precision']) ) {
+							$precision=$this->elParams['precision'];
 						} else {
 							$precision=1;
 						}
 						$seconds=intdiv($val,$precision);
 						$fraction=(($val % $precision)/$precision)*100;
-						if ( isset($elementDef['timeFormat']) )
-							$format=trim($elementDef['timeFormat']);
+						if ( isset($this->elParams['timeFormat']) )
+							$format=trim($this->elParams['timeFormat']);
 						else {
 							$format="m:s";
 						}
@@ -138,10 +146,10 @@ class AtasciGen {
 		}
 	}
 
-	private function parseDate($date,$elementDef) {
+	private function parseDate($date) {
 		if ( is_int($date) ) {
-			if ( isset($elementDef['dateFormat']) ) {
-				return date($elementDef['dateFormat'],$date);
+			if ( isset($this->elParams['dateFormat']) ) {
+				return date($this->elParams['dateFormat'],$date);
 			} else {
 				return date('Y.m.d',$date);
 			}
@@ -232,25 +240,25 @@ class AtasciGen {
 		}
 	}
 
-	private function makeStr($value, array $def) {
-		switch (@$def['align']) {
+	private function makeStr($value) {
+		switch (@$this->elParams['align']) {
 			case 'left': $align=STR_PAD_RIGHT; break;
 			case 'center': $align=STR_PAD_BOTH; break;
 			default:
 				$align=STR_PAD_LEFT;
 		}
 
-		if ( @($def['uppercase']) ) { $value=strtoupper($value); }
-		if ( @($def['lowercase']) ) { $value=strtolower($value); }
+		if ( @($this->elParams['uppercase']) ) { $value=strtoupper($value); }
+		if ( @($this->elParams['lowercase']) ) { $value=strtolower($value); }
 
-		if ( @($def['limitChars']) ) {
-			$value=$this->limitChars($value,$def['limitChars'],
-				isset($def['replaceOutsideChars'])?$def['replaceOutsideChars']:' ');
+		if ( @($this->elParams['limitChars']) ) {
+			$value=$this->limitChars($value,$this->elParams['limitChars'],
+				isset($this->elParams['replaceOutsideChars'])?$this->elParams['replaceOutsideChars']:' ');
 		}
 
-		if ( @($def['invert']) ) { strInvert($value); }
+		if ( @($this->elParams['invert']) ) { $this->strInvert($value); }
 
-		return str_pad($value,$def['width'],!isset($def['fillChar'])?' ':$def['fillChar'],$align);
+		return str_pad($value,$this->elParams['width'],!isset($this->elParams['fillChar'])?' ':$this->elParams['fillChar'],$align);
 	}
 
 	static function limitChars($value,$limitChars,$replaceChar) {
