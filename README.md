@@ -15,7 +15,8 @@ Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/
 ## Czym jest HSC Atasci Generator?
 
 Jest to skrypt napisany w języku PHP, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką AtasciART.
-Ekran jest generowany po stronie serwera na podstawie pliku konfiguracyjnego w formacie JSON i w postaci czytelnej dla małego ATARI, przesyłany do interfaceu FujiNet. Po odebraniu przez komputer danych, ekran może być wyświetlony bezpośrednio do pamięci ekranu, bez konieczności przetwarzania informacji.
+Ekran jest generowany (po stronie serwera) na podstawie pliku konfiguracyjnego w formacie JSON i w postaci czytelnej dla małego ATARI, przesyłany jest do interfaceu FujiNet za pośrednictwem internetu. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu, bez konieczności przetwarzania informacji.
+
 Atutem takiego rozwiązania są:
 
 - udekorowanie wyników grafiką AtasciArt
