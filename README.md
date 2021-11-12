@@ -1,10 +1,35 @@
-# Plik konfiguracyjny
+# High Score Cafe Atasci Generator
+
+## Krótko, czym jest HSC
+
+High Score Cafe (HSC) jest usługą udostępniona przez Krzysztofa XXL Dudka, która gromadzi i prezentuje listy wyników użytkowników z gier, przeznaczonych na 8-bitowe komputery ATARI.
+
+Przesyłanie wyników odbywa się na trzy różne sposoby:
+
+- ręcznie dodanie za pośrednictwem serwisu HSC
+- kod QR generowany w grze na małym Atari
+- API HSC, korzystające z urządzenia FujiNet.
+
+Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/)
+
+## Czym jest HSC Atasci Generator?
+
+Jest to skrypt napisany w języku PHP, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką AtasciART.
+Ekran jest generowany po stronie serwera na podstawie pliku konfiguracyjnego w formacie JSON i w postaci czytelnej dla małego ATARI, przesyłany do interfaceu FujiNet. Po odebraniu przez komputer danych, ekran może być wyświetlony bezpośrednio do pamięci ekranu, bez konieczności przetwarzania informacji.
+Atutem takiego rozwiązania są:
+
+- udekorowanie wyników grafiką AtasciArt
+- brak konieczności przetwarzania danych JSON po stronie Atari
+- szybki dostęp do listy wyników wielu gier.
+
+## Co to jest Plik konfiguracyjny?
 
 Plik konfiguracyjny to plik w formacie JSON.
 
     Ważne, aby pamiętać, że wielkość liter w nazwach atrybutów oraz ich wartościach MA ZNACZENIE!
+    Kolejność występowania atrybutów, nie ma znaczenia.
 
-Jego pierwszy poziom, definiuje właściwości szablonu takie jak:
+Jego pierwszy (najwyższy) poziom, definiuje właściwości szablonu takie jak:
 
 - `width`, `height` - szerokość i wysokość całkowita w znakach. **Te atrybuty są wymagne!**
 - `colors` - tablica reprezentująca ustawienia kolorów (wartości dla rejestrów od 708 do 712)
@@ -120,7 +145,7 @@ Użycie schematu jest banalnie proste. W definicji linii wyniku wstawiamy atrybu
 ```JSON
 {
   ...
-  "schemas": [
+  "schemes": [
     "my_schema": {
       "x": 5,
       "width": 20,
