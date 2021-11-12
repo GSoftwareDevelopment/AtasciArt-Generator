@@ -27,7 +27,7 @@ class HSCGenerator extends AtasciGen {
 // example
 //
 
-$gen=new HSCGenerator('screen_kret__.json');
+$gen=new HSCGenerator('screen_kret.json');
 echo $gen->generate();
 $gen->makeXEX('out.xex',0xbc40);
 
