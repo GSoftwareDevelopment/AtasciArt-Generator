@@ -103,7 +103,7 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 - `precision` - określ dokładność z jaką będzie interpretowana wartość wyniku (1/n części sekundy)
 - `formatTime` - opisz format, który będzie zastosowany w wyniku.
 
-`formatTime` jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
+`timeFormat` jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
 
 - `h` - ilość godzin (bez zera wiodącego)
 - `Hn` - ilość godzin, gdzie `n` określa ilość zer wiodących (jedna cyra)
@@ -116,7 +116,7 @@ Nierozpoznane znaki w ciągu formatu zostaną przedstawione bez zmian.
 
 ### Atrybuty dla opcji `date`
 
-Atrybutem rozszerzającym opcje `date` jest `formatDate`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
+Atrybutem rozszerzającym opcje `date` jest `dateFormat`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
 
 Funkcją formatującą czas jest funkcja języka PHP `date()`. Jej opis znajdziesz [tu](https://www.php.net/manual/en/function.date.php), a możliwe opcje formatowania [tu](https://www.php.net/manual/en/datetime.format.php).
 
