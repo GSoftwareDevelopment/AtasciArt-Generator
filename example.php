@@ -11,6 +11,9 @@ class HSCGenerator extends AtasciGen {
 		["date"=>0, "nick"=>"", "score"=>""],
 		["date"=>0, "nick"=>"", "score"=>""],
 		["date"=>0, "nick"=>"", "score"=>""],
+		["date"=>0, "nick"=>"", "score"=>""],
+		["date"=>0, "nick"=>"", "score"=>""],
+		["date"=>0, "nick"=>"", "score"=>""],
 		["date"=>0, "nick"=>"", "score"=>""]
 	);
 
@@ -27,7 +30,7 @@ class HSCGenerator extends AtasciGen {
 // example
 //
 
-$gen=new HSCGenerator('screen_kret.json');
+$gen=new HSCGenerator('screens/kret.json');
 echo $gen->generate();
 $gen->makeXEX('out.xex',0xbc40);
 
