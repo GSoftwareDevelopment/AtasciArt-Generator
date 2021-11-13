@@ -2,7 +2,7 @@
 
 ## Krótko, czym jest HSC
 
-High Score Cafe (HSC) jest usługą udostępniona przez Krzysztofa XXL Dudka, która gromadzi i prezentuje listy wyników użytkowników z gier, przeznaczonych na 8-bitowe komputery ATARI.
+High Score Cafe (HSC) jest usługą udostępnioną przez Krzysztofa XXL Dudka, która gromadzi i prezentuje listy wyników użytkowników z gier, przeznaczonych na 8-bitowe komputery ATARI.
 
 Przesyłanie wyników odbywa się na trzy różne sposoby:
 
@@ -15,7 +15,7 @@ Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/
 ## Czym jest HSC Atasci Generator?
 
 Jest to skrypt napisany w języku PHP, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką AtasciART.
-Ekran jest generowany (po stronie serwera) na podstawie pliku konfiguracyjnego w formacie JSON i w postaci czytelnej dla małego ATARI, przesyłany jest do interfaceu FujiNet za pośrednictwem internetu. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu, bez konieczności przetwarzania informacji.
+Ekran jest generowany (po stronie serwera) na podstawie pliku konfiguracyjnego w formacie JSON i w postaci czytelnej dla małego ATARI, przesyłany jest do interfaceu FujiNet za pośrednictwem internetu. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu komputera Atari, bez konieczności przetwarzania informacji.
 
 Atutem takiego rozwiązania są:
 
