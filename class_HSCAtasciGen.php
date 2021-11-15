@@ -67,7 +67,13 @@ class AtasciGen {
 					 !isset($currentSchema['width']) )
 				throw new Exception("Parameters 'x', 'y' and 'width' are required in object definition");
 
-			['x'=>$lineX,'y'=>$lineY,'width'=>$lineWidth]=$currentSchema;
+			// array destructuring (in PHP version >=7.0)
+			// ['x'=>$lineX,'y'=>$lineY,'width'=>$lineWidth]=$currentSchema;
+
+			// classic thinking (<7.0)
+			$lineX=$currentSchema['x'];
+			$lineY=$currentSchema['y'];
+			$lineWidth=$currentSchema['width'];
 
 			$place=$lineIndex+1;
 
