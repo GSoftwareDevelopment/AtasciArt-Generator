@@ -101,7 +101,7 @@ class AtasciGen {
 		return $this->screenDef;
 	}
 
-	protected function parseElement(string $elType,array $scoreEntry) {
+	protected function parseElement($elType,$scoreEntry) {
 		switch ($elType) {
 			case "place": $this->createElement($scoreEntry['place']); break;
 			case "nick": $this->createElement($scoreEntry['nick']); break;
