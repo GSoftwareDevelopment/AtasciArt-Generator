@@ -23,7 +23,7 @@ class AtasciGen {
 		// Checking the required configuration parameters
 		// Screen data or file is required
 		if (@$this->config['screenData']) {
-			$this->hexString2Data($this->config['screenData'],$this->screenDef);
+			$this->screenDef=$this->hexString2Data($this->config['screenData']);
 			$this->isScreenDefined=(strlen($this->screenDef)>0);
 
 		} else if (@$this->config['screenFile']) {
@@ -167,7 +167,8 @@ class AtasciGen {
 //
 //
 
-	static function hexString2Data(array $hexData, string &$data) {
+	static function hexString2Data($hexData) {
+		$data='';
 		$dstOffset=0;
 		foreach ( $hexData as $lineIndex => $dataLine ) {
 			$srcOffset=0; $srcLen=strlen($dataLine);
@@ -188,10 +189,11 @@ class AtasciGen {
 						$val=hexdec($chHi.$chLo);
 					}
 
-					$data[$dstOffset]=chr($val); $dstOffset++;
+					$data.=chr($val); $dstOffset++;
 				}
 			}
 		}
+		return $data;
 	}
 
 	public function makeXEX($fn,$start) {
