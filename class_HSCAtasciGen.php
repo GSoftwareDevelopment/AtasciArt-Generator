@@ -8,11 +8,7 @@ class AtasciGen {
 	private $elParams;
 	private $schemes;
 
-	function __construct($fn) {
-		return $this->loadConfig($fn);
-	}
-
-	private function loadConfig($fn) {
+	public function loadConfig(string $fn) {
 		$this->confFN="";
 		$configFile=@file_get_contents($fn);
 		if ( $configFile===false ) throw new Exception("Can't open config file");
@@ -287,6 +283,14 @@ class AtasciGen {
 	}
 
 	static function formatTime($format,$seconds,$fraction) {
+
+		// this is only for earler versions of PHP
+		function intdiv($a, $b) {
+			$a = (int) $a;
+			$b = (int) $b;
+			return ($a - fmod($a, $b)) / $b;
+		}
+
 		$formatIndex=0; $formatLen=strlen($format);
 		$out="";
 		while ($formatIndex<$formatLen) {
