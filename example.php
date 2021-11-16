@@ -6,7 +6,15 @@ include('./class_HSCAtasciGen.php');
 class HSCGenerator extends AtasciGen {
 	private $gameId;
 
-	public $scoreboard=array(
+	public $scoreboard=[];
+
+	public function loadConfig(string $fn, int $gameId = null) {
+		// PL: można tak zrobić, gdyż zakres zmiennyh parametrów funkcji jest inny niz zakres zminnych klasy ($this!)
+		if ($gameId===null) throw new Exception("GameID must be defined!");
+		// przed pobraniem danych z bazy, sprawdź obecność $gameId
+		$this->$gameId=$gameId;
+		// tu pobierasz dane z bazy do zminnej #scoreboard
+		$this->scoreboard=array(
 		["date"=>0, "nick"=>"PeBe", "score"=>12345],
 		["date"=>0, "nick"=>"", "score"=>""],
 		["date"=>0, "nick"=>"", "score"=>""],
@@ -18,14 +26,6 @@ class HSCGenerator extends AtasciGen {
 		["date"=>0, "nick"=>"", "score"=>""],
 		["date"=>0, "nick"=>"", "score"=>""]
 	);
-
-	public function loadConfig(string $fn, int $gameId = null) {
-		// PL: można tak zrobić, gdyż zakres zmiennyh parametrów funkcji jest inny niz zakres zminnych klasy ($this!)
-		if ($gameId===null) throw new Exception("GameID must be defined!");
-		// przed pobraniem danych z bazy, sprawdź obecność $gameId
-		$this->$gameId=$gameId;
-		// tu pobierasz dane z bazy do zminnej #scoreboard
-
 		// wywołanie nadrzędnej metody wczytania szablonu
 		parent::loadConfig($fn);
 	}
