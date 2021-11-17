@@ -25,7 +25,7 @@
 				"shift": 5,
 				"width": 16,
 				"align": "left",
-				"fillChar": ".",
+				"fillChar": "."
 			},
 			"score": {
 				"shift": 23,
