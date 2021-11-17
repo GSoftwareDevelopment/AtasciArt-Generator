@@ -25,9 +25,7 @@
 				"shift": 4,
 				"width": 15,
 				"align": "left",
-				"fillChar": ".",
-				"limitChars": " !\"#$%'()*+,-./0123456789@ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-				"replaceOutsideChars": "."
+				"fillChar": "."
 			},
 			"score": {
 				"shift": 21,
