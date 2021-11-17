@@ -1,4 +1,6 @@
 <?
+require_once('_polyfill.php');
+
 class AtasciGen {
 	public $confFN='';
 	private $screenDef='';
@@ -8,7 +10,7 @@ class AtasciGen {
 	private $elParams;
 	private $schemes;
 
-	public function loadConfig(string $fn) {
+	public function __construct($fn) {
 		$this->confFN="";
 		$configFile=@file_get_contents($fn);
 		if ( $configFile===false ) throw new Exception("Can't open config file");
@@ -163,7 +165,7 @@ class AtasciGen {
 //
 //
 
-	static function hexString2Data($hexData) {
+	private function hexString2Data($hexData) {
 		$data='';
 		$dstOffset=0;
 		foreach ( $hexData as $lineIndex => $dataLine ) {
@@ -206,7 +208,7 @@ class AtasciGen {
 		fclose($f);
 	}
 
-	static function strANTIC2ASCII(&$src) {
+	private function strANTIC2ASCII(&$src) {
 		for ($i=0;$i<strlen($src);$i++) {
 			$ch=ord($src[$i]);
 			if ($ch>=0 and $ch<=63)
@@ -217,7 +219,7 @@ class AtasciGen {
 		}
 	}
 
-	static function strASCII2ANTIC(&$src) {
+	private function strASCII2ANTIC(&$src) {
 		for ($i=0;$i<strlen($src);$i++) {
 			$ch=ord($src[$i]);
 			$inv=$ch & 0x80;
@@ -265,7 +267,7 @@ class AtasciGen {
 		return str_pad($value,$this->elParams['width'],!isset($this->elParams['fillChar'])?' ':$this->elParams['fillChar'],$align);
 	}
 
-	static function limitChars($value,$limitChars,$replaceChar) {
+	private function limitChars($value,$limitChars,$replaceChar) {
 		for ($i=0;$i<strlen($value);$i++) {
 			$ch=$value[$i];
 			if ( strpos($limitChars,$ch)===false ) {
@@ -275,22 +277,14 @@ class AtasciGen {
 		return $value;
 	}
 
-	static function strInvert(&$line) {
+	private function strInvert(&$line) {
 		for ($i=0;$i<strlen($line);$i++) {
 			$ch=ord($line[$i]);
 			$line[$i]=chr($ch ^ 128);
 		}
 	}
 
-	static function formatTime($format,$seconds,$fraction) {
-
-		// this is only for earler versions of PHP
-		function intdiv($a, $b) {
-			$a = (int) $a;
-			$b = (int) $b;
-			return ($a - fmod($a, $b)) / $b;
-		}
-
+	private function formatTime($format,$seconds,$fraction) {
 		$formatIndex=0; $formatLen=strlen($format);
 		$out="";
 		while ($formatIndex<$formatLen) {
