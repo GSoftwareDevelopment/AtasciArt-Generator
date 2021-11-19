@@ -1,50 +1,27 @@
 <?
+include('./class_HSCGenerator.php'); // class implementation - this is required to use
 
-include('./class_HSCAtasciGen.php');
+//
+// Run
+//
 
-// extend class
-class HSCGenerator extends AtasciGen {
-	private $gameId;
+try {
+// construcor call examples.
+// for default layout of dedicated config file.
+// If the game has no dedicated configuration file
+// default configuration file is specified in HSCGenerator::DEFAULT_CONFIG_FILE
+	$gen=new HSCGenerator(109);
 
-	public $scoreboard=[];
+// for specified layout (name 'game') of dedicated config file
+//	$gen=new HSCGenerator(109,'game');
 
-	public function __construct($fn, $gameId = null) {
-		if ($gameId===null) throw new Exception("GameID must be defined!");
-		// przed pobraniem danych z bazy, sprawdź obecność $gameId
-		$this->$gameId=$gameId;
-		// tu pobierasz dane z bazy do zminnej #scoreboard
-		$this->scoreboard=array(
-		["date"=>0, "nick"=>"PeBe", "score"=>12345],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""],
-		["date"=>0, "nick"=>"", "score"=>""]
-	);
-		// HINT: wywołanie nadrzędnej metody (z klasy AtasciGen) wczytania szablonu
-		parent::__construct($fn);
-	}
+// like above, but specified layout has name '1'
+//	$gen=new HSCGenerator(109,'1');
 
-	function getScoreboardEntry($place) {
-		// This is where the scoreboard data is retrieved :)
-		return [
-			"place"=>$place,
-			"nick"=>$this->scoreboard[$place-1]["nick"],
-			"score"=>$this->scoreboard[$place-1]["score"]
-		];
-	}
+	echo $gen->generate();
+
+} catch (Exception $th) {
+	echo "Error: ".$th->getMessage();
 }
-
-//
-// example
-//
-
-$gen=new HSCGenerator('screens/kret.json',109); // 109 is game_id
-echo $gen->generate();
-$gen->makeXEX('out.xex',0xbc40);
 
 ?>
