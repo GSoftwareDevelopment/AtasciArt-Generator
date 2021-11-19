@@ -1,7 +1,7 @@
 <?
-include('./class_AtasciGen.php');    // general AtasciGen class - required
+include('./class_AtasciiGen.php');    // general AtasciGen class - required
 
-class HSCGenerator extends AtasciGen {
+class HSCGenerator extends AtasciiGen {
 	//
 	// path constants
 
