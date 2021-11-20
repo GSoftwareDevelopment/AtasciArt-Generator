@@ -15,7 +15,7 @@ Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/
 ## Czym jest HSC Atasci Generator?
 
 Jest to skrypt napisany w języku PHP, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką AtasciiArt.
-Ekran jest generowany (po stronie serwera) i w postaci czytelnej dla małego ATARI, przesyłany jest do interfaceu FujiNet za pośrednictwem internetu. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu komputera Atari, bez konieczności przetwarzania informacji.
+Ekran jest generowany (po stronie serwera) i w postaci czytelnej dla małego ATARI, przesyłany jest do interfaceu FujiNet za pośrednictwem sieci Internet. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu komputera Atari, bez konieczności przetwarzania informacji.
 
 Atutem takiego rozwiązania są:
 
@@ -27,11 +27,11 @@ Atutem takiego rozwiązania są:
 
 Jest to plik w formacie JSON. Opisuje on właściwości i elementy generowanego ekranu AtasciiArt.
 
-    Ważne, aby pamiętać, że wielkość liter w nazwach atrybutów oraz ich wartościach MA ZNACZENIE!
+    Ważne, aby pamiętać, że wielkość liter w nazwach sekcji, atrybutów oraz ich wartościach MA ZNACZENIE!
 
 ### Sekcja `layouts`
 
-Z punktu widzenia pliku JSON, `layouts` jest objektem w którym umieszczone są definicje wyglądu ekranów. Każda taka definicja to osobny object.
+Z punktu widzenia formatu JSON, `layouts` jest objektem w którym umieszczone są definicje wyglądu ekranów. Każda taka definicja to osobny object.
 
 ```JSON
 {
@@ -58,17 +58,17 @@ Powyższy przykład, przedstawia definicję trzech ekranów:
 
 __Atrybuty wymagane:__
 
-- `width`, `height` - szerokość i wysokość całkowita w znakach.
-- `elements` - tablica obiektów opisująca elementy generowane przez skrypt.
+- `width`, `height` - szerokość i wysokość całkowita w znakach
+- `lines` - tablica obiektów opisująca generowane linie
 
 __Opcjonalne atrybuty:__
 
 - `colors` - tablica reprezentująca ustawienia kolorów (wartości dla rejestrów od 708 do 712)
-- `encodeAs` - sposób wyjściowego kodowania treści elementów
+- `encodeLinesAs` - sposób wyjściowego kodowania treści generowanych linii
 - `screenData` - tablica ciągów tekstowych opisująca zawartość ekranu bazowego (dane heksadecymalne)
-- `screenFill` - znak, jakim będzie wypełniony ekran bazowy.
+- `screenFill` - znak, jakim będzie wypełniony ekran bazowy w przypadku, braku atrybutu `screenData`
 
-## Sekcja `elements`
+## Sekcja `lines`
 
 Jest to tablica objektów (w rozumieniu pliku JSON). Każdy objekt w tej sekcji, definiuje osobną linię w ekranie bazowym.
 
@@ -79,13 +79,13 @@ __Atrybuty wymagane:__
 
 __Opcjonalne atrybuty:__
 
-- `inversLine`, ustawiony na `true`, dokonuje inwersji (operacja XOR na 7 bicie każdego znaku)  w wynikowym elemencie
+- `invert`, ustawiony na `true`, dokonuje inwersji (operacja XOR na 7 bicie każdego znaku)  w wynikowej linii
 
-W objecie sekcji, definiowane są też elementy.
+W sekcji tej, definiowane są też elementy wchodzące w skład linii.
 
-### Typy elementów
+### Elementy linii
 
-Typ generowanego elementu zawarty jest w nazwie atrybutu, objektu opisującego generowaną linię tablicy `elements`
+Typ generowanego elementu zawarty jest w nazwie atrybutu objektu opisującego generowaną linię tablicy `lines`
 
 ```JSON
 {
@@ -126,22 +126,22 @@ Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po typie 
 }
 ```
 
-Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu. Główne ma zastosowanie w eleencie typu `text`.
+Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu.
 
 ### Atrybuty opisujące element
 
 __Atrybuty wymagane:__
 
 - `shift` - przesunięcie względem początku linii (w znakach)
-- `width` - szerokość generowanej wartości (w znakach)
+- `width` - szerokość generowanego elementu (w znakach)
 
 __Opcjonalnie atrybuty:__
 
-- `align` - justowanie zawartości względem podanej szerokości objektu (atrybut `width`) Możliwe wartości to: `left`, `center`, `right`. Wartość `right` jest domyślna.
-- `fillChar` - znak, jakim będzie wypełniony objekt na całej jego szerokości. Domyślną wartością jest znak #32 (spacja)
+- `align` - justowanie zawartości względem podanej szerokości elementu (atrybut `width`) Możliwe wartości to: `left`, `center`, `right`. Wartość `right` jest domyślna.
+- `fillChar` - znak, jakim będzie wypełniony element na całej jego szerokości. Domyślną wartością jest znak #32 (spacja)
 - `letterCase` - pozwala na kowersję wielkości liter. Możliwe wartości: `uppercase`,`lowercase`
-- `limitChars` - zawiera zestaw znaków, jaki jest akceptowany przy wyświetlaniu. Jego opis to wartość typu string, zawierająca wszystkie chciane znaki. W parze z tym atrybutem jest atrybut `replaceOutsideChars`. Domyślnie akceptowane są wszystkie znaki.
-- `replaceOutsideChars` - ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak objektu nie należy do zakresu określnego w atrybucie `limitChars`. Domyślną wartością jest #32 (spacja)
+- `limitChars` - zawiera zestaw znaków, jaki jest akceptowany przy gnerowaniu elementu. Jego opis to wartość typu string, zawierająca wszystkie akceptowane znaki. W parze z tym atrybutem jest atrybut `replaceOutsideChars`. Domyślnie akceptowane są wszystkie znaki.
+- `replaceOutsideChars` - ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak generowanego elementu nie należy do zakresu określnego w atrybucie `limitChars`. Domyślną wartością jest #32 (spacja)
 - `invert` - działa tak samo jak atrybut `inversLine` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego objektu.
 
 ### Dedykowane atrybuty elementów
