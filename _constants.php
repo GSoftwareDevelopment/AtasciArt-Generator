@@ -2,7 +2,7 @@
 // config file sections and attributes
 // required section
 const CONFIG_LAYOUTS="layouts";
-const CONFIG_LAYOUTS_ELEMENTS="elements";
+const CONFIG_LAYOUTS_LINES="lines";
 // optional section
 const CONFIG_ELEMENTSCHAMES="elementSchemes";
 
@@ -34,7 +34,7 @@ const ATTR_USESCHEMA="useSchema";
 const ATTR_USEATASCIFONT="useAtasciFont"; // TODO
 const ATTR_ALIGN="align";
 const ATTR_FILLCHAR="fillChar";
-const ATTR_INVERS="inversLine";
+const ATTR_INVERS="invert";
 const ATTR_LETTERCASE="letterCase";
 const ATTR_LIMITCHAR="limitChar";
 const ATTR_REPLACEOUTSIDECHAR="replaceOutsideChar";
