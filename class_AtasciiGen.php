@@ -224,5 +224,26 @@ class AtasciiGen {
 			return "";
 		}
 	}
+
+	public function makeImage($imageFile=null) {
+		$fnt=@imagecreatefrompng('./AtasciiSet.png');
+		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
+		$width=$this->layoutData['width'];
+		$height=$this->layoutData['height'];
+		$img=@imagecreate(($width*16),($height*16))
+			or die("Cannot Initialize new GD image stream");
+		for ($y=0;$y<$height;$y++) {
+			$offset=$y*$width;
+			for ($x=0;$x<$width;$x++) {
+				$ch=ord($this->screenDef[$offset+$x]);
+				$chx=$ch & 0x1f;
+				$chy=$ch >> 5;
+				imagecopy($img,$fnt,$x*16,$y*16,$chx*16,$chy*16,16,16);
+			}
+		}
+		imagepng($img,$imageFile);
+		imagedestroy($img);
+		imagedestroy($fnt);
+	}
 }
 ?>
