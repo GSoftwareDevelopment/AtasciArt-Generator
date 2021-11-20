@@ -163,12 +163,25 @@ class AtasciiGen {
 			case ELEMENT_NICK: $this->createElement($scoreEntry['nick']); break;
 			case ELEMENT_SCORE: $this->createElement($this->parseScore($scoreEntry['score'])); break;
 			case ELEMENT_DATE: $this->createElement($this->parseDate($scoreEntry['date'])); break;
-			case ELEMENT_TEXT:
-				// TODO
-			break;
-			case ELEMENT_GENTIME:
-				// TODO
-			break;
+			case ELEMENT_TEXT: $this->createElement($this->parseText()); break;
+			case ELEMENT_GENTIME:	$this->createElement($this->parseGenerationTime()); break;
+		}
+	}
+
+	private function parseGenerationTime() {
+		if ( @($this->elParams[ATTR_TIMEFORMAT]) ) {
+			$format=$this->elParams[ATTR_TIMEFORMAT];
+		} else {
+			$format=DEFAULT_GENTIME_FORMAT;
+		}
+		return date($format);
+	}
+
+	private function parseText() {
+		if ( @($this->elParams[ATTR_CONTENT]) ) {
+			return $this->elParams[ATTR_CONTENT];
+		} else {
+			return "";
 		}
 	}
 

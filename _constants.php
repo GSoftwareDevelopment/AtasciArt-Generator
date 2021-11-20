@@ -42,8 +42,10 @@ const ATTR_SHOWSCOREAS="showScoreAs";
 const ATTR_PRECISION="precision";
 const ATTR_TIMEFORMAT="timeFormat";
 const ATTR_DATEFORMAT="dateFormat";
+const ATTR_CONTENT="content";
 
 // default values for attributes
 const DEFAULT_TIMEFORMAT="m:s";
 const DEFAULT_DATEFORMAT="Y.m.d";
+const DEFAULT_GENTIME_FORMAT="Y.m.d H:i:s";
 ?>
