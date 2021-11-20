@@ -40,9 +40,8 @@ const ATTR_LIMITCHAR="limitChar";
 const ATTR_REPLACEOUTSIDECHAR="replaceOutsideChar";
 const ATTR_SHOWSCOREAS="showScoreAs";
 const ATTR_PRECISION="precision";
-const ATTR_TIMEFORMAT="timeFormat";
-const ATTR_DATEFORMAT="dateFormat";
 const ATTR_CONTENT="content";
+const ATTR_FORMAT="format";
 
 // default values for attributes
 const DEFAULT_TIMEFORMAT="m:s";

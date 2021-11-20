@@ -169,8 +169,8 @@ class AtasciiGen {
 	}
 
 	private function parseGenerationTime() {
-		if ( @($this->elParams[ATTR_TIMEFORMAT]) ) {
-			$format=$this->elParams[ATTR_TIMEFORMAT];
+		if ( @($this->elParams[ATTR_FORMAT]) ) {
+			$format=$this->elParams[ATTR_FORMAT];
 		} else {
 			$format=DEFAULT_GENTIME_FORMAT;
 		}
@@ -197,8 +197,8 @@ class AtasciiGen {
 						}
 						$seconds=intdiv($val,$precision);
 						$fraction=(($val % $precision)/$precision)*100;
-						if ( isset($this->elParams[ATTR_TIMEFORMAT]) )
-							$format=trim($this->elParams[ATTR_TIMEFORMAT]);
+						if ( isset($this->elParams[ATTR_FORMAT]) )
+							$format=trim($this->elParams[ATTR_FORMAT]);
 						else {
 							$format=DEFAULT_TIMEFORMAT;
 						}
@@ -215,8 +215,8 @@ class AtasciiGen {
 
 	private function parseDate($date) {
 		if ( is_int($date) ) {
-			if ( isset($this->elParams[ATTR_DATEFORMAT]) ) {
-				return date($this->elParams[ATTR_DATEFORMAT],$date);
+			if ( isset($this->elParams[ATTR_FORMAT]) ) {
+				return date($this->elParams[ATTR_FORMAT],$date);
 			} else {
 				return date(DEFAULT_DATEFORMAT,$date);
 			}
