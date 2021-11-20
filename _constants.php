@@ -50,4 +50,6 @@ const DEFAULT_GENTIME_FORMAT="Y.m.d H:i:s";
 
 //
 const DEFAULT_FONT_FILE="./atari.png";
+const DEFAULT_CHAR_WIDTH=16;
+const DEFAULT_CHAR_HEIGHT=16;
 ?>
