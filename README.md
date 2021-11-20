@@ -14,75 +14,142 @@ Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/
 
 ## Czym jest HSC Atasci Generator?
 
-Jest to skrypt napisany w języku PHP, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką AtasciART.
-Ekran jest generowany (po stronie serwera) na podstawie pliku konfiguracyjnego w formacie JSON i w postaci czytelnej dla małego ATARI, przesyłany jest do interfaceu FujiNet za pośrednictwem internetu. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu komputera Atari, bez konieczności przetwarzania informacji.
+Jest to skrypt napisany w języku PHP, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką AtasciiArt.
+Ekran jest generowany (po stronie serwera) i w postaci czytelnej dla małego ATARI, przesyłany jest do interfaceu FujiNet za pośrednictwem internetu. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu komputera Atari, bez konieczności przetwarzania informacji.
 
 Atutem takiego rozwiązania są:
 
-- udekorowanie wyników grafiką AtasciArt
+- udekorowanie wyników grafiką AtasciiArt
 - brak konieczności przetwarzania danych JSON po stronie Atari
 - szybki dostęp do listy wyników wielu gier.
 
 ## Co to jest Plik konfiguracyjny?
 
-Plik konfiguracyjny to plik w formacie JSON.
+Jest to plik w formacie JSON. Opisuje on właściwości i elementy generowanego ekranu AtasciiArt.
 
     Ważne, aby pamiętać, że wielkość liter w nazwach atrybutów oraz ich wartościach MA ZNACZENIE!
-    Kolejność występowania atrybutów, nie ma znaczenia.
 
-Jego pierwszy (najwyższy) poziom, definiuje właściwości szablonu takie jak:
+### Sekcja `layouts`
 
-- `width`, `height` - szerokość i wysokość całkowita w znakach. **Te atrybuty są wymagne!**
+Z punktu widzenia pliku JSON, `layouts` jest objektem w którym umieszczone są definicje wyglądu ekranów. Każda taka definicja to osobny object.
+
+```JSON
+{
+ "layouts":{
+  "default":{
+   ...
+  },
+  "layout_1":{
+   ...
+  },
+  "layout_1":{
+   ...
+  }
+ }
+}
+```
+
+Powyższy przykład, przedstawia definicję trzech ekranów.
+
+[Jak żądać konkretnej definicji ekranu](#jak-żądać-konkretnej definicji ekranu)
+
+Nazwa `default` jest zarezerwowana dla domyślnego wyglądu.
+
+#### Definicwanie wyglądu ekranu
+
+__Atrybuty wymagane:__
+
+- `width`, `height` - szerokość i wysokość całkowita w znakach.
+- `elements` - tablica obiektów opisująca elementy generowane przez skrypt.
+
+__Opcjonalne atrybuty:__
+
 - `colors` - tablica reprezentująca ustawienia kolorów (wartości dla rejestrów od 708 do 712)
-- `encodeAs` - sposób kodowania linii wyników
-- `layout` - tablica obiektów opisująca wygląd poszczególnych linii wyników. **Ten atrybut jest wymagany.**
-- \* `screenFile` - plik binarny z zawartością ekranu
-- \* `screenData` - tablica ciągów tekstowych opisująca zawartość ekranu (dane heksadecymalne)
+- `encodeAs` - sposób wyjściowego kodowania treści elementów
+- `screenData` - tablica ciągów tekstowych opisująca zawartość ekranu bazowego (dane heksadecymalne)
+- `screenFill` - znak, jakim będzie wypełniony ekran bazowy.
 
-_\* Jeden z dwóch atrybutów MUSI być określony w pliku._
+## Sekcja `elements`
 
-Istotną kwestią jest rozpatrywanie atrybutów `screenFile` i `screenData`. W pierwszej kolejności brany jest pod uwagę atrybut `screenData`, a jeżeli nie jest określony to pobierane są dane z pliku opisanego w `screenFile`. Jeżeli są zdefiniowane oba atrybuty, priorytet będzie miał atrybut `screenData`!
+Jest to tablica objektów (w rozumieniu pliku JSON). Każdy objekt w tej sekcji, definiuje osobną linię w ekranie bazowym.
 
-## Opis listy wyników. Tablica objektów `Layout`
+__Atrybuty wymagane:__
 
-Każda linia wyniku opisana jest osobnym obiektem. Aby zrozumieć istotę objektowosci, najlepiej posłużyć się grafiką:
+- `x` i `y` - określające początkowe położenie elementu w ekranie bazowym
+- `width` - szerokość elementu
 
-![rysunek](./AtasciArt-objects.png)
+__Opcjonalne atrybuty:__
 
-W obiekcie wymagane są następujące atrybuty:
+- `inversLine`, ustawiony na `true`, dokonuje inwersji (operacja XOR na 7 bicie każdego znaku)  w wynikowym elemencie
 
-- `x` i `y` - określające początkowe położenie linii wyniku.
-- `width` - szerokość linii wyniku.
+W objecie sekcji, definiowane są też elementy.
 
-Do opisu zawartości linii wyniku stosuje się opcje:
+### Typy elementów
 
-- `place` - generuje miejsce
-- `nick` - generuje nazwę gracza (jego nick)
-- `score` - generuje osiągnięty wynik.
-- `date` - generuje datę rejestracji wyniku.
+Typ generowanego elementu zawarty jest w nazwie atrybutu, objektu opisującego generowaną linię tablicy `elements`
 
-Specjalną opcją jest atrybut `inversLine`, który ustawiony na `true` generuje tekst w odwróconych kolorach (operacja XOR na 7 bicie każdego znaku linii)
+```JSON
+{
+ "layouts":{
+  "default":{
+   "elements":[
+    {
+     "x": 1,
+     "y": 1,
+     "width": 20,
+     "element_type": {
+      {element_attributes}
+     },
+     "element_type": {
+      {element_attributes}
+     },...
+    },...
+   ]
+  }
+ }
+}
+```
 
-Powyższe opcje to obiekty i każdy z nich MUSI mieć zawarte atrybuty:
+### Rodzaje elementów
+
+- `place` - miejsce z tablicy wyników
+- `nick` - nazwę gracza (jego nick)
+- `score` - osiągnięty wynik
+- `date` - datę rejestracji wyniku
+- `text` - generuje dowolny tekst (TODO)
+- `genTime` - generuje czas powstania ekranu (TODO)
+
+Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po nazwie elementu, poprzedzając ją znakiem kropki.
+
+```JSON
+{
+ "text.gamename":{...}
+}
+```
+
+Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu. Główne zastosowanie w eleencie typu `text`.
+
+### Atrybuty opisujące element
+
+__Atrybuty wymagane:__
 
 - `shift` - przesunięcie względem początku linii (w znakach)
 - `width` - szerokość generowanej wartości (w znakach)
 
-Opcjonalnie, każdy z objektów może posiadać atrybuty:
+__Opcjonalnie atrybuty:__
 
 - `align` - justowanie zawartości względem podanej szerokości objektu (atrybut `width`) Możliwe wartości to: `left`, `center`, `right`. Wartość `right` jest domyślna.
 - `fillChar` - znak, jakim będzie wypełniony objekt na całej jego szerokości. Domyślną wartością jest znak #32 (spacja)
-- `uppercase` - (ustawiony na wartość `true`) konwertuje znaki alfabetu na wielkie. Domyślnie ustawiony na `false`
-- `lowercase` - (ustawiony na wartość `true`) konwertuje znaki alfabetu na małe. Domyślnie ustawiony na `false`
+- `letterCase` - pozwala na kowersję wielkości liter. Możliwe wartości: `uppercase`,`lowercase`
 - `limitChars` - zawiera zestaw znaków, jaki jest akceptowany przy wyświetlaniu. Jego opis to wartość typu string, zawierająca wszystkie chciane znaki. W parze z tym atrybutem jest atrybut `replaceOutsideChars`. Domyślnie akceptowane są wszystkie znaki.
 - `replaceOutsideChars` - ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak objektu nie należy do zakresu określnego w atrybucie `limitChars`. Domyślną wartością jest #32 (spacja)
 - `invert` - działa tak samo jak atrybut `inversLine` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego objektu.
 
-## Dodatkowe atrybuty opcji
+### Dodatkowe atrybuty elementów `score` i `date`
 
 Opcje `score` i `date` posiadają dodatkowe atrybuty, które rozszerzają interpretację wartości.
 
-### Atrybuty dla opcji `score`
+#### Atrybuty dla opcji `score`
 
 Opcja wyniku domyślnie interpretowana jest, jako wartość 32-bitowa typu całkowitego (przedstawiająca wynik punktowy osiągnięty przez gracza). Może być też przedstawiona jako czas.
 
@@ -97,7 +164,15 @@ Czas zapisywany jest w postaci liczby całkowitej zawierającej część ułamko
 | 5       |             | 00s.10   |
 | 55      |             | 01s.10   |
 
-Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące atrybuty w opcji `score`:
+Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące atrybuty w elemencie `score`:
+
+```JSON
+{
+ "showScoreAs": "time",
+ "precision": 50,
+ "formatTime": "h.m.f"
+}
+```
 
 - `showScoreAs` - wartość tego atrybutu określ jako `time`
 - `precision` - określ dokładność z jaką będzie interpretowana wartość wyniku (1/n części sekundy)
@@ -106,7 +181,7 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 `timeFormat` jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
 
 - `h` - ilość godzin (bez zera wiodącego)
-- `Hn` - ilość godzin, gdzie `n` określa ilość zer wiodących (jedna cyra)
+- `Hn` - ilość godzin, gdzie `n` określa ilość zer wiodących (jedna cyfra)
 - `m` - ilość minut (z zerem wiodącym)
 - `s` - ilość sekund (z zerem wiodącym)
 - `f` - część ułamkowa sekundy (dwie cyfry)
@@ -114,23 +189,24 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 
 Nierozpoznane znaki w ciągu formatu zostaną przedstawione bez zmian.
 
-### Atrybuty dla opcji `date`
+#### Atrybuty dla opcji `date`
 
 Atrybutem rozszerzającym opcje `date` jest `dateFormat`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
 
 Funkcją formatującą czas jest funkcja języka PHP `date()`. Jej opis znajdziesz [tu](https://www.php.net/manual/en/function.date.php), a możliwe opcje formatowania [tu](https://www.php.net/manual/en/datetime.format.php).
 
-## Schematy definicji linii
+## Sekcja `elementScheme` - Schematy definicji elementów
 
-Aby ułatwić projektowanie schematu oraz zwiększyć czytelność pliku konfiguracyjnego, można stosować **schematy definicji linii**.
+Aby ułatwić projektowanie schematu oraz zwiększyć czytelność pliku konfiguracyjnego, można stosować **schematy definicji elementów**.
 
-Ich definicje opisuje się na najwyższym poziome pliku koniguracyjnego, tworząc tablicę objektów `schemes`.
-Każdy schemat jest obiektem i musi być nazwany, np:
+Ich definicje opisuje się w głównej częśći pliku konfiguracyjnego w sekcji `elementSchemes` i jest ona objectem (JSON) w którym zawarte są poszczególne schematy.
+
+Każdy schemat jest obiektem (JSON) i musi być nazwany, np:
 
 ```JSON
 {
   ...
-  "schemes": [
+  "elementSchemes": [
     "my_schema": {
       ...
     }
@@ -139,37 +215,42 @@ Każdy schemat jest obiektem i musi być nazwany, np:
 }
 ```
 
-W definicji schematu można stosować wszystkie objekty i ich atrybuty, które zostały wymienione w sekcji [Opis listy wyników. Tablica objektów `Layout`](#opis-listy-wyników.-tablica-objektów-Layout).
+W definicji schematu można stosować wszystkie elementy i ich atrybuty, które zostały wymienione w [Sekcja `elements`](#sekcja-elements).
 
 Użycie schematu jest banalnie proste. W definicji linii wyniku wstawiamy atrybut `useSchema` któremu przypisujemy nazwę zdefiniowanego schematu (wielkość liter ma znaczenie!)
 
 ```JSON
 {
-  ...
-  "schemes": [
-    "my_schema": {
-      "x": 5,
-      "width": 20,
-      "place": {
-        "shift": 1,
-        "width": 2
-        "align": right
-      },
-      ...
-      "invertLine": false
-    }
-  ],
-  "layout": [
+ ...
+ "schemes": [
+  "my_schema": {
+   "x": 5,
+   "width": 20,
+   "place": {
+    "shift": 1,
+    "width": 2
+    "align": right
+   },
+   ...
+   "invertLine": false
+  }
+ ],
+ "layouts": {
+  "default":{
+   ...
+   "elements":[
     {
-      "y": 5,
-      "useSchema": "my_schema",
-      "invertLine": true
+     "y": 5,
+     "useSchema": "my_schema",
+     "invertLine": true
     },
     {
-      "y": 7,
-      "useSchema": "my_schema"
+     "y": 7,
+     "useSchema": "my_schema"
     }
     ...
+   ]
+  }
   ]
 }
 ```
