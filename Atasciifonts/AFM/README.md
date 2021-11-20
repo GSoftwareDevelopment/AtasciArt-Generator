@@ -1,0 +1,1 @@
+This folder contains files for the Atari Font Maker program.
