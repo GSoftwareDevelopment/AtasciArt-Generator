@@ -115,18 +115,18 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu, objektu opisującego g
 - `nick` - nazwę gracza (jego nick)
 - `score` - osiągnięty wynik
 - `date` - datę rejestracji wyniku
-- `text` - generuje dowolny tekst (TODO)
-- `genTime` - generuje czas powstania ekranu (TODO)
+- `text` - generuje dowolny tekst
+- `genTime` - generuje czas powstania ekranu
 
-Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po nazwie elementu, poprzedzając ją znakiem kropki.
+Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po typie elementu, poprzedzając ją znakiem kropki.
 
 ```JSON
 {
- "text.gamename":{...}
+ "text.label":{...}
 }
 ```
 
-Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu. Główne zastosowanie w eleencie typu `text`.
+Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu. Główne ma zastosowanie w eleencie typu `text`.
 
 ### Atrybuty opisujące element
 
@@ -144,11 +144,16 @@ __Opcjonalnie atrybuty:__
 - `replaceOutsideChars` - ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak objektu nie należy do zakresu określnego w atrybucie `limitChars`. Domyślną wartością jest #32 (spacja)
 - `invert` - działa tak samo jak atrybut `inversLine` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego objektu.
 
-### Dodatkowe atrybuty elementów `score` i `date`
+### Dedykowane atrybuty elementów
 
-Elementy `score` i `date` posiadają dodatkowe atrybuty, które rozszerzają interpretację wartości.
+Spośród wszystkich elementów można wybrać takie, które mają przypisane dodatkowe atrybuty. Takimi elementami są:
 
-#### Atrybuty dla elementu `score`
+- `score`
+- `date`
+- `genTime`
+- `text`
+
+#### Atrybuty elementu `score`
 
 Element wyniku `score` domyślnie interpretowana jest jako wartość 32-bitowa typu całkowitego, przedstawiająca wynik punktowy osiągnięty przez gracza. Może być też przedstawiona jako czas.
 
@@ -169,15 +174,15 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 {
  "showScoreAs": "time",
  "precision": 50,
- "formatTime": "h.m.f"
+ "format": "h.m.f"
 }
 ```
 
 - `showScoreAs` - wartość tego atrybutu określ jako `time`
 - `precision` - określ dokładność z jaką będzie interpretowana wartość wyniku (1/n części sekundy)
-- `formatTime` - opisz format, który będzie zastosowany w wyniku.
+- `format` - opisz format, który będzie zastosowany w wyniku.
 
-`timeFormat` jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
+`format` jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
 
 - `h` - ilość godzin (bez zera wiodącego)
 - `Hn` - ilość godzin, gdzie `n` określa ilość zer wiodących (jedna cyfra)
@@ -188,11 +193,19 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 
 Nierozpoznane znaki w ciągu formatu zostaną przedstawione bez zmian.
 
-#### Atrybuty dla elementu `date`
+#### Atrybuty elementu `date`
 
-Atrybutem rozszerzającym element `date` jest `dateFormat`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
+Atrybutem rozszerzającym element `date` jest `format`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
 
 Funkcją formatującą czas jest funkcja języka PHP `date()`. Jej opis znajdziesz [tu](https://www.php.net/manual/en/function.date.php), a możliwe opcje formatowania [tu](https://www.php.net/manual/en/datetime.format.php).
+
+#### Atrybuty elemenu `genTime`
+
+Patrz opis atrybutów elementu `date`
+
+#### Atrybuty elementu `text`
+
+Użyj atrybutu `content` celem, określenia treści generowanego tekstu.
 
 ## Sekcja `elementScheme` - Schematy definicji elementów
 
