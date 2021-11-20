@@ -1,7 +1,7 @@
 {
 	"name": "Kret",
 	"author": "PeBe",
-	"elementSchemes": {
+	"lineSchemes": {
 		"default": {
 			"x": 9,
 			"width": 21,
@@ -99,7 +99,7 @@
 				0,
 				0
 			],
-			"encodeElementsAs": "antic",
+			"encodeLinesAs": "antic",
 			"lines": [
 				{
 					"y": 6,

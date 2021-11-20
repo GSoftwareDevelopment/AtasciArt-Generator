@@ -1,7 +1,7 @@
 {
 	"name": "Default - simple #1",
 	"author": "PeBe for HSC",
-	"elementSchemes": {
+	"lineSchemes": {
 		"default": {
 			"x": 5,
 			"width": 30,
@@ -37,8 +37,8 @@
 				0,
 				0
 			],
-			"encodeElementsAs": "antic",
-			"elements": [
+			"encodeLinesAs": "antic",
+			"lines": [
 				{
 					"y": 6,
 					"useSchema": "default",
