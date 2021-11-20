@@ -49,11 +49,10 @@ Z punktu widzenia pliku JSON, `layouts` jest objektem w którym umieszczone są 
 }
 ```
 
-Powyższy przykład, przedstawia definicję trzech ekranów.
+Powyższy przykład, przedstawia definicję trzech ekranów:
 
-[Jak żądać konkretnej definicji ekranu](#jak-żądać-konkretnej definicji ekranu)
-
-Nazwa `default` jest zarezerwowana dla domyślnego wyglądu.
+- `default` jest zarezerwowana dla domyślnego wyglądu
+- `layout_1` i `layout_2` są dodatkowymi ekreanami
 
 #### Definicwanie wyglądu ekranu
 
@@ -147,11 +146,11 @@ __Opcjonalnie atrybuty:__
 
 ### Dodatkowe atrybuty elementów `score` i `date`
 
-Opcje `score` i `date` posiadają dodatkowe atrybuty, które rozszerzają interpretację wartości.
+Elementy `score` i `date` posiadają dodatkowe atrybuty, które rozszerzają interpretację wartości.
 
-#### Atrybuty dla opcji `score`
+#### Atrybuty dla elementu `score`
 
-Opcja wyniku domyślnie interpretowana jest, jako wartość 32-bitowa typu całkowitego (przedstawiająca wynik punktowy osiągnięty przez gracza). Może być też przedstawiona jako czas.
+Element wyniku `score` domyślnie interpretowana jest jako wartość 32-bitowa typu całkowitego, przedstawiająca wynik punktowy osiągnięty przez gracza. Może być też przedstawiona jako czas.
 
 Czas zapisywany jest w postaci liczby całkowitej zawierającej część ułamkową, której dokładność określa atrybut `precision` w zakresie od 2 do 100. Wartośc `precision` należy rozumieć jako część sekundy 1/n. Najlepiej będzie to zrozumieć, przedstawiając to w tabeli:
 
@@ -189,9 +188,9 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 
 Nierozpoznane znaki w ciągu formatu zostaną przedstawione bez zmian.
 
-#### Atrybuty dla opcji `date`
+#### Atrybuty dla elementu `date`
 
-Atrybutem rozszerzającym opcje `date` jest `dateFormat`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
+Atrybutem rozszerzającym element `date` jest `dateFormat`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
 
 Funkcją formatującą czas jest funkcja języka PHP `date()`. Jej opis znajdziesz [tu](https://www.php.net/manual/en/function.date.php), a możliwe opcje formatowania [tu](https://www.php.net/manual/en/datetime.format.php).
 
