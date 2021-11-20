@@ -47,4 +47,7 @@ const ATTR_FORMAT="format";
 const DEFAULT_TIMEFORMAT="m:s";
 const DEFAULT_DATEFORMAT="Y.m.d";
 const DEFAULT_GENTIME_FORMAT="Y.m.d H:i:s";
+
+//
+const DEFAULT_FONT_FILE="./atari.png";
 ?>
