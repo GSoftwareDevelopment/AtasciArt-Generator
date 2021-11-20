@@ -59,7 +59,7 @@ class AtasciiGen {
 		// get optional screen data or screen fill character
 		$this->getScreenDataFromLayout();
 
-		foreach ($this->layoutData[CONFIG_LAYOUTS_ELEMENTS] as $lineIndex => $lineDef) {
+		foreach ($this->layoutData[CONFIG_LAYOUTS_LINES] as $lineIndex => $lineDef) {
 			$currentSchema=[];
 
 			// build schema
@@ -226,7 +226,7 @@ class AtasciiGen {
 	}
 
 	public function makeImage($imageFile=null) {
-		$fnt=@imagecreatefrompng('./AtasciiSet.png');
+		$fnt=@imagecreatefrompng('./atari.png');
 		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
 		$width=$this->layoutData['width'];
 		$height=$this->layoutData['height'];
@@ -241,7 +241,11 @@ class AtasciiGen {
 				imagecopy($img,$fnt,$x*16,$y*16,$chx*16,$chy*16,16,16);
 			}
 		}
-		imagepng($img,$imageFile);
+		if ($imageFile!==null) {
+			imagepng($img,$imageFile);
+		} else {
+			imagepng($img);
+		}
 		imagedestroy($img);
 		imagedestroy($fnt);
 	}

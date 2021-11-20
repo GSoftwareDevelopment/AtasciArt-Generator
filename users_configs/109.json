@@ -23,7 +23,7 @@
 				"align": "right",
 				"fillChar": "0"
 			},
-			"inversLine": false
+			"invert": false
 		},
 		"game": {
 			"x": 1,
@@ -49,7 +49,7 @@
 				"align": "right",
 				"fillChar": "0"
 			},
-			"inversLine": false
+			"invert": false
 		}
 	},
 	"layouts": {
@@ -58,7 +58,7 @@
 			"height": 7,
 			"encodeElementsAs": "atasci",
 			"screenFill": " ",
-			"elements": [
+			"lines": [
 				{
 					"y": 0,
 					"useSchema": "game"
@@ -100,11 +100,11 @@
 				0
 			],
 			"encodeElementsAs": "antic",
-			"elements": [
+			"lines": [
 				{
 					"y": 6,
 					"useSchema": "default",
-					"inversLine": true
+					"invert": true
 				},
 				{
 					"y": 8,
