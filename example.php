@@ -20,6 +20,8 @@ try {
 
 	echo $gen->generate();
 
+	// lets generate pNg image
+	$gen->makeImage('test.png');
 } catch (Exception $th) {
 	echo "Error: ".$th->getMessage();
 }
