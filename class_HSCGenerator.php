@@ -5,8 +5,8 @@ class HSCGenerator extends AtasciiGen {
 	//
 	// path constants
 
-	const USER_CONFIG_PATH="users_configs/";
-	const DEFAULT_CONFIG_PATH="default_configs/";
+	const USER_CONFIG_PATH="./users_configs/";
+	const DEFAULT_CONFIG_PATH="./default_configs/";
 	const DEFAULT_CONFIG_FILE="default_0";
 	const CONFIG_FILE_EXTENTION=".json";
 	const CONFIG_LAYOUTS_DEFAULT="default";
@@ -42,13 +42,12 @@ class HSCGenerator extends AtasciiGen {
 		}
 
 		$this->fetchScoreboardFromDB();
-		// HINT: wywołanie nadrzędnej metody (z klasy AtasciGen) wczytania szablonu
+
 		parent::__construct($configFile);
 	}
 
 	function fetchScoreboardFromDB() {
-		// przed pobraniem danych z bazy, sprawdź obecność identyfikatora gry `$this->gameId`
-		// tu pobierasz dane z bazy do zminnej $scoreboard
+		// here is place for fetchin scoreboard data from database
 		$this->scoreboard=array(
 			["date"=>0, "nick"=>"PeBe", "score"=>12345],
 			["date"=>0, "nick"=>"", "score"=>""],
