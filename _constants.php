@@ -4,12 +4,12 @@
 const CONFIG_LAYOUTS="layouts";
 const CONFIG_LAYOUTS_LINES="lines";
 // optional section
-const CONFIG_ELEMENTSCHAMES="elementSchemes";
+const CONFIG_ELEMENTSCHAMES="lineSchemes";
 
 // layout section
 // attributes in layout section
 const CONFIG_LAYOUTS_SCREENDATA="screenData";
-const CONFIG_LAYOUTS_ENCODEELEMENTAS="encodeElementsAs";
+const CONFIG_LAYOUTS_ENCODEELEMENTAS="encodeLinesAs";
 const CONFIG_SCREENFILL="screenFill";
 
 // default elements tags
@@ -49,7 +49,7 @@ const DEFAULT_DATEFORMAT="Y.m.d";
 const DEFAULT_GENTIME_FORMAT="Y.m.d H:i:s";
 
 //
-const DEFAULT_FONT_FILE="./atari.png";
+const DEFAULT_FONT_FILE="./atari_16.png";
 const DEFAULT_CHAR_WIDTH=16;
 const DEFAULT_CHAR_HEIGHT=16;
 ?>
