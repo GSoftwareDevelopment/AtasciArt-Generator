@@ -225,12 +225,13 @@ class AtasciiGen {
 		}
 	}
 
-	public function makeImage($imageFile=null) {
-		$fnt=@imagecreatefrompng('./atari.png');
+	public function makeImage($imageFile=null, $fontFile=DEFAULT_FONT_FILE,
+	                          $defaultCharWidth=DEFAULT_CHAR_WIDTH,$defaultCharHeight=DEFAULT_CHAR_HEIGHT) {
+		$fnt=@imagecreatefrompng($fontFile);
 		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
 		$width=$this->layoutData['width'];
 		$height=$this->layoutData['height'];
-		$img=@imagecreate(($width*16),($height*16))
+		$img=@imagecreate(($width*$defaultCharWidth),($height*$defaultCharHeight))
 			or die("Cannot Initialize new GD image stream");
 		for ($y=0;$y<$height;$y++) {
 			$offset=$y*$width;
@@ -238,7 +239,10 @@ class AtasciiGen {
 				$ch=ord($this->screenDef[$offset+$x]);
 				$chx=$ch & 0x1f;
 				$chy=$ch >> 5;
-				imagecopy($img,$fnt,$x*16,$y*16,$chx*16,$chy*16,16,16);
+				imagecopy($img,$fnt,
+				          $x*$defaultCharWidth,$y*$defaultCharHeight,
+				          $chx*$defaultCharWidth,$chy*$defaultCharHeight,
+				          $defaultCharWidth,$defaultCharHeight);
 			}
 		}
 		if ($imageFile!==null) {
