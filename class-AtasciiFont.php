@@ -30,7 +30,7 @@ class AtasciiFont {
 		$this->width=$font['width'];
 		$this->height=$font['height'];
 		$this->letterSpace=$font['letterSpacing'];
-		$this->lineSpace=$font['lineSpacing'];
+		$this->lineSpace=$font['linesSpacing'];
 		$this->spaceWidth=@$font['spaceWidth'] or $this->letterSpace;
 
 		switch (@$font['horizontalPositioning']) {
