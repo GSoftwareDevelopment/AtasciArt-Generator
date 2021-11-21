@@ -25,7 +25,8 @@ const LABEL_SEPARATOR=".";
 // required attributes, used in layers and elements section
 const ATTR_X="x";
 const ATTR_Y="y";
-const ATTR_XOFFSET="shift";
+const ATTR_XOFFSET="offsetX";
+const ATTR_YOFFSET="offsetY";
 const ATTR_WIDTH="width";
 const ATTR_HEIGHT="height";
 
