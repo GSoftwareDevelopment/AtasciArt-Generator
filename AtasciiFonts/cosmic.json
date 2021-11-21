@@ -8,6 +8,7 @@
 	"linesSpacing": 0,
 	"spaceWidth": 2,
 	"horizontalPositioning":"halfChar",
+	"dataCode":"antic",
 	"charsDefinition":{
 		"even":{
 			"0":{"width":3,"height":3,"data":"49554F550080CF55C9"},

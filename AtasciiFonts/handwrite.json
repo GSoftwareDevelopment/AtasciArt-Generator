@@ -8,6 +8,7 @@
 	"linesSpacing": 0,
 	"spaceWidth": 2,
 	"horizontalPositioning": "wholeChar",
+	"dataCode":"antic",
 	"charsDefinition":{
 		"0":{"width":3,"height":4,"data":"5152457C7C7C7C7C7C5A5243"},
 		"1":{"width":1,"height":4,"data":"457C7C58"},
