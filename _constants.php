@@ -17,8 +17,8 @@ const ELEMENT_PLACE="place";
 const ELEMENT_NICK="nick";
 const ELEMENT_SCORE="score";
 const ELEMENT_DATE="date";
-const ELEMENT_TEXT="text"; // TODO
-const ELEMENT_GENTIME="genTime"; // TODO
+const ELEMENT_TEXT="text";
+const ELEMENT_GENTIME="genTime";
 // separator sign for element labeling
 const LABEL_SEPARATOR=".";
 
@@ -31,8 +31,9 @@ const ATTR_WIDTH="width";
 const ATTR_HEIGHT="height";
 
 // attributes used in elements section
+const ATTR_ISENTRY="isEntry";
 const ATTR_USESCHEMA="useSchema";
-const ATTR_USEATASCIFONT="useAtasciFont"; // TODO
+const ATTR_USEATASCIFONT="useAtasciiFont";
 const ATTR_ALIGN="align";
 const ATTR_FILLCHAR="fillChar";
 const ATTR_INVERS="invert";
