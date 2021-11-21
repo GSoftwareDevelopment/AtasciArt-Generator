@@ -1,33 +1,48 @@
 <?
 const HEX_CHARS="0123456789ABCDEF";
 
-function hexString2Data($hexData) {
+function hexToStr($dataLine) {
 	$data='';
 	$dstOffset=0;
-	foreach ( $hexData as $lineIndex => $dataLine ) {
-		$srcOffset=0; $srcLen=strlen($dataLine);
-		if ( $srcLen!=0 ) {
-			$dataLine=strtoupper($dataLine);
-			while ($srcOffset<$srcLen) {
-				$chHi=$dataLine[$srcOffset]; $srcOffset++;
+	$srcOffset=0;
+	$srcLen=strlen($dataLine);
+	if ( $srcLen!=0 ) {
+		$dataLine=strtoupper($dataLine);
+		while ($srcOffset<$srcLen) {
+			$chHi=$dataLine[$srcOffset]; $srcOffset++;
 
-				if ( strpos(HEX_CHARS,$chHi)===false ) continue;
+			if ( strpos(HEX_CHARS,$chHi)===false ) continue;
 
-				if ($srcOffset<$srcLen) {
-					$chLo=$dataLine[$srcOffset]; $srcOffset++;
-				} else $chLo='';
+			if ($srcOffset<$srcLen) {
+				$chLo=$dataLine[$srcOffset]; $srcOffset++;
+			} else $chLo='';
 
-				if ( strpos(HEX_CHARS,$chLo)===false ) {
-					$val=hexdec($chHi);
-				} else {
-					$val=hexdec($chHi.$chLo);
-				}
-
-				$data.=chr($val); $dstOffset++;
+			if ( strpos(HEX_CHARS,$chLo)===false ) {
+				$val=hexdec($chHi);
+			} else {
+				$val=hexdec($chHi.$chLo);
 			}
+
+			$data.=chr($val); $dstOffset++;
 		}
 	}
 	return $data;
+}
+
+function hexString2Data($hexData) {
+	$data='';
+	$dstOffset=0;
+
+	if ( is_string($hexData) ) {
+		return hexToStr($hexData);
+	} elseif ( is_array($hexData) ) {
+		foreach ( $hexData as $lineIndex => $hexLine ) {
+			$data.=hexToStr($hexLine);
+		}
+		return $data;
+	} else {
+		return null;
+	}
 }
 
 function strANTIC2ASCII(&$src) {
