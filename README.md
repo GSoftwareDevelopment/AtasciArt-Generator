@@ -163,6 +163,8 @@ __Opcjonalnie atrybuty:__
 
 - `invert` - działa tak samo jak atrybut `inversLine` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego elementu.
 
+- `useAtasciiFont` - generuje treść elementu z użyciem **AtasciiFont**
+
 ### Dedykowane atrybuty elementów
 
 Spośród wszystkich elementów można wybrać takie, które mają przypisane dodatkowe atrybuty. Takimi elementami są:
@@ -288,6 +290,6 @@ Użycie schematu jest banalnie proste. W definicji linii wyniku wstawiamy atrybu
 
 Elementy i atrybuty zdefinsiowane w linii wyniku mają priorytet nad schematem, dzięki czemu, można nadpisywać ustawiane przez schemat cechy.
 
-# AtasciiFont
+## AtasciiFont
 
 TODO
