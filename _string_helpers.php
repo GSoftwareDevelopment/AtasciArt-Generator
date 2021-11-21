@@ -48,11 +48,13 @@ function hexString2Data($hexData) {
 function strANTIC2ASCII(&$src) {
 	for ($i=0;$i<strlen($src);$i++) {
 		$ch=ord($src[$i]);
+		$inv=$ch & 0x80;
+		$ch=$ch & 0x7f;
 		if ($ch>=0 and $ch<=63)
 			$ch+=32;
 		else if ($ch>=64 and $ch<=95)
 			$ch-=64;
-		$src[$i]=chr($ch);
+		$src[$i]=chr($ch | $inv);
 	}
 }
 
