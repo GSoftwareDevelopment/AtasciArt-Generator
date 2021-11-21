@@ -1,11 +1,9 @@
 <?
-//
-const DEFAULT_FONT_FILE="./atari_16.png";
-const DEFAULT_CHAR_WIDTH=16;
-const DEFAULT_CHAR_HEIGHT=16;
-
 require_once('./_polyfill.php');
 require_once('./_string_helpers.php');
+
+const ENCODE_ANTIC=false;
+const ENCODE_ATASCII=true;
 
 class AtasciiFont {
 	const HPOS_WHOLE="wholeChar";
@@ -19,6 +17,7 @@ class AtasciiFont {
 	public $letterSpace; // Space between letters
 	public $lineSpace; // Space between lines
 	public $HPos; // Horizontal positioning - true-WholeChar; false-halfChar
+	public $dataEncode; // encode method for character data
 
 	public function __construct($fontFile) {
 		$cnt=@file_get_contents($fontFile);
@@ -27,11 +26,27 @@ class AtasciiFont {
 		if (json_last_error()!=0) throw new Exception(json_last_error_msg()." in AtasciiFont file");
 		$this->fn=$fontFile;
 
+		$this->name=@$font['name'] or $fontFile;
+		if ( !(isset($font['width'])) || !(isset($font['height'])) ) {
+			throw new Exception('AtasciiFont file dimentions not speciied.');
+		}
 		$this->width=$font['width'];
 		$this->height=$font['height'];
-		$this->letterSpace=$font['letterSpacing'];
-		$this->lineSpace=$font['linesSpacing'];
+		$this->letterSpace=$font['letterSpacing'] or 1;
+		$this->lineSpace=$font['linesSpacing'] or 1;
 		$this->spaceWidth=@$font['spaceWidth'] or $this->letterSpace;
+
+		switch (@$font['dataEncode']) {
+			case 'antic': $this->dataEncode=ENCODE_ANTIC; break;
+			case 'atascii': $this->dataEncode=ENCODE_ATASCII; break;
+			default:
+				$this->dataEncode=ENCODE_ANTIC;
+		}
+
+		if ( !isset($font['charsDefinition']) ) {
+			throw new Exception('No character definition section found in AtasciiFont file');
+		}
+		$this->charDef=&$font['charsDefinition'];
 
 		switch (@$font['horizontalPositioning']) {
 			case self::HPOS_WHOLE: $this->HPos=true; break;
@@ -40,7 +55,12 @@ class AtasciiFont {
 				$this->HPos=true;
 		}
 
-		$this->charDef=&$font['charsDefinition'];
+		if ( !$this->HPos && isset($font['horizontalPositioning']) ) {
+			if ( !(isset($font['charsDefinition']['even'])) ||
+			     !(isset($font['charsDefinition']['odd'])) ) {
+						 throw new Exception('AtasciiFont file has incorrect characters definition');
+					 }
+		}
 	}
 
 	public function getCharData($ch,$pos=0) {
@@ -67,14 +87,19 @@ class AtasciiFont {
 		return [$curFDef['width'],$curFDef['height'],hexString2Data($curFDef['data'])];
 	}
 
-	public function makeText($str) {
+	public function makeText($str,$encode=null) {
 		$outLines=[]; $textHeight=0;
-
-		for ($strOfs=0;$strOfs<strlen($str);$strOfs++) {
+		if ($encode!==null) {
+			if ($encode) $spaceCh=chr(0); else $spaceCh=chr(32);
+		} else {
+			if (!$encode) $spaceCh=chr(0); else $spaceCh=chr(32);
+		}
+		$strLen=strLen($str);
+		for ($strOfs=0;$strOfs<$strLen;$strOfs++) {
 			$ch=$str[$strOfs];
 			if ($ch===chr(32)) {
 				for ($line=0;$line<$textHeight;$line++) {
-					@$outLines[$line].=str_repeat(chr(0),$this->spaceWidth);
+					@$outLines[$line].=str_repeat($spaceCh,$this->spaceWidth);
 				}
 			} else {
 				list($curCharWidth,$curCharHeight,$curCharDef)=$this->getCharData($ch,$strOfs);
@@ -82,12 +107,24 @@ class AtasciiFont {
 				if ($curCharHeight>$textHeight) $textHeight=$curCharHeight;
 				for ($line=0;$line<$textHeight;$line++) {
 					if ($line<$curCharHeight) {
-						@$outLines[$line].=substr($curCharDef,$line*$curCharWidth,$curCharWidth);
+						$chLine=substr($curCharDef,$line*$curCharWidth,$curCharWidth);
+						if ($encode!==false) {
+							if ( $this->dataEncode===ENCODE_ANTIC && $encode===ENCODE_ATASCII ) {
+								strANTIC2ASCII($chLine);
+							} elseif ( $this->dataEncode===ENCODE_ATASCII && $encode===ENCODE_ANTIC ) {
+								strASCII2ANTIC($chLine);
+							}
+						}
+						@$outLines[$line].=$chLine;
 					} else {
-						@$outLines[$line].=str_repeat(chr(0),$curCharHeight);
+						@$outLines[$line].=str_repeat($spaceCh,$curCharHeight);
 					}
-					if ($this->letterSpace>0) {
-						@$outLines[$line].=str_repeat(chr(0),$this->letterSpace);
+
+					// letter spacing add
+					if ( $strOfs+1<$strLen ) { // ...but only, if it is not last character in string
+						if ($this->letterSpace>0) {
+							@$outLines[$line].=str_repeat($spaceCh,$this->letterSpace);
+						}
 					}
 				}
 			}
