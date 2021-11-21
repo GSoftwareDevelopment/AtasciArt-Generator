@@ -4,21 +4,21 @@
 	"lineSchemes": {
 		"default": {
 			"x": 9,
-			"width": 21,
+			"width": 27,
 			"place": {
-				"shift": 0,
+				"offsetX": 0,
 				"width": 2,
 				"align": "right",
 				"fillChar": "0"
 			},
 			"nick": {
-				"shift": 4,
+				"offsetX": 4,
 				"width": 15,
 				"align": "left",
 				"fillChar": "."
 			},
 			"score": {
-				"shift": 21,
+				"offsetX": 21,
 				"width": 6,
 				"align": "right",
 				"fillChar": "0"
@@ -29,13 +29,13 @@
 			"x": 1,
 			"width": 18,
 			"place": {
-				"shift": 0,
+				"offsetX": 0,
 				"width": 2,
 				"align": "right",
 				"fillChar": " "
 			},
 			"nick": {
-				"shift": 3,
+				"offsetX": 3,
 				"width": 8,
 				"align": "left",
 				"uppercase": true,
@@ -44,7 +44,7 @@
 				"fillChar": "."
 			},
 			"score": {
-				"shift": 12,
+				"offsetX": 12,
 				"width": 6,
 				"align": "right",
 				"fillChar": "0"

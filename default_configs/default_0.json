@@ -6,19 +6,19 @@
 			"x": 5,
 			"width": 30,
 			"place": {
-				"shift": 1,
+				"offsetX": 1,
 				"width": 2,
 				"align": "right",
 				"fillChar": "0"
 			},
 			"nick": {
-				"shift": 5,
+				"offsetX": 5,
 				"width": 16,
 				"align": "left",
 				"fillChar": "."
 			},
 			"score": {
-				"shift": 23,
+				"offsetX": 23,
 				"width": 6,
 				"align": "right",
 				"fillChar": "0"
@@ -40,9 +40,17 @@
 			"encodeLinesAs": "antic",
 			"lines": [
 				{
-					"y": 6,
+					"y": 2,
 					"useSchema": "default",
 					"inversLine": true
+				},
+				{
+					"y": 4,
+					"useSchema": "default"
+				},
+				{
+					"y": 6,
+					"useSchema": "default"
 				},
 				{
 					"y": 8,
@@ -67,6 +75,20 @@
 				{
 					"y": 18,
 					"useSchema": "default"
+				},
+				{
+					"y": 20,
+					"useSchema": "default"
+				},
+				{
+					"x": 9,
+					"y": 23,
+					"width": 22,
+					"genTime":{
+						"offsetX": 1,
+						"format": "Y.m.d  H:i:s"
+					},
+					"invert": true
 				}
 			],
 			"screenData": [
