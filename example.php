@@ -18,9 +18,10 @@ try {
 // like above, but specified layout has name '1'
 //	$gen=new HSCGenerator(109,'1');
 
-	echo $gen->generate();
+// generate screen - its needed for make image process
+	$gen->generate();
 
-	// lets generate pNg image
+// lets generate PNG image
 	$gen->makeImage('test.png');
 } catch (Exception $th) {
 	echo "Error: ".$th->getMessage();
