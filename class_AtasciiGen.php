@@ -1,7 +1,8 @@
 <?
-include('_constants.php');
-require_once('_polyfill.php');
-require_once('_string_helpers.php');
+include('./_constants.php');
+require_once('./_polyfill.php');
+require_once('./_string_helpers.php');
+require_once('./class_AtasciiFont.php');
 
 class AtasciiGen {
 	public $confFN='';
@@ -51,6 +52,23 @@ class AtasciiGen {
 		}
 	}
 
+	private function rangeCheck($value,$min,$max,$errMsg) {
+		if ($value<$min || $value>$max)
+			throw new Exception($errMsg."! Acceptable value is between {$min} and {$max})");
+		return $value;
+	}
+
+	private function checkExist($value,$default=null,$errMsg="Some attribut is not specified") {
+		if ( is_null($value) ) {
+			if ( $default!==null ) {
+				return $default;
+			} else {
+				throw new Exception($errMsg);
+			}
+		} else {
+			return $value;
+		}
+	}
 	public function generate() {
 		// check required parameters for layout
 		if ( !isset($this->layoutData[ATTR_WIDTH]) || // No layout width
@@ -74,18 +92,27 @@ class AtasciiGen {
 			$currentSchema=$lineDef+$currentSchema;
 
 			// Checking required parameters for element
-			if ( !isset($currentSchema[ATTR_X]) || // No column defined
-					 !isset($currentSchema[ATTR_Y]) || // No row defined
-					 !isset($currentSchema[ATTR_WIDTH]) )
-				throw new Exception("Parameters '".ATTR_X."', '".ATTR_Y."' and '".ATTR_WIDTH."' are required in element definition");
+//			if ( !isset($currentSchema[ATTR_X]) ) throw new Exception("Element '".ATTR_X."', is not defined");
+//			if ( !isset($currentSchema[ATTR_Y]) ) throw new Exception("Element '".ATTR_Y."', is not defined");
+//			if ( !isset($currentSchema[ATTR_WIDTH]) ) throw new Exception("Element '".ATTR_WIDTH."', is not defined");
 
-			$lineX=$currentSchema[ATTR_X];
-			$lineY=$currentSchema[ATTR_Y];
-			$lineWidth=$currentSchema[ATTR_WIDTH];
+			$lineX=$this->rangeCheck(
+				$this->checkExist($currentSchema[ATTR_X],null,"Element {ATTR_X} is not defined"),
+				0,39,'Line column is out of range.');
+			$lineY=$this->rangeCheck(
+				$this->checkExist($currentSchema[ATTR_Y],0),
+				0,23,'Line row is out of range.');
+			$lineWidth=$this->rangeCheck(
+				$this->checkExist($currentSchema[ATTR_WIDTH],40),
+				1,40,'Line width is out of range.');
+			$lineHeight=$this->rangeCheck(
+				$this->checkExist(@$currentSchema[ATTR_HEIGHT],1),
+				0,23,'Line height is out of range.');
 
 			$place=$lineIndex+1;
 
-			$this->currentLineData=str_pad('',$lineWidth,!isset($currentSchema[ATTR_FILLCHAR])?' ':$currentSchema[ATTR_FILLCHAR]);
+			$ch=!isset($currentSchema[ATTR_FILLCHAR])?' ':$currentSchema[ATTR_FILLCHAR];
+			$this->currentLineData=str_repeat($ch,$lineWidth*$lineHeight);
 
 			// parse elements
 			foreach ($currentSchema as $elType => $this->elParams) {
@@ -110,7 +137,11 @@ class AtasciiGen {
 
 			// Paste the finished score line into the screen definition.
 			$screenOffset=$lineX+$lineY*$this->layoutData[ATTR_WIDTH];
-			putStr($this->currentLineData,$this->screenDef,$screenOffset);
+			for ($dataLine=0;$dataLine<$lineHeight;$dataLine++) {
+				$lineOffset=$dataLine*$lineWidth;
+				$lineData=substr($this->currentLineData,$lineOffset,$lineWidth);
+				putStr($lineData,$this->screenDef,$screenOffset);
+			}
 		}
 
 		return $this->screenDef;
@@ -121,7 +152,17 @@ class AtasciiGen {
 //
 
 	private function createElement($val) {
-		// Create a string based on definition parameters
+		$offsetX=$this->rangeCheck(
+			$this->checkExist(@$this->elParams[ATTR_XOFFSET],0),
+			0,39,'Element column offset is out of range.');
+		$offsetY=$this->rangeCheck(
+			$this->checkExist(@$this->elParams[ATTR_YOFFSET],0),
+			0,23,'Element row offset is out of range.');
+		$elWidth=$this->rangeCheck(
+			$this->checkExist(@$this->elParams[ATTR_WIDTH],strlen($val)),
+			0,39,'Element width is out of range.');
+
+	// Create a string based on definition parameters
 		switch (@$this->elParams[ATTR_ALIGN]) {
 			case 'left': $align=STR_PAD_RIGHT; break;
 			case 'center': $align=STR_PAD_BOTH; break;
@@ -130,8 +171,8 @@ class AtasciiGen {
 		}
 
 		switch(@$this->elParams[ATTR_LETTERCASE]) {
-			case "uppercase": break;
-			case "lowercase": break;
+			case "uppercase": $val=strtoupper($val); break;
+			case "lowercase": $val=strtolower($val); break;
 			default:
 		}
 
@@ -140,20 +181,33 @@ class AtasciiGen {
 				isset($this->elParams[ATTR_REPLACEOUTSIDECHAR])?$this->elParams[ATTR_REPLACEOUTSIDECHAR]:' ');
 		}
 
-		if ( @($this->elParams[ATTR_INVERS]) ) { strInvert($val); }
-
-		$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->elParams[ATTR_FILLCHAR];
-		$val=str_pad($val,$this->elParams[ATTR_WIDTH],$ch,$align);
-
-		// clip string to width length
-		$val=substr($val,0,$this->elParams[ATTR_WIDTH]);
-
 		if ( @($this->elParams[ATTR_USEATASCIFONT]) ) {
-			// TODO
-			throw new Exception("The AtasciiFont feature is not yes available :(");
+			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->elParams[ATTR_FILLCHAR];
+			$val=str_pad($val,$this->elParams[ATTR_WIDTH],$ch,$align);
+
+			$fontName=$this->elParams[ATTR_USEATASCIFONT];
+			$AFnt=new AtasciiFont($fontName);
+			$textLines=$AFnt->makeText($val);
+
+			for ($line=0;$line<count($textLines);$line++) {
+				$lineLen=strlen($textLines[$line]);
+				$ch=" ";
+				$val=str_pad($textLines[$line],$elWidth,$ch,$align);
+				$outLineOfs=$offsetX+($elWidth*($offsetY+$line));
+				putStr($val,$this->currentLineData,$outLineOfs);
+			}
 		} else {
+			if ( @($this->elParams[ATTR_INVERS]) ) { strInvert($val); }
+
+			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->elParams[ATTR_FILLCHAR];
+			$val=str_pad($val,$elWidth,$ch,$align);
+
+			// clip string to width length
+			$val=substr($val,0,$elWidth);
+
 			// Paste the created string into a string representing the defined line.
-			putStr($val,$this->currentLineData,$this->elParams[ATTR_XOFFSET]);
+			$outOffset=$offsetX+$offsetY*$elWidth;
+			putStr($val,$this->currentLineData,$outOffset);
 		}
 	}
 
