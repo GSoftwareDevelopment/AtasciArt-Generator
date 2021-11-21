@@ -2,6 +2,7 @@
 require_once('./_polyfill.php');
 require_once('./_string_helpers.php');
 
+const ATASCII_FONT_PATH="./AtasciiFonts/";
 const ENCODE_ANTIC=false;
 const ENCODE_ATASCII=true;
 
@@ -20,7 +21,7 @@ class AtasciiFont {
 	public $dataEncode; // encode method for character data
 
 	public function __construct($fontFile) {
-		$cnt=@file_get_contents($fontFile);
+		$cnt=@file_get_contents(ATASCII_FONT_PATH.$fontFile);
 		if ( $cnt===false ) throw new Exception("Can't open AtasciiFont file");
 		$font=json_decode($cnt,true);
 		if (json_last_error()!=0) throw new Exception(json_last_error_msg()." in AtasciiFont file");
@@ -90,9 +91,9 @@ class AtasciiFont {
 	public function makeText($str,$encode=null) {
 		$outLines=[]; $textHeight=0;
 		if ($encode!==null) {
-			if ($encode) $spaceCh=chr(0); else $spaceCh=chr(32);
+			if ($encode) $spaceCh=chr(32); else $spaceCh=chr(0);
 		} else {
-			if (!$encode) $spaceCh=chr(0); else $spaceCh=chr(32);
+			if ($this->dataEncode) $spaceCh=chr(32); else $spaceCh=chr(0);
 		}
 		$strLen=strLen($str);
 		for ($strOfs=0;$strOfs<$strLen;$strOfs++) {
