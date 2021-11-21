@@ -8,9 +8,13 @@ class AtasciiGen {
 	public $confFN='';
 	private $screenDef='';
 	private $config;
+	private $schemes;
+
+	private $screenWidth,$screenHeight;
+	private $curLineX,$curLineY,$curLineWidth,$curLineHeight;
+
 	protected $currentLineData;
 	private $elParams;
-	private $schemes;
 
 	public function __construct($fn) {
 		$this->confFN="";
@@ -70,10 +74,15 @@ class AtasciiGen {
 		}
 	}
 	public function generate() {
+		$curPlace=1;
 		// check required parameters for layout
-		if ( !isset($this->layoutData[ATTR_WIDTH]) || // No layout width
-				 !isset($this->layoutData[ATTR_HEIGHT]) ) // No layout height
- 			throw new Exception("The definition of a layout MUST HAVE `".ATTR_WIDTH."` and `".ATTR_HEIGHT."` parameters specified.");
+		$this->screenWidth=$this->rangeCheck(
+			$this->checkExist($this->layoutData[ATTR_WIDTH],40),
+			1,48,'Layout width is out of range.');
+		$this->screenHeight=$this->rangeCheck(
+			$this->checkExist($this->layoutData[ATTR_HEIGHT],24),
+			1,30,'Layout height is out of range.');
+
 		// get optional screen data or screen fill character
 		$this->getScreenDataFromLayout();
 
@@ -92,29 +101,37 @@ class AtasciiGen {
 			$currentSchema=$lineDef+$currentSchema;
 
 			// Checking required parameters for element
-//			if ( !isset($currentSchema[ATTR_X]) ) throw new Exception("Element '".ATTR_X."', is not defined");
-//			if ( !isset($currentSchema[ATTR_Y]) ) throw new Exception("Element '".ATTR_Y."', is not defined");
-//			if ( !isset($currentSchema[ATTR_WIDTH]) ) throw new Exception("Element '".ATTR_WIDTH."', is not defined");
-
-			$lineX=$this->rangeCheck(
-				$this->checkExist($currentSchema[ATTR_X],null,"Element {ATTR_X} is not defined"),
+			$this->curLineX=$this->rangeCheck(
+				$this->checkExist($currentSchema[ATTR_X],null,"Element {ATTR_X} is not specified"),
 				0,39,'Line column is out of range.');
-			$lineY=$this->rangeCheck(
-				$this->checkExist($currentSchema[ATTR_Y],0),
+			$this->curLineY=$this->rangeCheck(
+				$this->checkExist($currentSchema[ATTR_Y],null,"Element {ATTR_Y} is not specified"),
 				0,23,'Line row is out of range.');
-			$lineWidth=$this->rangeCheck(
+			$this->curLineWidth=$this->rangeCheck(
 				$this->checkExist($currentSchema[ATTR_WIDTH],40),
 				1,40,'Line width is out of range.');
-			$lineHeight=$this->rangeCheck(
+			$this->curLineHeight=$this->rangeCheck(
 				$this->checkExist(@$currentSchema[ATTR_HEIGHT],1),
 				0,23,'Line height is out of range.');
 
 			$place=$lineIndex+1;
 
 			$ch=!isset($currentSchema[ATTR_FILLCHAR])?' ':$currentSchema[ATTR_FILLCHAR];
-			$this->currentLineData=str_repeat($ch,$lineWidth*$lineHeight);
+			$this->currentLineData=str_repeat($ch,$this->curLineWidth*$this->curLineHeight);
 
-			// parse elements
+			if ( isset($currentSchema[ATTR_ISENTRY]) ) {
+				$isEntry=$currentSchema[ATTR_ISENTRY];
+			} else {
+				$isEntry=true;
+			}
+			if ( $isEntry ) {
+				if ( is_int($isEntry) ) {
+					$curPlace=$isEntry;
+				}
+				$this->curEntry=$this->getScoreboardEntry($curPlace);
+			}
+
+			// parse elements in current line definition
 			foreach ($currentSchema as $elType => $this->elParams) {
 				$label=null;
 				$labelPos=strpos($elType,LABEL_SEPARATOR);
@@ -122,7 +139,7 @@ class AtasciiGen {
 					$elType=substr($elType,0,$labelPos-1);
 					$label=substr($elType,$labelPos+1);
 				}
-				$this->parseElement($elType,$this->getScoreboardEntry($place),$label);
+				$this->parseElement($elType,$this->curEntry,$label);
 			}
 
 			// general parameters
@@ -136,12 +153,15 @@ class AtasciiGen {
 			}
 
 			// Paste the finished score line into the screen definition.
-			$screenOffset=$lineX+$lineY*$this->layoutData[ATTR_WIDTH];
-			for ($dataLine=0;$dataLine<$lineHeight;$dataLine++) {
-				$lineOffset=$dataLine*$lineWidth;
-				$lineData=substr($this->currentLineData,$lineOffset,$lineWidth);
+			$screenOffset=$this->curLineX+$this->curLineY*$this->screenWidth;
+			for ($dataLine=0;$dataLine<$this->curLineHeight;$dataLine++) {
+				$lineOffset=$dataLine*$this->curLineWidth;
+				$lineData=substr($this->currentLineData,$lineOffset,$this->curLineWidth);
 				putStr($lineData,$this->screenDef,$screenOffset);
+				$screenOffset+=$this->screenWidth;
 			}
+
+			if ( $isEntry ) $curPlace++;
 		}
 
 		return $this->screenDef;
@@ -154,13 +174,16 @@ class AtasciiGen {
 	private function createElement($val) {
 		$offsetX=$this->rangeCheck(
 			$this->checkExist(@$this->elParams[ATTR_XOFFSET],0),
-			0,39,'Element column offset is out of range.');
+			0,$this->screenWidth-1,'Element column offset is out of range.');
 		$offsetY=$this->rangeCheck(
 			$this->checkExist(@$this->elParams[ATTR_YOFFSET],0),
-			0,23,'Element row offset is out of range.');
+			0,$this->screenHeight-1,'Element row offset is out of range.');
 		$elWidth=$this->rangeCheck(
-			$this->checkExist(@$this->elParams[ATTR_WIDTH],strlen($val)),
-			0,39,'Element width is out of range.');
+			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineWidth-$offsetX),
+			1,48,'Element width is out of range.');
+		$elHeight=$this->rangeCheck(
+			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineHeight-$offsetY),
+			1,30,'Element height is out of range.');
 
 	// Create a string based on definition parameters
 		switch (@$this->elParams[ATTR_ALIGN]) {
@@ -183,18 +206,18 @@ class AtasciiGen {
 
 		if ( @($this->elParams[ATTR_USEATASCIFONT]) ) {
 			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->elParams[ATTR_FILLCHAR];
-			$val=str_pad($val,$this->elParams[ATTR_WIDTH],$ch,$align);
+//			$val=str_pad($val,$elWidth*$elHeight,$ch,$align);
 
 			$fontName=$this->elParams[ATTR_USEATASCIFONT];
 			$AFnt=new AtasciiFont($fontName);
-			$textLines=$AFnt->makeText($val);
+			$textLines=$AFnt->makeText($val,ENCODE_ATASCII);
 
 			for ($line=0;$line<count($textLines);$line++) {
 				$lineLen=strlen($textLines[$line]);
-				$ch=" ";
-				$val=str_pad($textLines[$line],$elWidth,$ch,$align);
-				$outLineOfs=$offsetX+($elWidth*($offsetY+$line));
-				putStr($val,$this->currentLineData,$outLineOfs);
+
+				$ln=str_pad($textLines[$line],$elWidth,$ch,$align);
+				$outLineOfs=$offsetX+($this->curLineWidth*($offsetY+$line));
+				putStr($ln,$this->currentLineData,$outLineOfs);
 			}
 		} else {
 			if ( @($this->elParams[ATTR_INVERS]) ) { strInvert($val); }
