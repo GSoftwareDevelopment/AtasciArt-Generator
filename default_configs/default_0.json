@@ -81,11 +81,14 @@
 					"useSchema": "default"
 				},
 				{
+					"isEntry": false,
 					"x": 9,
 					"y": 23,
 					"width": 22,
 					"genTime":{
-						"offsetX": 1,
+						"offsetX": 0,
+						"width": 22,
+						"align": "center",
 						"format": "Y.m.d  H:i:s"
 					},
 					"invert": true
