@@ -16,6 +16,8 @@ class AtasciiGen {
 	protected $currentLineData;
 	private $elParams;
 
+	public $params=[];
+
 	public function __construct($fn) {
 		$this->confFN="";
 		$configFile=@file_get_contents($fn);
@@ -51,7 +53,7 @@ class AtasciiGen {
 			}	else {
 			  $ch=chr(0);
 			}
-			$len=$this->layoutData[ATTR_WIDTH]*$this->layoutData[ATTR_HEIGHT];
+			$len=$this->screenWidth*$this->screenHeight;
 			$this->screenDef=str_pad("",$len,$ch);
 		}
 	}
@@ -73,12 +75,23 @@ class AtasciiGen {
 			return $value;
 		}
 	}
+
 	public function generate() {
 		$curPlace=1;
 		// check required parameters for layout
-		$this->screenWidth=$this->rangeCheck(
-			$this->checkExist($this->layoutData[ATTR_WIDTH],40),
-			1,48,'Layout width is out of range.');
+		if ( is_int(@$this->layoutData[ATTR_WIDTH]) ) {
+			$this->screenWidth=$this->rangeCheck(
+				$this->checkExist($this->layoutData[ATTR_WIDTH],40),
+				1,48,'Layout width is out of range.');
+		} else {
+			switch ($this->layoutData[ATTR_WIDTH]) {
+				case 'narrow': $this->screenWidth=32; break;
+				case 'normal': $this->screenWidth=40; break;
+				case 'wide':   $this->screenWidth=48; break;
+				default:
+					throw new Exception("Screen width value not recognized");
+			}
+		}
 		$this->screenHeight=$this->rangeCheck(
 			$this->checkExist($this->layoutData[ATTR_HEIGHT],24),
 			1,30,'Layout height is out of range.');
@@ -98,21 +111,21 @@ class AtasciiGen {
 					throw new Exception("Schema '".$schemaName."' is not defined!");
 				}
 			}
-			$currentSchema=$lineDef+$currentSchema;
+			$currentSchema=array_merge_recursive($lineDef,$currentSchema);
 
 			// Checking required parameters for element
 			$this->curLineX=$this->rangeCheck(
-				$this->checkExist($currentSchema[ATTR_X],null,"Element {ATTR_X} is not specified"),
-				0,39,'Line column is out of range.');
+				$this->checkExist(@$currentSchema[ATTR_X],null,"Element {ATTR_X} is not specified"),
+				0,47,'Line column is out of range.');
 			$this->curLineY=$this->rangeCheck(
-				$this->checkExist($currentSchema[ATTR_Y],null,"Element {ATTR_Y} is not specified"),
-				0,23,'Line row is out of range.');
+				$this->checkExist(@$currentSchema[ATTR_Y],null,"Element {ATTR_Y} is not specified"),
+				0,39,'Line row is out of range.');
 			$this->curLineWidth=$this->rangeCheck(
-				$this->checkExist($currentSchema[ATTR_WIDTH],40),
-				1,40,'Line width is out of range.');
+				$this->checkExist(@$currentSchema[ATTR_WIDTH],$this->screenWidth-$this->curLineX),
+				1,48,'Line width is out of range.');
 			$this->curLineHeight=$this->rangeCheck(
 				$this->checkExist(@$currentSchema[ATTR_HEIGHT],1),
-				0,23,'Line height is out of range.');
+				1,30,'Line height is out of range.');
 
 			$place=$lineIndex+1;
 
@@ -139,7 +152,7 @@ class AtasciiGen {
 					$elType=substr($elType,0,$labelPos-1);
 					$label=substr($elType,$labelPos+1);
 				}
-				$this->parseElement($elType,$this->curEntry,$label);
+				$this->parseElement($elType,@$this->curEntry,$label);
 			}
 
 			// general parameters
@@ -172,17 +185,29 @@ class AtasciiGen {
 //
 
 	private function createElement($val) {
+		if ( @($this->elParams[ATTR_USEATASCIFONT]) ) {
+			$fontName=$this->elParams[ATTR_USEATASCIFONT];
+			$AFnt=new AtasciiFont($fontName);
+			$textLines=$AFnt->makeText($val,ENCODE_ATASCII);
+			$valWidth=$AFnt->getWidth($textLines);
+			$valHeight=$AFnt->getHeight($textLines);
+			$useAtasciiFont=true;
+		} else {
+			$valWidth=strlen($val); $valHeight=1;
+			$useAtasciiFont=false;
+		}
+
 		$offsetX=$this->rangeCheck(
 			$this->checkExist(@$this->elParams[ATTR_XOFFSET],0),
-			0,$this->screenWidth-1,'Element column offset is out of range.');
+			0,$this->curLineWidth-1,'Element column offset is out of range.');
 		$offsetY=$this->rangeCheck(
 			$this->checkExist(@$this->elParams[ATTR_YOFFSET],0),
-			0,$this->screenHeight-1,'Element row offset is out of range.');
+			0,$this->curLineHeight-1,'Element row offset is out of range.');
 		$elWidth=$this->rangeCheck(
-			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineWidth-$offsetX),
+			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineWidth),
 			1,48,'Element width is out of range.');
 		$elHeight=$this->rangeCheck(
-			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineHeight-$offsetY),
+			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineHeight),
 			1,30,'Element height is out of range.');
 
 	// Create a string based on definition parameters
@@ -204,18 +229,11 @@ class AtasciiGen {
 				isset($this->elParams[ATTR_REPLACEOUTSIDECHAR])?$this->elParams[ATTR_REPLACEOUTSIDECHAR]:' ');
 		}
 
-		if ( @($this->elParams[ATTR_USEATASCIFONT]) ) {
+		if ( $useAtasciiFont ) {
 			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->elParams[ATTR_FILLCHAR];
-//			$val=str_pad($val,$elWidth*$elHeight,$ch,$align);
-
-			$fontName=$this->elParams[ATTR_USEATASCIFONT];
-			$AFnt=new AtasciiFont($fontName);
-			$textLines=$AFnt->makeText($val,ENCODE_ATASCII);
-
 			for ($line=0;$line<count($textLines);$line++) {
-				$lineLen=strlen($textLines[$line]);
-
 				$ln=str_pad($textLines[$line],$elWidth,$ch,$align);
+				$ln=substr($ln,0,$elWidth);
 				$outLineOfs=$offsetX+($this->curLineWidth*($offsetY+$line));
 				putStr($ln,$this->currentLineData,$outLineOfs);
 			}
@@ -256,7 +274,16 @@ class AtasciiGen {
 
 	private function parseText() {
 		if ( @($this->elParams[ATTR_CONTENT]) ) {
-			return $this->elParams[ATTR_CONTENT];
+			$val=trim($this->elParams[ATTR_CONTENT]);
+			if ($val[0]==="%") {
+				$paramID=substr($val,1);
+				if ( isset($this->params[$paramID]) ) {
+					$val=$this->params[$paramID];
+				} else {
+					$val="";
+				}
+			}
+			return $val;
 		} else {
 			return "";
 		}
@@ -306,8 +333,8 @@ class AtasciiGen {
 	                          $defaultCharWidth=DEFAULT_CHAR_WIDTH,$defaultCharHeight=DEFAULT_CHAR_HEIGHT) {
 		$fnt=@imagecreatefrompng($fontFile);
 		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
-		$width=$this->layoutData['width'];
-		$height=$this->layoutData['height'];
+		$width=$this->screenWidth;
+		$height=$this->screenHeight;
 		$img=@imagecreate(($width*$defaultCharWidth),($height*$defaultCharHeight))
 			or die("Cannot Initialize new GD image stream");
 		for ($y=0;$y<$height;$y++) {
