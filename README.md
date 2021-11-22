@@ -12,7 +12,7 @@ Przesyłanie wyników odbywa się na trzy różne sposoby:
 
 Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/)
 
-## Czym jest HSC Atasci Generator?
+## Czym jest HSC AtasciArt Generator?
 
 Jest to skrypt rozszerzający możliwości HSC, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką **AtasciiArt**.
 Ekran jest generowany na podstawie przesłanego do serwisu pliku konfiguracyjnego. W postaci czytelnej dla małego ATARI, przesyłany jest do interfejsu **FujiNet** za pośrednictwem sieci Internet. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu komputera Atari, bez konieczności przetwarzania informacji.
@@ -29,7 +29,7 @@ Jest to plik w formacie JSON. Opisuje on właściwości i elementy generowanego 
 
     Ważne, aby pamiętać, że wielkość liter w nazwach sekcji, atrybutów oraz ich wartościach MA ZNACZENIE!
 
-### Sekcja `layouts`
+## Sekcja `layouts` - Definicje layoutów
 
 Z punktu widzenia formatu JSON, `layouts` jest obiektem w którym umieszczone są definicje wyglądu ekranów. Każda taka definicja to osobny obiekt.
 
@@ -49,16 +49,27 @@ Z punktu widzenia formatu JSON, `layouts` jest obiektem w którym umieszczone s�
 }
 ```
 
-Powyższy przykład, przedstawia definicję trzech ekranów:
+Powyższy przykład, przedstawia poglądową definicję trzech ekranów (sub layoutów):
 
 - nazwa `default` jest zarezerwowana dla domyślnego wyglądu
 - `layout_1` i `layout_2` są dodatkowymi ekranami
 
-#### Definiowanie wyglądu ekranu
+### Definiowanie wyglądu ekranu
 
 __Atrybuty wymagane:__
 
 - `width`, `height` - szerokość i wysokość całkowita w znakach
+
+  Domyślna wartość to 40 znaków.
+
+  Wartości `width` z zakresu od 1 do 48. Można też używać predefiniowanych wartości:
+
+  - `narrow` - szerokość 32 znaki
+  - normal - szerokość 40 znaków
+  - `wide` - szerokość 48
+
+  Wartość `height` od 1 do 30.
+
 - `lines` - tablica obiektów opisująca generowane linie
 
 __Opcjonalne atrybuty:__
@@ -68,18 +79,23 @@ __Opcjonalne atrybuty:__
 - `screenData` - tablica ciągów tekstowych opisująca zawartość ekranu bazowego (dane heksadecymalne)
 - `screenFill` - znak, jakim będzie wypełniony ekran bazowy w przypadku, braku atrybutu `screenData`
 
-## Sekcja `lines`
+## Sekcja `lines` - Definicje linii
 
 Jest to tablica obiektów (w rozumieniu pliku JSON). Każdy obiekt w tej sekcji, definiuje osobną linię w ekranie bazowym.
 
 __Atrybuty wymagane:__
 
-- `x` i `y` - określające początkowe położenie elementu w ekranie bazowym
-- `width` - szerokość elementu
+- `x` i `y` - określające początkowe położenie linii w ekranie bazowym
 
 __Opcjonalne atrybuty:__
 
+- `width` oraz `height` - szerokość i wysokość linii.
+
+  Domyślne wartości to: `height` = 1. Jeśli chodzi o `width` to ta wartość domyślnie dobierana jest na podstawie różnicy szerkości generowanego ekranu, a wartości X połoźenia linii.
+
 - `invert`, ustawiony na `true`, dokonuje inwersji (operacja XOR na 7 bicie każdego znaku)  w wynikowej linii
+
+Treść generowanej linii jest obcinana do jej szerokości oraz wysokości.
 
 W sekcji tej, definiowane są też elementy wchodzące w skład linii.
 
@@ -91,7 +107,7 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu obiektu opisującego ge
 {
  "layouts":{
   "default":{
-   "elements":[
+   "lines":[
     {
      "x": 1,
      "y": 1,
@@ -116,7 +132,7 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu obiektu opisującego ge
 - `score` - osiągnięty wynik
 - `date` - datę rejestracji wyniku
 - `text` - generuje dowolny tekst
-- `genTime` - generuje czas powstania ekranu
+- `genTime` - generuje czas utworzenia ekranu
 
 Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po typie elementu, poprzedzając ją znakiem kropki.
 
@@ -128,42 +144,82 @@ Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po typie 
 
 Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu.
 
+
+
 ### Atrybuty opisujące element
 
-__Atrybuty wymagane:__
+Poniższe atrybuty nie są wymagane, gdyż w przypadku ich braku wybierana jest wartość domyślna, jednak warto nad nimi panować, celem osiągnięcia zamierzonego efektu.
 
-- `shift` - przesunięcie względem początku linii (w znakach)
-- `width` - szerokość generowanego elementu (w znakach)
+#### `offsetX` i `offsetY`
 
-__Opcjonalnie atrybuty:__
+Definiują przesunięcie poziome oraz pionowe względem początku linii (w znakach)
 
-- `align` - justowanie zawartości względem podanej szerokości elementu (atrybut `width`)
+Wartości domyślne dla obu atrybutów wynoszą 0 (zero)
 
-  Możliwe wartości to: `left`, `center`, `right`.
+#### `width` i `height`
 
-  Wartość `right` jest domyślna.
+Ustalają szerokość i wysokość generowanego elementu (w znakach)
 
-- `fillChar` - znak, jakim będzie wypełniony element na całej jego szerokości.
+Wartościami domyślnymi dla atrybutów `width` i `height` są, szerokość i wysokość definiowanej linii. 
 
-  Domyślną wartością jest znak #32 (spacja)
+#### `align`
 
-- `letterCase` - pozwala na konwersję wielkości liter.
+justowanie zawartości względem podanej szerokości elementu (atrybut `width`)
 
-  Możliwe wartości: `uppercase`,`lowercase`
+Możliwe wartości to: `left`, `center`, `right`.
 
-- `limitChars` - zawiera zestaw znaków, jaki jest akceptowany przy generowaniu elementu. Jego opis to wartość typu string, zawierająca wszystkie akceptowane znaki.
+Wartość `right` jest domyślna.
 
-  W parze z tym atrybutem jest atrybut `replaceOutsideChars`.
+#### `fillChar`
 
-  Domyślnie akceptowane są wszystkie znaki.
+Określna znak, jakim będzie wypełniony element na całej jego szerokości.
 
-- `replaceOutsideChars` - ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak generowanego elementu nie należy do zakresu określonego w atrybucie `limitChars`.
+Domyślną wartością jest znak #32 (spacja)
 
-  Domyślną wartością jest #32 (spacja)
+#### `letterCase`
 
-- `invert` - działa tak samo jak atrybut `inversLine` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego elementu.
+Pozwala na konwersję wielkości liter.
 
-- `useAtasciiFont` - generuje treść elementu z użyciem **AtasciiFont**
+Możliwe wartości: `uppercase`,`lowercase`
+
+#### `limitChars`
+
+Zawiera listę znaków, jaka będzie akceptowana przy generowaniu elementu. Jego opis to wartość typu string, zawierająca wszystkie akceptowane znaki.
+
+W parze z tym atrybutem jest atrybut `replaceOutsideChars`.
+
+Domyślnie akceptowane są wszystkie znaki.
+
+#### `replaceOutsideChars` 
+
+Ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak generowanego elementu nie należy do zakresu określonego w atrybucie `limitChars`.
+
+Domyślną wartością jest #32 (spacja)
+
+#### `invert` 
+
+Działa tak samo jak atrybut `invert` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego elementu.
+
+#### `useAtasciiFont` 
+
+Generuje treść elementu z użyciem **AtasciiFont** (patrz dział [AtasciiFont](#AtasciiFont))
+
+#### `isEntry`
+
+Atrybut wskazujący na pobranie wyniku z tablicy wyników.
+
+Przyjmuje dwa typy wartości:
+
+- `boolean` - określające, czy pobierać wynik z tablicy wyników (wartość `true`, czy też nie (wartość `false`).
+- `integer` - określająca, który wynik z tablicy wyników ma być pobrany
+
+Ustalenie tego atrybutu tyczy się aktualnie definiowanej linii. Po przejściu do następnej, numer miejsca wyniku jest automatycznie zwiększany o jeden. Ustawienie wartości `false` powoduje, niezwiększanie numeru miejsca dla następnej linii.
+
+Domyślną wartością jest `true`
+
+**UWAGA!** Atrybut nie sprawdza zakresu! 
+
+
 
 ### Dedykowane atrybuty elementów
 
@@ -174,20 +230,11 @@ Spośród wszystkich elementów można wybrać takie, które mają przypisane do
 - `genTime`
 - `text`
 
-#### Atrybuty elementu `score`
+#### Element `score`
 
-Element wyniku `score` domyślnie interpretowana jest jako wartość 32-bitowa typu całkowitego, przedstawiająca wynik punktowy osiągnięty przez gracza. Może być też przedstawiona jako czas.
+Element wyniku `score` domyślnie interpretowana jest jako wartość 32-bitowa typu całkowitego (`longint`), przedstawiająca wynik punktowy osiągnięty przez gracza. Może być też przedstawiona jako czas, używając atrybutu `showScoreAs`
 
-Czas zapisywany jest w postaci liczby całkowitej zawierającej część ułamkową, której dokładność określa atrybut `precision` w zakresie od 2 do 100. Wartość `precision` należy rozumieć jako część sekundy 1/n. Najlepiej będzie to zrozumieć, przedstawiając to w tabeli:
-
-| `score` | `precision` | rezultat |
-| ------- | ----------- | -------- |
-| 1       | 5 (1/5s)    | 00s.20   |
-| 5       |             | 01s.00   |
-| 51      |             | 10s.20   |
-| 1       | 50 (1/50s)  | 00s.02   |
-| 5       |             | 00s.10   |
-| 55      |             | 01s.10   |
+##### `showScoreAs`
 
 Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące atrybuty w elemencie `score`:
 
@@ -203,7 +250,22 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 - `precision` - określ dokładność z jaką będzie interpretowana wartość wyniku (1/n części sekundy)
 - `format` - opisz format, który będzie zastosowany w wyniku.
 
-`format` jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
+##### `precision`
+
+Czas zapisywany jest w postaci liczby całkowitej zawierającej część ułamkową, której dokładność określa atrybut `precision` w zakresie od 2 do 100. Wartość `precision` należy rozumieć jako część sekundy (1/n). Najlepiej będzie to zrozumieć, przedstawiając to w tabeli:
+
+| wartość<br />wyniku | wartść<br />atrybutu<br />`precision` | rezultat |
+| :-----------------: | :-----------------------------------: | :------: |
+|          1          |               5 (1/5s)                |  00s.20  |
+|          5          |                                       |  01s.00  |
+|         51          |                                       |  10s.20  |
+|          1          |              50 (1/50s)               |  00s.02  |
+|          5          |                                       |  00s.10  |
+|         55          |                                       |  01s.10  |
+
+##### `format` 
+
+Jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
 
 - `h` - ilość godzin (bez zera wiodącego)
 - `Hn` - ilość godzin, gdzie `n` określa ilość zer wiodących (jedna cyfra)
@@ -214,19 +276,40 @@ Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące a
 
 Nierozpoznane znaki w ciągu formatu zostaną przedstawione bez zmian.
 
-#### Atrybuty elementu `date`
+#### Element `date`
 
-Atrybutem rozszerzającym element `date` jest `format`. Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
+##### `format`
+
+Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data powstania wyniku. Domyślnie stosowany jest format `Y.m.d`
 
 Funkcją formatującą czas jest funkcja języka PHP `date()`. Jej opis znajdziesz [tu](https://www.php.net/manual/en/function.date.php), a możliwe opcje formatowania [tu](https://www.php.net/manual/en/datetime.format.php).
 
-#### Atrybuty elementu `genTime`
+#### `Element `genTime`
+
+Wyświetla serwerowy czas utworzenia ekranu.
+
+##### `format`
 
 Patrz opis atrybutów elementu `date`
 
-#### Atrybuty elementu `text`
+#### Element  `text`
 
-Użyj atrybutu `content` celem, określenia treści generowanego tekstu.
+##### `content`
+
+Użyj atrybutu `content` celem, określenia treści generowanego tekstu. Treść jest automycznie przycinana z obu stron pod kątem białych znaków.
+
+W treści atrybutu, może być użyty parametr, np:
+
+```JSON
+...
+"text":{
+    content:"%id"
+}
+```
+
+W miejscu `id` nalezy użyć identyfikatora, jaki zaostał użyty do przekazania parametrów do skryptu (patrz [Przekazywanie parametrów do HSC AAG](#Przekazywanie-parametrów-do-HSC-AAG))
+
+
 
 ## Sekcja `lineScheme` - Schematy definicji elementów
 
@@ -290,6 +373,138 @@ Użycie schematu jest banalnie proste. W definicji linii wyniku wstawiamy atrybu
 
 Elementy i atrybuty zdefinsiowane w linii wyniku mają priorytet nad schematem, dzięki czemu, można nadpisywać ustawiane przez schemat cechy.
 
+
+
 ## AtasciiFont
 
+**AtasciFont** to czcionki wykorzystujące zestaw znaków Atascii z małego ATARI.
+
+W połączeniu z **HSC AtasciiArt Generator** zwiększają one możliwości kreowania ekranów i można je wykorzystać w każdym aspekcie na jaki pozwala HSC AAG.
+
+### Dostępne czcionki
+
+Obecnie stworzonych jest 8 czcionek.
+
+| Nazwa pliku        | Nazwa czcionki     | Rozmiar |                        Przykład                        |
+| ------------------ | ------------------ | :-----: | :----------------------------------------------------: |
+| cosmic-line-2.json | Cosmic SquareLined |   3x3   | <img src="imgs/cosmic-line-2.png" style="zoom:50%;" /> |
+| cosmic-line.json   | Cosmic Lined       |   3x4   |  <img src="imgs/cosmic-line.png" style="zoom:50%;" />  |
+| cosmic.json        | Cosmic             | 3(4)x3  |    <img src="imgs/cosmic.png" style="zoom:50%;" />     |
+| handwrite.json     | Handwrite          |   3x5   |   <img src="imgs/handwrite.png" style="zoom:50%;" />   |
+| round.json         | Round              | 3(4)x3  |     <img src="imgs/round.png" style="zoom:50%;" />     |
+| square-bold.json   | Square Bold        | 3(4)x3  |  <img src="imgs/square-bold.png" style="zoom:50%;" />  |
+| square-slim.json   | Square Slim        |   3x3   |  <img src="imgs/square-slim.png" style="zoom:50%;" />  |
+| ultra-future.json  | Ultra Future       |   4x4   | <img src="imgs/ultra-future.png" style="zoom:50%;" />  |
+
+---
+
+**Uwaga!** Nie wszystkie czcionki zawierają definicjie: małych liter oraz znaków interpunkcyjnych! Użycie niezdefiniowanego znaku, spowoduje jego nie wyświetlenie.
+
+Zobacz [katalog podglądu czcionek](./AtasciiFonts/png_preview/), aby zobaczyć, jakie znaki są zdefiniowane w czcionkach.
+
+---
+
+
+
+### Jak korzystać z czcionek AtasciiFont w HSC AAG?
+
+Aby użyć czcionki **AtasciFont** w pliku konfiguracyjnym, należy w definicji elementu umieści atrybut `useAtasciiFont`. W jego parametrze należy podać nazwę pliku czcionki bez rozszerzenia `.json`, np.
+
+```JSON
+...
+"text":{
+    "content":"ATARI RULEZ",
+    "useAtasciiFont": "cosmic-line-2"
+}
+...
+```
+
+Należy też pamiętać o dobraniu wysokości linii do wysokości czcionki, gdyż skrypt nie robi tego automatycznie. W przeciwnym wypadku czcionka będzie ucięta.
+
+```JSON
+...
+"lines":{
+    height:3,
+    "elements":{
+        "text":{
+            "content":"ATARI RULEZ",
+            "useAtasciiFont": "cosmic-line-2"
+        }
+    }
+}
+...
+```
+
+Wszelkie atrybuty dostosowujące treść elementu są akceptowane dla **AtasciiFont**.
+
+
+
+## Dla deweloperów
+
+### Podstawy
+
 TODO
+
+### Rozszerzona klasa `HSCGenerator`
+
+TODO
+
+### Przekazywanie parametrów do HSC AAG
+
+Do skryptu można przekazywać parametry. Aby to uczynić, należy po zainicjowaniu nowej instancji `AtasciiGen` ale przed wygenerowanie ekranu dodać do zmiennej tablicowej `params` instanji wartości, np.
+
+~~~PHP
+// make new instance
+$gen=new AtasciGen("config.json");
+
+// add parameters
+$gen->params[]="ATARI";
+$gen->params[]="RULEZ";
+$gen->params[]="AND BASTA";
+
+// generate screen
+$gen->generate();
+~~~
+
+W powyższym przykładzie, parametry będą dostępne dla pliku konfiguracyjnego pod nazwami `%0`, `%1`,`%2`.
+
+Mozna używać asocjacji, celem czytelniejszego oznaczenia parametrów, np.
+
+```PHP
+// make new instance
+$gen=new AtasciGen("config.json");
+
+// add parameters
+$gen->params["line1"]="ATARI";
+$gen->params["line2"]="RULEZ";
+$gen->params["line3"]="AND BASTA";
+
+// generate screen
+$gen->generate();
+```
+
+W takim przypadku, parametry będą dostępne pod nazwami `line1`,`line2`,`line3`.
+
+### Tworzenie obrazów
+
+TODO
+
+
+
+# Podziękowania
+
+Chciałem tu szczególnie podziękować osobom które wspierały ten projekt. Bez nich, prawdopodobnie nic by z niego nie było.
+
+## XXL
+
+Twórca serwisu **High Score Cafe**. Cierpliwie wdraża każdą moją aktualizację. Wspiera w utrzymaniu rozszerzenia oraz podaje świetne pomysły.
+
+## KAZ
+
+Twórca serwisu **AtariOnLine**. Pomocna dusza ;) Udzielił dostępu do serwisu, celem utworzenia artykułu o HSC. Dostarcza nie lada emocji, widząc ciekawe rzeczy (m.in. HSC AAG) - to budujące!
+
+---
+
+**Osoby niewymienione, nie powinny czuć się niedocenione. Ich komentarze są równie cenne, co wkład osób przedstawionych powyżej :)**
+
+---
