@@ -88,6 +88,19 @@ class AtasciiFont {
 		return [$curFDef['width'],$curFDef['height'],hexString2Data($curFDef['data'])];
 	}
 
+	public function getWidth(&$textLines) {
+		$width=0;
+		foreach ($textLines as $nLine => $textLine) {
+			$len=strlen($textLine);
+			if ($len>$width) $width=$len;
+		}
+		return $width;
+	}
+
+	public function getHeight(&$textLines) {
+		return count($textLines);
+	}
+
 	public function makeText($str,$encode=null) {
 		$outLines=[]; $textHeight=0;
 		if ($encode!==null) {
@@ -95,7 +108,7 @@ class AtasciiFont {
 		} else {
 			if ($this->dataEncode) $spaceCh=chr(32); else $spaceCh=chr(0);
 		}
-		$strLen=strLen($str);
+		$strLen=strLen($str); $letterCnt=0;
 		for ($strOfs=0;$strOfs<$strLen;$strOfs++) {
 			$ch=$str[$strOfs];
 			if ($ch===chr(32)) {
@@ -103,7 +116,7 @@ class AtasciiFont {
 					@$outLines[$line].=str_repeat($spaceCh,$this->spaceWidth);
 				}
 			} else {
-				list($curCharWidth,$curCharHeight,$curCharDef)=$this->getCharData($ch,$strOfs);
+				list($curCharWidth,$curCharHeight,$curCharDef)=$this->getCharData($ch,$letterCnt);
 				if ( $curCharDef===null ) continue;
 				if ($curCharHeight>$textHeight) $textHeight=$curCharHeight;
 				for ($line=0;$line<$textHeight;$line++) {
@@ -128,6 +141,7 @@ class AtasciiFont {
 						}
 					}
 				}
+				$letterCnt++;
 			}
 		}
 		return $outLines;
