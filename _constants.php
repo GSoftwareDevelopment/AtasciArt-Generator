@@ -46,7 +46,8 @@ const ATTR_CONTENT="content";
 const ATTR_FORMAT="format";
 
 // default values for attributes
-const DEFAULT_TIMEFORMAT="m:s";
+const DEFAULT_BCDTIMEFORMAT="H2:m:s";
+const DEFAULT_INTTIMEFORMAT="m:s";
 const DEFAULT_DATEFORMAT="Y.m.d";
 const DEFAULT_GENTIME_FORMAT="Y.m.d H:i:s";
 
