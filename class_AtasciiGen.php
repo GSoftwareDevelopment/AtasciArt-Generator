@@ -58,6 +58,30 @@ class AtasciiGen {
 		}
 	}
 
+	private function getParameter($val) {
+		if ( strlen($val)>0 ) {
+			if ($val[0]==="%") {
+				$paramID=substr($val,1);
+				if ( isset($this->params[$paramID]) ) {
+					$val=$this->params[$paramID];
+				} else {
+					$val="";
+				}
+			}
+		}
+		return $val;
+	}
+
+	private function parseValue($val) {
+		if ( is_int($val) ) return $val;
+		if ( is_bool($val) ) return $val;
+		if ( is_string($val) ) {
+//			$val=trim($val);
+			return $this->getParameter($val);
+		}
+		return null;
+	}
+
 	private function rangeCheck($value,$min,$max,$errMsg) {
 		if ($value<$min || $value>$max)
 			throw new Exception($errMsg."! Acceptable value is between {$min} and {$max})");
@@ -78,12 +102,12 @@ class AtasciiGen {
 
 	protected function parseLayoutBefore(&$layoutData) {
 		// check required parameters for layout
-		if ( is_int(@$layoutData[ATTR_WIDTH]) ) {
+		if ( is_int($this->parseValue(@$layoutData[ATTR_WIDTH])) ) {
 			$this->screenWidth=$this->rangeCheck(
-				$this->checkExist($this->layoutData[ATTR_WIDTH],40),
+				$this->checkExist($this->parseValue($this->layoutData[ATTR_WIDTH]),40),
 				1,48,'Layout width is out of range.');
 		} else {
-			switch ($layoutData[ATTR_WIDTH]) {
+			switch ( $this->parseValue($layoutData[ATTR_WIDTH]) ) {
 				case 'narrow': $this->screenWidth=32; break;
 				case 'normal': $this->screenWidth=40; break;
 				case 'wide':   $this->screenWidth=48; break;
@@ -92,7 +116,7 @@ class AtasciiGen {
 			}
 		}
 		$this->screenHeight=$this->rangeCheck(
-			$this->checkExist($layoutData[ATTR_HEIGHT],24),
+			$this->checkExist($this->parseValue($layoutData[ATTR_HEIGHT]),24),
 			1,30,'Layout height is out of range.');
 
 		// get optional screen data or screen fill character
@@ -104,7 +128,7 @@ class AtasciiGen {
 
 		// build schema
 		if ( @isset($lineDef[ATTR_USESCHEMA]) ) {
-			$schemaName=$lineDef[ATTR_USESCHEMA];
+			$schemaName=$this->parseValue($lineDef[ATTR_USESCHEMA]);
 			if ( @isset($this->schemes[$schemaName]) ) {
 				$currentSchema=$this->schemes[$schemaName];
 			} else {
@@ -117,23 +141,23 @@ class AtasciiGen {
 	protected function parseLineBefore(&$currentSchema) {
 		// Checking base parameters for element
 		$this->curLineX=$this->rangeCheck(
-			$this->checkExist(@$currentSchema[ATTR_X],null,"Element {ATTR_X} is not specified"),
+			$this->checkExist($this->parseValue(@$currentSchema[ATTR_X]),null,"Element {ATTR_X} is not specified"),
 			0,47,'Line column is out of range.');
 		$this->curLineY=$this->rangeCheck(
-			$this->checkExist(@$currentSchema[ATTR_Y],null,"Element {ATTR_Y} is not specified"),
+			$this->checkExist($this->parseValue(@$currentSchema[ATTR_Y]),null,"Element {ATTR_Y} is not specified"),
 			0,39,'Line row is out of range.');
 		$this->curLineWidth=$this->rangeCheck(
-			$this->checkExist(@$currentSchema[ATTR_WIDTH],$this->screenWidth-$this->curLineX),
+			$this->checkExist($this->parseValue(@$currentSchema[ATTR_WIDTH]),$this->screenWidth-$this->curLineX),
 			1,48,'Line width is out of range.');
 		$this->curLineHeight=$this->rangeCheck(
-			$this->checkExist(@$currentSchema[ATTR_HEIGHT],1),
+			$this->checkExist($this->parseValue(@$currentSchema[ATTR_HEIGHT]),1),
 			1,30,'Line height is out of range.');
 
-		$ch=!isset($currentSchema[ATTR_FILLCHAR])?' ':$currentSchema[ATTR_FILLCHAR];
+		$ch=!isset($currentSchema[ATTR_FILLCHAR])?' ':$this->parseValue($currentSchema[ATTR_FILLCHAR]);
 		$this->currentLineData=str_repeat($ch,$this->curLineWidth*$this->curLineHeight);
 
 		if ( isset($currentSchema[ATTR_ISENTRY]) ) {
-			$this->isEntry=$currentSchema[ATTR_ISENTRY];
+			$this->isEntry=$this->parseValue($currentSchema[ATTR_ISENTRY]);
 		} else {
 			$this->isEntry=true;
 		}
@@ -147,11 +171,11 @@ class AtasciiGen {
 
 	protected function parseLineAfter(&$layoutData,&$currentSchema) {
 		// general parameters
-		if (@$currentSchema[ATTR_INVERS]) { strInvert($this->currentLineData); }
+		if (@$this->parseValue($currentSchema[ATTR_INVERS])) { strInvert($this->currentLineData); }
 
 		// global parameters
 		// Conversion of entry lines into ANTIC codes (if specified in the configuration)
-		switch ($this->layoutData[CONFIG_LAYOUTS_ENCODEELEMENTAS]) {
+		switch ($this->parseValue($this->layoutData[CONFIG_LAYOUTS_ENCODEELEMENTAS])) {
 			case 'antic': strASCII2ANTIC($this->currentLineData); break;
 			default:
 		}
@@ -200,7 +224,7 @@ class AtasciiGen {
 
 	private function createElement($val) {
 		if ( @($this->elParams[ATTR_USEATASCIFONT]) ) {
-			$fontName=$this->elParams[ATTR_USEATASCIFONT];
+			$fontName=$this->parseValue($this->elParams[ATTR_USEATASCIFONT]);
 			$AFnt=new AtasciiFont($fontName);
 			$textLines=$AFnt->makeText($val,ENCODE_ATASCII);
 			$valWidth=$AFnt->getWidth($textLines);
@@ -212,39 +236,44 @@ class AtasciiGen {
 		}
 
 		$offsetX=$this->rangeCheck(
-			$this->checkExist(@$this->elParams[ATTR_XOFFSET],0),
+			$this->checkExist($this->parseValue(@$this->elParams[ATTR_XOFFSET]),0),
 			0,$this->curLineWidth-1,'Element column offset is out of range.');
 		$offsetY=$this->rangeCheck(
-			$this->checkExist(@$this->elParams[ATTR_YOFFSET],0),
+			$this->checkExist($this->parseValue(@$this->elParams[ATTR_YOFFSET]),0),
 			0,$this->curLineHeight-1,'Element row offset is out of range.');
 		$elWidth=$this->rangeCheck(
-			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineWidth),
+			$this->checkExist($this->parseValue(@$this->elParams[ATTR_WIDTH]),$this->curLineWidth),
 			1,48,'Element width is out of range.');
 		$elHeight=$this->rangeCheck(
-			$this->checkExist(@$this->elParams[ATTR_WIDTH],$this->curLineHeight),
+			$this->checkExist($this->parseValue(@$this->elParams[ATTR_HEIGHT]),$this->curLineHeight),
 			1,30,'Element height is out of range.');
 
 	// Create a string based on definition parameters
-		switch (@$this->elParams[ATTR_ALIGN]) {
+		switch ($this->parseValue(@$this->elParams[ATTR_ALIGN])) {
 			case 'left': $align=STR_PAD_RIGHT; break;
 			case 'center': $align=STR_PAD_BOTH; break;
 			default:
 				$align=STR_PAD_LEFT;
 		}
 
-		switch(@$this->elParams[ATTR_LETTERCASE]) {
+		switch($this->parseValue(@$this->elParams[ATTR_LETTERCASE])) {
 			case "uppercase": $val=strtoupper($val); break;
 			case "lowercase": $val=strtolower($val); break;
 			default:
 		}
 
 		if ( @($this->elParams[ATTR_LIMITCHAR]) ) {
-			$val=limitChars($val,$this->elParams[ATTR_LIMITCHAR],
-				isset($this->elParams[ATTR_REPLACEOUTSIDECHAR])?$this->elParams[ATTR_REPLACEOUTSIDECHAR]:' ');
+			$val=limitChars($val,$this->parseValue($this->elParams[ATTR_LIMITCHAR]),
+				isset($this->elParams[ATTR_REPLACEOUTSIDECHAR])
+					?$this->parseValue($this->elParams[ATTR_REPLACEOUTSIDECHAR])
+					:' ');
 		}
 
 		if ( $useAtasciiFont ) {
-			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->elParams[ATTR_FILLCHAR];
+			$ch=!isset($this->elParams[ATTR_FILLCHAR])
+				?' '
+				:$this->parseValue($this->elParams[ATTR_FILLCHAR]);
+
 			for ($line=0;$line<count($textLines);$line++) {
 				$ln=str_pad($textLines[$line],$elWidth,$ch,$align);
 				$ln=substr($ln,0,$elWidth);
@@ -252,9 +281,9 @@ class AtasciiGen {
 				putStr($ln,$this->currentLineData,$outLineOfs);
 			}
 		} else {
-			if ( @($this->elParams[ATTR_INVERS]) ) { strInvert($val); }
+			if ( $this->parseValue(@($this->elParams[ATTR_INVERS])) ) { strInvert($val); }
 
-			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->elParams[ATTR_FILLCHAR];
+			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->parseValue($this->elParams[ATTR_FILLCHAR]);
 			$val=str_pad($val,$elWidth,$ch,$align);
 
 			// clip string to width length
@@ -279,7 +308,7 @@ class AtasciiGen {
 
 	private function parseGenerationTime() {
 		if ( @($this->elParams[ATTR_FORMAT]) ) {
-			$format=$this->elParams[ATTR_FORMAT];
+			$format=$this->parseValue($this->elParams[ATTR_FORMAT]);
 		} else {
 			$format=DEFAULT_GENTIME_FORMAT;
 		}
@@ -288,53 +317,61 @@ class AtasciiGen {
 
 	private function parseText() {
 		if ( @($this->elParams[ATTR_CONTENT]) ) {
-			$val=trim($this->elParams[ATTR_CONTENT]);
-			if ($val[0]==="%") {
-				$paramID=substr($val,1);
-				if ( isset($this->params[$paramID]) ) {
-					$val=$this->params[$paramID];
-				} else {
-					$val="";
-				}
-			}
+			$val=$this->parseValue($this->elParams[ATTR_CONTENT]);
 			return $val;
+
 		} else {
 			return "";
 		}
 	}
 
 	private function parseScore($val) {
-		if ( is_int($val) ) {
-			if (isset($this->elParams[ATTR_SHOWSCOREAS])) {
-				switch ($this->elParams[ATTR_SHOWSCOREAS]) {
-					case 'time':
-						if ( isset($this->elParams[ATTR_PRECISION]) ) {
-							$precision=$this->elParams[ATTR_PRECISION];
-						} else {
-							$precision=1;
-						}
-						$seconds=intdiv($val,$precision);
-						$fraction=(($val % $precision)/$precision)*100;
-						if ( isset($this->elParams[ATTR_FORMAT]) )
-							$format=trim($this->elParams[ATTR_FORMAT]);
-						else {
-							$format=DEFAULT_TIMEFORMAT;
-						}
-						return formatTime($format,$seconds,$fraction);
-					break;
-				}
-			} else {
-				return $val;
-			}
+		if (isset($this->elParams[ATTR_SHOWSCOREAS])) {
+			$type=$this->parseValue($this->elParams[ATTR_SHOWSCOREAS]);
 		} else {
-			return "";
+			$type="score";
+		}
+
+		switch ( $type ) {
+			case 'score': return $val; break;
+			case 'timeBCD':
+				$hours=(int) substr($val,0,2);
+				$minutes=(int) substr($val,2,2);
+				$seconds=(int) substr($val,4,2);
+				$seconds=$seconds+($minutes*60)+($hours*3600);
+				if ( isset($this->elParams[ATTR_FORMAT]) )
+					$format=$this->parseValue($this->elParams[ATTR_FORMAT]);
+				else {
+					$format=DEFAULT_BCDTIMEFORMAT;
+				}
+				return formatTime($format,$seconds,1);
+			break;
+			case 'timeINT':
+				if ( is_int($val) ) {
+					if ( isset($this->elParams[ATTR_PRECISION]) ) {
+						$precision=$this->parseValue($this->elParams[ATTR_PRECISION]);
+					} else {
+						$precision=1;
+					}
+					$seconds=intdiv($val,$precision);
+					$fraction=(($val % $precision)/$precision)*100;
+					if ( isset($this->elParams[ATTR_FORMAT]) )
+						$format=$this->parseValue($this->elParams[ATTR_FORMAT]);
+					else {
+						$format=DEFAULT_INTTIMEFORMAT;
+					}
+					return formatTime($format,$seconds,$fraction);
+				} else {
+					return "#type#";
+				}
+			break;
 		}
 	}
 
 	private function parseDate($date) {
 		if ( is_int($date) ) {
 			if ( isset($this->elParams[ATTR_FORMAT]) ) {
-				return date($this->elParams[ATTR_FORMAT],$date);
+				return date($this->parseValue($this->elParams[ATTR_FORMAT]),$date);
 			} else {
 				return date(DEFAULT_DATEFORMAT,$date);
 			}
