@@ -76,7 +76,7 @@ class AtasciiGen {
 		}
 	}
 
-	public function parseLayoutBefore(&$layoutData) {
+	protected function parseLayoutBefore(&$layoutData) {
 		// check required parameters for layout
 		if ( is_int(@$layoutData[ATTR_WIDTH]) ) {
 			$this->screenWidth=$this->rangeCheck(
@@ -99,7 +99,7 @@ class AtasciiGen {
 		$this->getScreenDataFromLayout();
 	}
 
-	public function buildLineSchema(&$lineDef) {
+	protected function buildLineSchema(&$lineDef) {
 		$currentSchema=[];
 
 		// build schema
@@ -114,7 +114,7 @@ class AtasciiGen {
 		return array_merge_recursive($lineDef,$currentSchema);
 	}
 
-	public function parseLineBefore(&$currentSchema) {
+	protected function parseLineBefore(&$currentSchema) {
 		// Checking base parameters for element
 		$this->curLineX=$this->rangeCheck(
 			$this->checkExist(@$currentSchema[ATTR_X],null,"Element {ATTR_X} is not specified"),
@@ -145,7 +145,7 @@ class AtasciiGen {
 		}
 	}
 
-	public function parseLineAfter(&$layoutData,&$currentSchema) {
+	protected function parseLineAfter(&$layoutData,&$currentSchema) {
 		// general parameters
 		if (@$currentSchema[ATTR_INVERS]) { strInvert($this->currentLineData); }
 
