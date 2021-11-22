@@ -441,13 +441,406 @@ Wszelkie atrybuty dostosowujące treść elementu są akceptowane dla **AtasciiF
 
 ## Dla deweloperów
 
-### Podstawy
+Na projekt HSC AAG składają się następujące katalogi i pliki:
 
-TODO
+| Nazwa                     | Opis                                                         |
+| ------------------------- | ------------------------------------------------------------ |
+| `/AtasciiFonts`           | definicje czcionek **AtasciiFont** oraz ich źródła i obrazy poglądowe |
+| `/config_files_examples`  | przykłady i źródła plików konfiguracyjnych                   |
+| `/default_configs`        | katalog z definicjami domyślnych plików konfiguracyjnych     |
+| `/user_configs`           | zawiera pliki konfiguracyjne użytkowników                    |
+| `_constants.php`          | definicje stałych dla klasy `AtasciiGen`                     |
+| `_polyfill.php`           | funkcje zapewniające kompatybilność ze starszymi wersjami PHP |
+| `_string_helpers.php`     | funkcje pomocnicze do operowania na ciągach znaków           |
+| `class_AtasciiFont.php`   | klasa generująca tekst z użyciem czcionek **AtasciiFont**    |
+| `class_AtasciiGen.php`    | klasa bazowa, generująca ekrany **AtasciArt**                |
+| `class_HSCGenerator.php`  | rozszerzenie klasy bazowej, dostosowyujące do wymogów **HSC** |
+| `example-AtasciiFont.php` | przykład użycia klasy `AtasciiFont`                          |
+| `example.php`             | przykad użycia klasy `HSCGenerator`                          |
+| `atari_8.png`             | obraz z graficzną reprezentacją znaków Atascii (rozmiar piksela 1x1) |
+| `atari_16.png`            | j.w. (rozmiar piksela 2x2)                                   |
+
+
+
+### Budowa klasy `AtasciiGen`
+
+#### Właściwości klasy
+
+#####  `$confFN`
+
+| Widoczność | Typ    |
+| ---------- | ------ |
+| public     | string |
+
+Przechowuje nazwę otwartego pliku konfiguracyjnego.
+
+##### `$params`
+
+| Widoczność | Typ   |
+| ---------- | ----- |
+| public     | array |
+
+Jednowymiarowa tablica asocjacyjna zawierająca parametry które będą mogły być odczytane przez plik konfiguracyjny.
+
+Asocjacja odbywa się poprzez klucz i jego wartość, gdzie nazwa klucza jest identyfikatorem parametru.
+
+
+
+##### `$screenDef`
+
+| Widoczność | Typ    |
+| ---------- | ------ |
+| private    | string |
+
+Zmienna przechowująca wygenerowany ekran w postaci ciągu znaków Atascii. Rozmiar ciągu ustalany jest na podstawie wartości przekazanych przez plik konfiguracyjny w atrybutach layoutu `width` i `height`.
+
+##### `$config`
+
+| Widoczność | Typ   |
+| ---------- | ----- |
+| private    | array |
+
+Zawiera zdekodowany do referencyjnej tablicy asocjacyjnej plik konfiguracyjny JSON.
+
+##### `$schemes`
+
+| Widoczność | Typ   |
+| ---------- | ----- |
+| private    | array |
+
+Referencja do obiektu `$config['linesScheme']` zawierająca definicje schematów linii.
+
+##### `$screenWidth` i `$screenHeight`;
+
+| Widoczność | Typ     |
+| ---------- | ------- |
+| private    | integer |
+
+Szerokość `$screenWidth` i wysokość `$screenHeight` generowanego ekranu. Wartości tych zmiennych ustalane są z definicji layoutu pliku konfiguracyjnego
+
+##### `$curLineX` i`$curLineY`
+
+| Widoczność | Typ     |
+| ---------- | ------- |
+| private    | integer |
+
+Zmienne zawierają położenie lewego górnego rogu (kolumnę `$curLineX` i wiersz `$curLineY`) aktualnie przetwarzanej linii definicji layoutu.
+
+##### `$curLineWidth` i `$curLineHeight`
+
+| Widoczność | Typ     |
+| ---------- | ------- |
+| private    | integer |
+
+Zawierają wymiary (szerokość `$curLineWidth` i wysokość `$curLineHeight`) aktualnie przetwarzanej linii definicji layoutu.
+
+##### `$currentLineData`
+
+| Widoczność | Typ   |
+| ---------- | ----- |
+| protected  | array |
+
+Tablica ciągów znaków, której indeks reprezentuje numer przetwarzanej linii definicji layoutu.
+
+##### `$elParams`
+
+| Widoczność | Typ   |
+| ---------- | ----- |
+| private    | array |
+
+Zawiera atrybuty aktualnie przetwarzanego elementu definicji linii.
+
+#### Metody klasy
+
+#####  __construct
+
+| Widoczność |
+| ---------- |
+| public     |
+
+| parametr | type   | wartość domyślna |
+| -------- | ------ | ---------------- |
+| `$fn`    | string | brak             |
+
+Konstruktor, wczytujący i dekodujący plik konfiguracyjny w formacie JSON. W przypadku nieznalezienia pliku lub błędu w jego składni, funkcja wyrzuca wyjątek.
+
+Ustala też tablicę layoutów oraz schematów linii.
+
+##### getScoreboardEntry
+
+| Widoczność |
+| ---------- |
+| public     |
+
+| parametr | type    | wartość domyślna |
+| -------- | ------- | ---------------- |
+| `$place` | integer | brak             |
+
+Metoda którą trzeba nadpisać poprzez rozszerzenie klasy `AtasciiGen`. Jej wywołanie wyrzuca wyjątek.
+
+Funkcja jaką pełni to, pobieranie pojedynczego wyniki z tablicy wyników.
+
+##### getScreenDataFromLayout
+
+| Widoczność |
+| ---------- |
+| private    |
+
+Metoda generująca ekran bazowy na podstawie atrybutów definicji layoutu `screenData` oraz `screenFill`.
+
+`screenData` może być ciągiem znaków lub tablicą ciągów znaków. Treść ciągów to 8-bitowe wartości zapisane w systemie szesnastkowym opisujące znak po znaku (w jednym z dwóch standardów ATASCI lub ANTIC) ekran bazowy. 
+
+##### rangeCheck
+
+| Widoczność |
+| ---------- |
+| private    |
+
+| parametr  | type    | wartość domyślna |
+| --------- | ------- | ---------------- |
+| `$value`  | integer | brak             |
+| `$min`    | integer | brak             |
+| `$max`    | integer | brak             |
+| `$errMsg` | string  | brak             |
+
+Metoda do kontroli zakresu wartości liczbowej, przekazywanej w parametrze `$value` . Zakres ustalany jest przez parametry `$min` i `$max`.
+
+Metoda generuje wyjątek w przypadku przekroczenia zakresu, a treść tego wyjątku jest podawana w parametrze `$errMsg`. Do treści wyjątku "doklejana" jest informacja o oczekiwanym zakresie.
+
+##### checkExist
+
+| Widoczność |
+| ---------- |
+| private    |
+
+| parametr   | type     | wartość domyślna                   |
+| ---------- | -------- | ---------------------------------- |
+| `$value`   | any type | brak                               |
+| `$default` | integer  | null                               |
+| `$errMsg`  | string   | `"Some atrribut is not specified"` |
+
+Metoda kontrolująca istnienie parametru. Jest nieco "kontrowersyjna", gdyż opiera się o tryb "silent" PHP (operator @). W tym trybie, nie są generowane błędy, a wartość zwracana przez nieistniejący paramert przyjmuje `null`.Należy go dołączyć do przekazywanego parametru `$vaue`, np.
+
+```PHP
+$this>checkExist(@$this->config['name'], null);
+```
+
+Może reagować na dwa sposoby:
+
+- generować wyjątek z komunikatem określonym w parametrze `$errMsg`. Ten sposób dostępny jest gdy, parametr `$default`
+- przypisywać wartość `$default`, jeżeli `$value` 
+
+##### parseLayoutBefore
+
+| Widoczność |
+| ---------- |
+| protected  |
+
+| parametr       | type  | wartość domyślna |
+| -------------- | ----- | ---------------- |
+| `&$layoutData` | array | brak             |
+
+
+
+##### buildLineSchema
+
+| Widoczność |
+| ---------- |
+| protected  |
+
+| parametr    | type  | wartość domyślna |
+| ----------- | ----- | ---------------- |
+| `&$lineDef` | array | brak             |
+
+
+
+##### parseLineBefore
+
+| Widoczność |
+| ---------- |
+| protected  |
+
+| parametr          | type  | wartość domyślna |
+| ----------------- | ----- | ---------------- |
+| `&$currentSchema` | array | brak             |
+
+
+
+##### parseLineAfter
+
+| Widoczność |
+| ---------- |
+| protected  |
+
+| parametr          | type  | wartość domyślna |
+| ----------------- | ----- | ---------------- |
+| `&$layoutData`    | array | brak             |
+| `&$currentSchema` | array | brak             |
+
+
+
+##### generate
+
+| Widoczność |
+| ---------- |
+| public     |
+
+
+
+##### createElement
+
+| Widoczność |
+| ---------- |
+| private    |
+
+| parametr | type   | wartość domyślna |
+| -------- | ------ | ---------------- |
+| `&val`   | string | brak             |
+
+
+
+##### parseElement
+
+| Widoczność |
+| ---------- |
+| protected  |
+
+| parametr      | type   | wartość domyślna |
+| ------------- | ------ | ---------------- |
+| `$elType`     | string | brak             |
+| `$scoreEntry` | array  | brak             |
+| `$label`      | string | null             |
+
+
+
+##### makeImage
+
+| Widoczność |
+| ---------- |
+| public     |
+
+| parametr             | type   | wartość domyślna    |
+| -------------------- | ------ | ------------------- |
+| `$imageFile`         | string | null                |
+| `$fontFile`          | string | DEFAULT_FONT_FILE   |
+| `$defaultCharWidth`  | int    | DEFAULT_CHAR_WIDTH  |
+| `$defaultCharHeight` | int    | DEFAULT_CHAR_HEIGHT |
+
+Metoda tworzy na podstawie wygenerowanego ekranu (musi być wcześniej wywołana metoda `generate`) obraz PNG. Obraz jest tworzony z wykorzystaniem podanego w parametrze `$fontFile` pliku orazu czcionki w formacie PNG. Rozmiar pojedynczego znaku opisany jest parametrami `$charWidth` i `$charHeight`. Układ czcionek w pliku graficznym to 32 znaki na 8 znaków, z czego druga połowa (linie od 5-8) zawierać musi znaki w inwersie (specyfika czcionek ATARI 8-bit)
+
+Jeżeli nie zostanie podany parametr `$imageFile`, metoda "wyrzuci" treść wygenerowanego obrazu w formacie PNG jako echo. Można tą cechę wykorzystać do generowania obrazów na żądanie stron HTML. Trzeba poprzedzić taki wynik ustawieniem nagłówka HTTP na `Content-Type: image/png`
 
 ### Rozszerzona klasa `HSCGenerator`
 
-TODO
+#### Stałe klasy
+
+##### `USER_CONFIG_PATH`
+
+="./users_configs/";
+
+
+
+##### `DEFAULT_CONFIG_PATH`
+
+="./default_configs/";
+
+
+
+##### `DEFAULT_CONFIG_FILE`
+
+="defaults";
+
+
+
+##### `CONFIG_FILE_EXTENTION`
+
+=".json";
+
+
+
+##### `CONFIG_LAYOUTS_DEFAULT`
+
+="default";
+
+
+
+#### Właściwości klasy
+
+##### private `$gameID`
+
+
+
+##### private `$layoutID`
+
+
+
+##### public `$scoreboard`
+
+=[]
+
+
+
+#### Metody klasy
+
+##### public _construct
+
+| Widoczność |
+| ---------- |
+| public     |
+
+| parametr    | type   | wartość domyślna             |
+| ----------- | ------ | ---------------------------- |
+| `$gameID`   | string | null                         |
+| `$layoutID` | string | self::CONFIG_LAYOUTS_DEFAULT |
+
+Konstruktor klasy inicjujący klasę bazową `AtasciiGen`.
+
+Jej zadaniem jest sprawdzenie istnienia pliku konfiguracyjnego dla `$gameID`. Jeżeli taki nie istnieje, ustawiany jest domyślny plik konfiguracyjny zapisany w stałej `self::DEFAULT_CONFIG_FILE`. Jeżeli domyślny plik nie istnieje, zwracany jest wyjątek.
+
+Dodatkowo, przygotowuje odpowiedni layout w przypadku ustawienia parametru `$layoutID` na odpowiedni identyfikator.
+
+W przypadku nieznalezienia identyfikatora `$layoutID` konstruktor zwraca wyjątek z klasy `AtasciiGen`.
+
+
+
+##### public fetchScoreboardFromDB
+
+Metoda pobierająca tablicę wyników z bazy danych. Wywoływana jest z poziomu konstruktora.
+
+
+
+##### public getScoreboardEntry
+
+| Widoczność |
+| ---------- |
+| public     |
+
+| parametr | type | wartość domyślna |
+| -------- | ---- | ---------------- |
+| `$place` | int  | brak             |
+
+Metoda pobierająca jeden wpis z tablicy wyników. Parametr `$place` zawiera miejsce w tablicy wyników liczone od 1.
+
+Metoda MUSI zwrócić tablicę asocjacyjną o kluczach:
+
+| nazwa klucza | typ wartości |
+| ------------ | ------------ |
+| `place`      | int          |
+| `nick`       | string       |
+| `score`      | int          |
+| `date`       | int          |
+
+np.
+
+~~~php
+return [
+	"place"=>$place,
+	"nick"=>$this->scoreboard[$place-1]["nick"],
+	"score"=>$this->scoreboard[$place-1]["score"]
+	];
+~~~
+
+
 
 ### Przekazywanie parametrów do HSC AAG
 
