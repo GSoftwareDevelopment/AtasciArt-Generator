@@ -11,8 +11,9 @@ include('./class_AtasciiFont.php');
 //
 
 try {
-	$txt=new AtasciiFont('handwrite.json');
-	$txt->makeImage('Hello Atarians','test.png');
+	$txt=new AtasciiFont('cosmic-line');
+//	$txt->makeImage('Hello Atarians','test.png');
+	$txt->makeImage('ABCabc123!#$','test.png');
 } catch (Exception $th) {
 	echo "Error: ".$th->getMessage();
 }
