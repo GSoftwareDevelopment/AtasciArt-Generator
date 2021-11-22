@@ -74,7 +74,7 @@
 			"height": 3,
 			"text":{
 				"align": "center",
-				"useAtasciiFont": "square-slim.json"
+				"useAtasciiFont": "square-slim"
 			}
 		}
 	},
