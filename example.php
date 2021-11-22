@@ -19,9 +19,9 @@ try {
 //	$gen=new HSCGenerator(109,'1');
 
 // add parameters
-	$gen->params[]="ATARI";
-	$gen->params[]="RULEZ";
-	$gen->params[]="AND BASTA";
+	$gen->params["title"]="Stunt Car Racer";
+	$gen->params['mode']="The Little Ramp \x2d Lap Time"; // tis is wired
+	$gen->params['showScoreAs']='score';
 // The above parameters can be used in a text element.
 // The parameter identifier must be provided in the 'content' attribute,
 // preceded by a percent sign, e.g.
