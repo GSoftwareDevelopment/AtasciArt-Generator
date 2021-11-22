@@ -7,7 +7,7 @@ class HSCGenerator extends AtasciiGen {
 
 	const USER_CONFIG_PATH="./users_configs/";
 	const DEFAULT_CONFIG_PATH="./default_configs/";
-	const DEFAULT_CONFIG_FILE="default_0";
+	const DEFAULT_CONFIG_FILE="defaults";
 	const CONFIG_FILE_EXTENTION=".json";
 	const CONFIG_LAYOUTS_DEFAULT="default";
 
@@ -38,7 +38,7 @@ class HSCGenerator extends AtasciiGen {
 				// if default file is not exist, throw exception
 				throw new Exception("Default config file not exist!");
 			}
-			$this->layoutID=self::CONFIG_LAYOUTS_DEFAULT;
+//			$this->layoutID=self::CONFIG_LAYOUTS_DEFAULT;
 		}
 
 		$this->fetchScoreboardFromDB();
