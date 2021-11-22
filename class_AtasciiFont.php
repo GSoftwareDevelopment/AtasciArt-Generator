@@ -3,6 +3,8 @@ require_once('./_polyfill.php');
 require_once('./_string_helpers.php');
 
 const ATASCII_FONT_PATH="./AtasciiFonts/";
+const ATASCII_FONT_EXT=".json";
+
 const ENCODE_ANTIC=false;
 const ENCODE_ATASCII=true;
 
@@ -21,7 +23,7 @@ class AtasciiFont {
 	public $dataEncode; // encode method for character data
 
 	public function __construct($fontFile) {
-		$cnt=@file_get_contents(ATASCII_FONT_PATH.$fontFile);
+		$cnt=@file_get_contents(ATASCII_FONT_PATH.$fontFile.ATASCII_FONT_EXT);
 		if ( $cnt===false ) throw new Exception("Can't open AtasciiFont file");
 		$font=json_decode($cnt,true);
 		if (json_last_error()!=0) throw new Exception(json_last_error_msg()." in AtasciiFont file");
