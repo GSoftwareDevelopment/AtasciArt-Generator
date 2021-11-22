@@ -76,15 +76,14 @@ class AtasciiGen {
 		}
 	}
 
-	public function generate() {
-		$curPlace=1;
+	public function parseLayoutBefore(&$layoutData) {
 		// check required parameters for layout
-		if ( is_int(@$this->layoutData[ATTR_WIDTH]) ) {
+		if ( is_int(@$layoutData[ATTR_WIDTH]) ) {
 			$this->screenWidth=$this->rangeCheck(
 				$this->checkExist($this->layoutData[ATTR_WIDTH],40),
 				1,48,'Layout width is out of range.');
 		} else {
-			switch ($this->layoutData[ATTR_WIDTH]) {
+			switch ($layoutData[ATTR_WIDTH]) {
 				case 'narrow': $this->screenWidth=32; break;
 				case 'normal': $this->screenWidth=40; break;
 				case 'wide':   $this->screenWidth=48; break;
@@ -93,56 +92,79 @@ class AtasciiGen {
 			}
 		}
 		$this->screenHeight=$this->rangeCheck(
-			$this->checkExist($this->layoutData[ATTR_HEIGHT],24),
+			$this->checkExist($layoutData[ATTR_HEIGHT],24),
 			1,30,'Layout height is out of range.');
 
 		// get optional screen data or screen fill character
 		$this->getScreenDataFromLayout();
+	}
+
+	public function buildLineSchema(&$lineDef) {
+		$currentSchema=[];
+
+		// build schema
+		if ( @isset($lineDef[ATTR_USESCHEMA]) ) {
+			$schemaName=$lineDef[ATTR_USESCHEMA];
+			if ( @isset($this->schemes[$schemaName]) ) {
+				$currentSchema=$this->schemes[$schemaName];
+			} else {
+				throw new Exception("Schema '".$schemaName."' is not defined!");
+			}
+		}
+		return array_merge_recursive($lineDef,$currentSchema);
+	}
+
+	public function parseLineBefore(&$currentSchema) {
+		// Checking base parameters for element
+		$this->curLineX=$this->rangeCheck(
+			$this->checkExist(@$currentSchema[ATTR_X],null,"Element {ATTR_X} is not specified"),
+			0,47,'Line column is out of range.');
+		$this->curLineY=$this->rangeCheck(
+			$this->checkExist(@$currentSchema[ATTR_Y],null,"Element {ATTR_Y} is not specified"),
+			0,39,'Line row is out of range.');
+		$this->curLineWidth=$this->rangeCheck(
+			$this->checkExist(@$currentSchema[ATTR_WIDTH],$this->screenWidth-$this->curLineX),
+			1,48,'Line width is out of range.');
+		$this->curLineHeight=$this->rangeCheck(
+			$this->checkExist(@$currentSchema[ATTR_HEIGHT],1),
+			1,30,'Line height is out of range.');
+
+		$ch=!isset($currentSchema[ATTR_FILLCHAR])?' ':$currentSchema[ATTR_FILLCHAR];
+		$this->currentLineData=str_repeat($ch,$this->curLineWidth*$this->curLineHeight);
+
+		if ( isset($currentSchema[ATTR_ISENTRY]) ) {
+			$this->isEntry=$currentSchema[ATTR_ISENTRY];
+		} else {
+			$this->isEntry=true;
+		}
+		if ( $this->isEntry ) {
+			if ( is_int($this->isEntry) ) {
+				$this->curPlace=$this->isEntry;
+			}
+			$this->curEntry=$this->getScoreboardEntry($this->curPlace);
+		}
+	}
+
+	public function parseLineAfter(&$layoutData,&$currentSchema) {
+		// general parameters
+		if (@$currentSchema[ATTR_INVERS]) { strInvert($this->currentLineData); }
+
+		// global parameters
+		// Conversion of entry lines into ANTIC codes (if specified in the configuration)
+		switch ($this->layoutData[CONFIG_LAYOUTS_ENCODEELEMENTAS]) {
+			case 'antic': strASCII2ANTIC($this->currentLineData); break;
+			default:
+		}
+	}
+
+	public function generate() {
+		$this->curPlace=1;
+		$this->parseLayoutBefore($this->layoutData);
 
 		foreach ($this->layoutData[CONFIG_LAYOUTS_LINES] as $lineIndex => $lineDef) {
-			$currentSchema=[];
+			$currentSchema=$this->buildLineSchema($lineDef);
 
-			// build schema
-			if ( @isset($lineDef[ATTR_USESCHEMA]) ) {
-				$schemaName=$lineDef[ATTR_USESCHEMA];
-				if ( @isset($this->schemes[$schemaName]) ) {
-					$currentSchema=$this->schemes[$schemaName];
-				} else {
-					throw new Exception("Schema '".$schemaName."' is not defined!");
-				}
-			}
-			$currentSchema=array_merge_recursive($lineDef,$currentSchema);
-
-			// Checking required parameters for element
-			$this->curLineX=$this->rangeCheck(
-				$this->checkExist(@$currentSchema[ATTR_X],null,"Element {ATTR_X} is not specified"),
-				0,47,'Line column is out of range.');
-			$this->curLineY=$this->rangeCheck(
-				$this->checkExist(@$currentSchema[ATTR_Y],null,"Element {ATTR_Y} is not specified"),
-				0,39,'Line row is out of range.');
-			$this->curLineWidth=$this->rangeCheck(
-				$this->checkExist(@$currentSchema[ATTR_WIDTH],$this->screenWidth-$this->curLineX),
-				1,48,'Line width is out of range.');
-			$this->curLineHeight=$this->rangeCheck(
-				$this->checkExist(@$currentSchema[ATTR_HEIGHT],1),
-				1,30,'Line height is out of range.');
-
-			$place=$lineIndex+1;
-
-			$ch=!isset($currentSchema[ATTR_FILLCHAR])?' ':$currentSchema[ATTR_FILLCHAR];
-			$this->currentLineData=str_repeat($ch,$this->curLineWidth*$this->curLineHeight);
-
-			if ( isset($currentSchema[ATTR_ISENTRY]) ) {
-				$isEntry=$currentSchema[ATTR_ISENTRY];
-			} else {
-				$isEntry=true;
-			}
-			if ( $isEntry ) {
-				if ( is_int($isEntry) ) {
-					$curPlace=$isEntry;
-				}
-				$this->curEntry=$this->getScoreboardEntry($curPlace);
-			}
+			$this->parseLineBefore($currentSchema);
 
 			// parse elements in current line definition
 			foreach ($currentSchema as $elType => $this->elParams) {
@@ -155,15 +177,7 @@ class AtasciiGen {
 				$this->parseElement($elType,@$this->curEntry,$label);
 			}
 
-			// general parameters
-			if (@$currentSchema[ATTR_INVERS]) { strInvert($this->currentLineData); }
-
-			// global parameters
-			// Conversion of entry lines into ANTIC codes (if specified in the configuration)
-			switch ($this->layoutData[CONFIG_LAYOUTS_ENCODEELEMENTAS]) {
-				case 'antic': strASCII2ANTIC($this->currentLineData); break;
-				default:
-			}
+			$this->parseLineAfter($this->layoutData,$currentSchema);
 
 			// Paste the finished score line into the screen definition.
 			$screenOffset=$this->curLineX+$this->curLineY*$this->screenWidth;
@@ -174,7 +188,7 @@ class AtasciiGen {
 				$screenOffset+=$this->screenWidth;
 			}
 
-			if ( $isEntry ) $curPlace++;
+			if ( $this->isEntry ) $this->curPlace++;
 		}
 
 		return $this->screenDef;
