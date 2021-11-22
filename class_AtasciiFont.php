@@ -104,16 +104,20 @@ class AtasciiFont {
 	}
 
 	public function makeText($str,$encode=null) {
-		$outLines=[]; $textHeight=0;
 		if ($encode!==null) {
 			if ($encode) $spaceCh=chr(32); else $spaceCh=chr(0);
 		} else {
 			if ($this->dataEncode) $spaceCh=chr(32); else $spaceCh=chr(0);
 		}
-		$strLen=strLen($str); $letterCnt=0;
+		$outLines=[]; $textHeight=0;
+		$strLen=strLen($str); $letterCnt=0; $offsetY=0;
 		for ($strOfs=0;$strOfs<$strLen;$strOfs++) {
 			$ch=$str[$strOfs];
-			if ($ch===chr(32)) {
+			if ( $ch==="\n" ) {
+				$letterCnt=0;
+				$offsetY+=$textHeight;
+			}
+			if ( $ch===chr(32) ) {
 				for ($line=0;$line<$textHeight;$line++) {
 					@$outLines[$line].=str_repeat($spaceCh,$this->spaceWidth);
 				}
@@ -131,15 +135,15 @@ class AtasciiFont {
 								strASCII2ANTIC($chLine);
 							}
 						}
-						@$outLines[$line].=$chLine;
+						@$outLines[$offsetY+$line].=$chLine;
 					} else {
-						@$outLines[$line].=str_repeat($spaceCh,$curCharHeight);
+						@$outLines[$offsetY+$line].=str_repeat($spaceCh,$curCharHeight);
 					}
 
 					// letter spacing add
 					if ( $strOfs+1<$strLen ) { // ...but only, if it is not last character in string
 						if ($this->letterSpace>0) {
-							@$outLines[$line].=str_repeat($spaceCh,$this->letterSpace);
+							@$outLines[$offsetY+$line].=str_repeat($spaceCh,$this->letterSpace);
 						}
 					}
 				}
