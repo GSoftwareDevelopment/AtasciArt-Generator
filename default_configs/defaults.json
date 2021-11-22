@@ -12,14 +12,15 @@
 				"fillChar": "0"
 			},
 			"nick": {
-				"offsetX": 5,
+				"offsetX": 4,
 				"width": 16,
 				"align": "left",
 				"fillChar": "."
 			},
 			"score": {
-				"offsetX": 23,
-				"width": 6,
+				"offsetX": 21,
+				"width": 8,
+				"showScoreAs":"%showScoreAs",
 				"align": "right",
 				"fillChar": "0"
 			},
@@ -35,18 +36,17 @@
 				"fillChar": " "
 			},
 			"nick": {
-				"offsetX": 4,
-				"width": 20,
+				"offsetX": 3,
+				"width": 21,
 				"align": "left",
 				"fillChar": "_"
 			},
 			"score": {
-				"offsetX": 26,
-				"width": 7,
+				"offsetX": 25,
+				"width": 8,
 				"align": "right",
-				"showScoreAs": "time",
-				"precision": 50,
-				"timeFormat": "m:s.F1"
+				"showScoreAs": "timeBCD",
+				"format": "H2:m:s"
 			},
 			"invert": false
 		},
@@ -71,10 +71,21 @@
 			"isEntry": false,
 			"x": 2,
 			"width": 36,
-			"height": 3,
+			"height": 9,
 			"text":{
 				"align": "center",
-				"useAtasciiFont": "square-slim"
+				"useAtasciiFont": "square-slim",
+				"content": "%title"
+			}
+		},
+		"gameMode": {
+			"isEntry": false,
+			"x": 2,
+			"width": 36,
+			"text":{
+				"align": "center",
+				"content": "%mode",
+				"invert": true
 			}
 		}
 	},
@@ -92,25 +103,12 @@
 			"encodeLinesAs": "antic",
 			"lines": [
 				{
-					"y": 2,
-					"useSchema": "title",
-					"text":{
-						"content": "%0"
-					}
-				},
-				{
-					"y": 5,
-					"useSchema": "title",
-					"text":{
-						"content": "%1"
-					}
+					"y": 4,
+					"useSchema": "title"
 				},
 				{
 					"y": 8,
-					"useSchema": "title",
-					"text":{
-						"content": "%2"
-					}
+					"useSchema": "gameMode"
 				},
 				{
 					"y": 12,
@@ -207,25 +205,12 @@
 			"encodeLinesAs": "antic",
 			"lines":[
 				{
-					"y": 2,
-					"useSchema": "title",
-					"text":{
-						"content": "%0"
-					}
+					"y": 1,
+					"useSchema": "title"
 				},
 				{
-					"y": 5,
-					"useSchema": "title",
-					"text":{
-						"content": "%1"
-					}
-				},
-				{
-					"y": 8,
-					"useSchema": "title",
-					"text":{
-						"content": "%2"
-					}
+					"y": 11,
+					"useSchema": "gameMode"
 				},
 				{
 					"y": 12,
