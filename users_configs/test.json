@@ -1,0 +1,30 @@
+{
+	"name": "AtasciiFont Test",
+	"author": "PeBe for HSC",
+	"layouts": {
+		"default":{
+			"width": "narrow",
+			"height": 24,
+			"colors": [
+				0,
+				0,
+				15,
+				0,
+				0
+			],
+			"encodeLinesAs": "antic",
+			"lines":[
+				{
+					"x": 0,
+					"y": 10,
+					"height": 5,
+					"text":{
+						"align":"center",
+						"content":"%0",
+						"useAtasciiFont":"handwrite.json"
+					}
+				}
+			]
+		}
+	}
+}
