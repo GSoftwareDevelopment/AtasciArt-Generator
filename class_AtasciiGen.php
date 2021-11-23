@@ -59,14 +59,14 @@ class AtasciiGen {
 	}
 
 	private function getParameter($val) {
-		if ( strlen($val)>0 ) {
-			if ($val[0]==="%") {
-				$paramID=substr($val,1);
-				if ( isset($this->params[$paramID]) ) {
-					$val=$this->params[$paramID];
-				} else {
-					$val="";
-				}
+		$paramPos=0;
+		$paramPos=strpos($val,'%',$paramPos);
+		if ($paramPos !== false) {
+			$paramID=substr($val,$paramPos+1);
+			if ( isset($this->params[$paramID]) ) {
+				$val=$this->params[$paramID];
+			} else {
+				$val="%param%";
 			}
 		}
 		return $val;
@@ -226,27 +226,24 @@ class AtasciiGen {
 		if ( @($this->elParams[ATTR_USEATASCIFONT]) ) {
 			$fontName=$this->parseValue($this->elParams[ATTR_USEATASCIFONT]);
 			$AFnt=new AtasciiFont($fontName);
-			$textLines=$AFnt->makeText($val,ENCODE_ATASCII);
-			$valWidth=$AFnt->getWidth($textLines);
-			$valHeight=$AFnt->getHeight($textLines);
 			$useAtasciiFont=true;
 		} else {
-			$valWidth=strlen($val); $valHeight=1;
+//			$valWidth=strlen($val); $valHeight=1;
 			$useAtasciiFont=false;
 		}
 
 		$offsetX=$this->rangeCheck(
 			$this->checkExist($this->parseValue(@$this->elParams[ATTR_XOFFSET]),0),
-			0,$this->curLineWidth-1,'Element column offset is out of range.');
+			0,$this->curLineWidth-1,'Element column offset is out of range');
 		$offsetY=$this->rangeCheck(
 			$this->checkExist($this->parseValue(@$this->elParams[ATTR_YOFFSET]),0),
-			0,$this->curLineHeight-1,'Element row offset is out of range.');
+			0,$this->curLineHeight-1,'Element row offset is out of range');
 		$elWidth=$this->rangeCheck(
 			$this->checkExist($this->parseValue(@$this->elParams[ATTR_WIDTH]),$this->curLineWidth),
-			1,48,'Element width is out of range.');
+			1,48,'Element width is out of range');
 		$elHeight=$this->rangeCheck(
 			$this->checkExist($this->parseValue(@$this->elParams[ATTR_HEIGHT]),$this->curLineHeight),
-			1,30,'Element height is out of range.');
+			1,30,'Element height is out of range');
 
 	// Create a string based on definition parameters
 		switch ($this->parseValue(@$this->elParams[ATTR_ALIGN])) {
@@ -269,42 +266,41 @@ class AtasciiGen {
 					:' ');
 		}
 
-		$ch=!isset($this->elParams[ATTR_FILLCHAR])
+		$fillChar=!isset($this->elParams[ATTR_FILLCHAR])
 			?' '
 			:$this->parseValue($this->elParams[ATTR_FILLCHAR]);
 
 		if ( $useAtasciiFont ) {
-			for ($line=0;$line<count($textLines);$line++) {
-				$ln=str_pad($textLines[$line],$elWidth,$ch,$align);
-				$ln=substr($ln,0,$elWidth);
-				if ( $this->parseValue(@($this->elParams[ATTR_INVERS])) ) { strInvert($ln); }
-				$outOffset=$offsetX+($this->curLineWidth*($offsetY+$line));
-				putStr($ln,$this->currentLineData,$outOffset);
-			}
+			$textLines=$AFnt->makeText($val,ENCODE_ATASCII);
+
 		} else {
-			if ( $this->parseValue(@($this->elParams[ATTR_INVERS])) ) { strInvert($val); }
-
-			$val=str_pad($val,$elWidth,$ch,$align);
-
-			// clip string to width length
-			$val=substr($val,0,$elWidth);
-
-			// Paste the created string into a string representing the defined line.
-			$outOffset=$offsetX+$offsetY*$elWidth;
-			putStr($val,$this->currentLineData,$outOffset);
+			unset($textLines);
+			$textLines[]=$val;
 		}
+
+		for ($line=0;$line<count($textLines);$line++) {
+			$ln=str_pad($textLines[$line],$elWidth,$fillChar,$align);
+			$ln=substr($ln,0,$elWidth);
+			if ( $this->parseValue(@($this->elParams[ATTR_INVERS])) ) { strInvert($ln); }
+			$outOffset=$offsetX+($this->curLineWidth*($offsetY+$line));
+			putStr($ln,$this->currentLineData,$outOffset);
+		}
+
 	}
 
 	protected function parseElement($elType,$scoreEntry,$label=null) {
 		switch ($elType) {
 			case ELEMENT_PLACE: $this->createElement($scoreEntry['place']); break;
 			case ELEMENT_NICK: $this->createElement($scoreEntry['nick']); break;
-			case ELEMENT_SCORE: $this->createElement($this->parseScore($scoreEntry['score'])); break;
+			case ELEMENT_SCORE: $this->createElement($scoreEntry['score']); break;
 			case ELEMENT_DATE: $this->createElement($this->parseDate($scoreEntry['date'])); break;
 			case ELEMENT_TEXT: $this->createElement($this->parseText()); break;
 			case ELEMENT_GENTIME:	$this->createElement($this->parseGenerationTime()); break;
 		}
 	}
+
+	//
+	// content parsers
 
 	private function parseGenerationTime() {
 		if ( @($this->elParams[ATTR_FORMAT]) ) {
@@ -378,6 +374,9 @@ class AtasciiGen {
 			return "";
 		}
 	}
+
+	//
+	//
 
 	public function makeImage($imageFile=null, $fontFile=DEFAULT_FONT_FILE,
 	                          $defaultCharWidth=DEFAULT_CHAR_WIDTH,$defaultCharHeight=DEFAULT_CHAR_HEIGHT) {
