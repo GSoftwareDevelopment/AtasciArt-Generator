@@ -269,21 +269,21 @@ class AtasciiGen {
 					:' ');
 		}
 
-		if ( $useAtasciiFont ) {
-			$ch=!isset($this->elParams[ATTR_FILLCHAR])
-				?' '
-				:$this->parseValue($this->elParams[ATTR_FILLCHAR]);
+		$ch=!isset($this->elParams[ATTR_FILLCHAR])
+			?' '
+			:$this->parseValue($this->elParams[ATTR_FILLCHAR]);
 
+		if ( $useAtasciiFont ) {
 			for ($line=0;$line<count($textLines);$line++) {
 				$ln=str_pad($textLines[$line],$elWidth,$ch,$align);
 				$ln=substr($ln,0,$elWidth);
-				$outLineOfs=$offsetX+($this->curLineWidth*($offsetY+$line));
-				putStr($ln,$this->currentLineData,$outLineOfs);
+				if ( $this->parseValue(@($this->elParams[ATTR_INVERS])) ) { strInvert($ln); }
+				$outOffset=$offsetX+($this->curLineWidth*($offsetY+$line));
+				putStr($ln,$this->currentLineData,$outOffset);
 			}
 		} else {
 			if ( $this->parseValue(@($this->elParams[ATTR_INVERS])) ) { strInvert($val); }
 
-			$ch=!isset($this->elParams[ATTR_FILLCHAR])?' ':$this->parseValue($this->elParams[ATTR_FILLCHAR]);
 			$val=str_pad($val,$elWidth,$ch,$align);
 
 			// clip string to width length
@@ -319,7 +319,6 @@ class AtasciiGen {
 		if ( @($this->elParams[ATTR_CONTENT]) ) {
 			$val=$this->parseValue($this->elParams[ATTR_CONTENT]);
 			return $val;
-
 		} else {
 			return "";
 		}
