@@ -20,9 +20,8 @@
 			"score": {
 				"offsetX": 21,
 				"width": 8,
-				"showScoreAs":"%showScoreAs",
 				"align": "right",
-				"fillChar": "0"
+				"fillChar": " "
 			},
 			"inversLine": false
 		},
@@ -63,7 +62,7 @@
 				"offsetX": 9,
 				"width": 6,
 				"align": "right",
-				"fillChar": "0"
+				"fillChar": " "
 			},
 			"inversLine": false
 		},
