@@ -109,22 +109,24 @@ class AtasciiFont {
 		} else {
 			if ($this->dataEncode) $spaceCh=chr(32); else $spaceCh=chr(0);
 		}
-		$outLines=[]; $textHeight=0;
+
+		$outLines=[]; $textHeight=$this->height;
 		$strLen=strLen($str); $letterCnt=0; $offsetY=0;
+
 		for ($strOfs=0;$strOfs<$strLen;$strOfs++) {
 			$ch=$str[$strOfs];
 			if ( $ch==="\n" ) {
 				$letterCnt=0;
-				$offsetY+=$textHeight;
+				$offsetY+=$textHeight+$this->lineSpace;
 			}
 			if ( $ch===chr(32) ) {
 				for ($line=0;$line<$textHeight;$line++) {
-					@$outLines[$line].=str_repeat($spaceCh,$this->spaceWidth);
+					@$outLines[$offsetY+$line].=str_repeat($spaceCh,$this->spaceWidth);
 				}
 			} else {
 				list($curCharWidth,$curCharHeight,$curCharDef)=$this->getCharData($ch,$letterCnt);
 				if ( $curCharDef===null ) continue;
-				if ($curCharHeight>$textHeight) $textHeight=$curCharHeight;
+
 				for ($line=0;$line<$textHeight;$line++) {
 					if ($line<$curCharHeight) {
 						$chLine=substr($curCharDef,$line*$curCharWidth,$curCharWidth);
