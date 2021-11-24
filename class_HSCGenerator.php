@@ -10,6 +10,7 @@ class HSCGenerator extends AtasciiGen {
 	const DEFAULT_CONFIG_FILE="defaults";
 	const CONFIG_FILE_EXTENTION=".json";
 	const CONFIG_LAYOUTS_DEFAULT="default";
+	const CONFIG_LAYOUTS="layouts";
 
 	private $gameID=null;
 	private $layoutID=null;
@@ -42,8 +43,23 @@ class HSCGenerator extends AtasciiGen {
 		}
 
 		$this->fetchScoreboardFromDB();
+		$isLayout=true;
 
-		parent::__construct($configFile);
+		try {
+			parent::__construct($configFile);
+		} catch (\Throwable $th) {
+			if ($th->getMessage()!=="No layout defined")
+				throw new Exception($th->getMessage());
+			$isLayout=false;
+		}
+
+		if (@!$this->config[self::CONFIG_LAYOUTS]) {
+			if ( !$isLayout ) {
+				throw new Exception("Layout(s) not defined");
+			}
+		} else {
+			$this->layoutData=&$this->config[self::CONFIG_LAYOUTS];
+		}
 	}
 
 	function fetchScoreboardFromDB() {
@@ -76,7 +92,7 @@ class HSCGenerator extends AtasciiGen {
 			if ( isset($this->layoutData[$this->layoutID]) ) {
 				$this->layoutData=&$this->layoutData[$this->layoutID];
 			} else {
-				throw new Exception("The requested definition is not present.");
+				throw new Exception("The requested layout is not present.");
 			}
 		}
 
