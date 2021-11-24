@@ -1,4 +1,6 @@
-# High Score Cafe Atascii Generator
+# High Score Cafe AtasciiArt Generator
+
+
 
 ## Krótko, czym jest HSC
 
@@ -12,9 +14,16 @@ Przesyłanie wyników odbywa się na trzy różne sposoby:
 
 Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/)
 
+
+
 ## Czym jest HSC AtasciArt Generator?
 
-Jest to skrypt rozszerzający możliwości HSC, pozwalający generować ekrany dla komputera ATARI z listą wyników danej gry oraz grafiką **AtasciiArt**.
+Jest to skrypt rozszerzający możliwości HSC. Dodaje możliwość generowania ekranów dla komputera ATARI z listą wyników danej gry oraz grafiką **AtasciiArt**.
+
+![](imgs/example_screen_1.png)
+
+
+
 Ekran jest generowany na podstawie przesłanego do serwisu pliku konfiguracyjnego. W postaci czytelnej dla małego ATARI, przesyłany jest do interfejsu **FujiNet** za pośrednictwem sieci Internet. Po odebraniu przez komputer danych, ekran może być wpisany bezpośrednio do pamięci ekranu komputera Atari, bez konieczności przetwarzania informacji.
 
 Atutem takiego rozwiązania są:
@@ -23,38 +32,61 @@ Atutem takiego rozwiązania są:
 - brak konieczności przetwarzania danych JSON po stronie ATARI
 - szybki dostęp do listy wyników wielu gier.
 
+
+
+# Dokumentacja
+
+Niniejsza dokumentacja zawiera podstawowe informacje dotyczące tworzenia pliku konfiguracyjnego dla rozszerzenia **HSC AtasciArt Generator** (HSC AAG).
+
+
+
 ## Co to jest Plik konfiguracyjny?
 
 Jest to plik w formacie JSON. Opisuje on właściwości i elementy generowanego ekranu **AtasciiArt**.
 
-    Ważne, aby pamiętać, że wielkość liter w nazwach sekcji, atrybutów oraz ich wartościach MA ZNACZENIE!
+---
 
-## Sekcja `layouts` - Definicje layoutów
+**Ważne, aby pamiętać, że wielkość liter w nazwach sekcji, atrybutów oraz ich wartościach MA ZNACZENIE!**
 
-Z punktu widzenia formatu JSON, `layouts` jest obiektem w którym umieszczone są definicje wyglądu ekranów. Każda taka definicja to osobny obiekt.
+---
+
+
+
+## Sekcja `layout` - Definicja layoutu
+
+Z punktu widzenia formatu JSON, `layout` jest obiektem opisującym ekran bazowy. Umieszczone są atrybuty layoutu, definicje generowanych linii oraz ich elementów.
 
 ```JSON
 {
- "layouts":{
-  "default":{
-   ...
-  },
-  "layout_1":{
-   ...
-  },
-  "layout_1":{
-   ...
-  }
+ "layout":{
+     layout_attributes,
+     "lines":[
+         { // first line
+             line_attributes,
+             element:{...},
+             element:{...},
+             ...
+         },
+         { // secound line
+             line_attributes,
+             element:{...},
+             element:{...},
+             ...
+         },
+		 ...
+     ]
  }
 }
 ```
 
-Powyższy przykład, przedstawia poglądową definicję trzech ekranów (sub layoutów):
+Powyższy przykład, przedstawia schemat definicji layoutu (ekranu). W jego skład wchodzą:
 
-- nazwa `default` jest zarezerwowana dla domyślnego wyglądu
-- `layout_1` i `layout_2` są dodatkowymi ekranami
+- atrybuty layoutu
+- sekcja `lines`
 
-### Definiowanie wyglądu ekranu
+
+
+### Atrybuty layoutu
 
 __Atrybuty wymagane:__
 
@@ -65,23 +97,61 @@ __Atrybuty wymagane:__
   Wartości `width` z zakresu od 1 do 48. Można też używać predefiniowanych wartości:
 
   - `narrow` - szerokość 32 znaki
-  - normal - szerokość 40 znaków
+  - `normal` - szerokość 40 znaków
   - `wide` - szerokość 48
 
   Wartość `height` od 1 do 30.
 
-- `lines` - tablica obiektów opisująca generowane linie
+- `lines` - tablica obiektów opisująca generowane linie (patrz [Sekcja `lines - Definicje linii`](#Sekcja-lines---Definicje-linii))
 
 __Opcjonalne atrybuty:__
 
 - `colors` - tablica reprezentująca ustawienia kolorów (wartości dla rejestrów od 708 do 712)
+
 - `encodeLinesAs` - sposób wyjściowego kodowania treści generowanych linii
-- `screenData` - tablica ciągów tekstowych opisująca zawartość ekranu bazowego (dane heksadecymalne)
+
+  Z natury rzeczy, ekran bazowy to nic innego jak ekran komputera Atari. Jest on standardowo kodowany z użyciem kodów ANTIC. Jednak można go też opisać używając standatu ATASCII.
+
+  W tym celu, należy zaznaczyć w jaki sposób będą kodowane, generowane linie.
+
+  Dostępne wartości: `atascii`,`antic`
+
+  Domyślna wartość: `antic`
+
+- `screenData` - tablica ciągów heksadecymalnych.
+
+  Atrybut ten zawiera opis ekranu bazowego. Standardowo można zapisać cały ekran w postaci jednego ciągu znaków hexa, np.
+
+  ```JSON
+  ...
+  layout:{
+      screenData:["0049494949494949494949494949494949494949494949494949494949494949494949494949490049004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C494C00D9C9CF5980D580D9C9C...
+  0000000000000000000000000000000000000000000000000000000000000000000494C494C494949494949494949494949494949494949494949494949494949494949494949494949004C00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"]
+  }
+  ```
+
+  Jednak trudno się odnieść do tak zapisanych danych. Można sobie trochę pomóc, formatując dane w postaci wielu linii:
+
+  ```json
+  "screenData": [
+  "00494949494949494949494949494949494949494949494949494949494949494949494949494900",
+  "49004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00",
+  "494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C",
+  ...
+  "494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
+  "494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
+  "494C494949494949494949494949494949494949494949494949494949494949494949494949004C",
+  "00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"
+  ]
+  ```
+
 - `screenFill` - znak, jakim będzie wypełniony ekran bazowy w przypadku, braku atrybutu `screenData`
+
+
 
 ## Sekcja `lines` - Definicje linii
 
-Jest to tablica obiektów (w rozumieniu pliku JSON). Każdy obiekt w tej sekcji, definiuje osobną linię w ekranie bazowym.
+Jest to tablica obiektów (w rozumieniu pliku JSON). Każdy obiekt w tej sekcji, definiuje osobną, generowaną linię w ekranie bazowym.
 
 __Atrybuty wymagane:__
 
@@ -98,6 +168,8 @@ __Opcjonalne atrybuty:__
 Treść generowanej linii jest obcinana do jej szerokości oraz wysokości.
 
 W sekcji tej, definiowane są też elementy wchodzące w skład linii.
+
+![](imgs/example_lines_elements.png)
 
 ### Elementy linii
 
@@ -125,6 +197,8 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu obiektu opisującego ge
 }
 ```
 
+
+
 ### Rodzaje elementów
 
 - `place` - miejsce z tablicy wyników
@@ -134,6 +208,10 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu obiektu opisującego ge
 - `text` - generuje dowolny tekst
 - `genTime` - generuje czas utworzenia ekranu
 
+
+
+#### Etykiety
+
 Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po typie elementu, poprzedzając ją znakiem kropki.
 
 ```JSON
@@ -142,13 +220,15 @@ Każdy element może posiadać etykietę. Jej nazwę definiujemy zaraz po typie 
 }
 ```
 
-Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu.
+Jest ona wymagana w przypadku chęci wstawienia kilku elementów tego samego typu w jednej definicji linii.
 
 
 
 ### Atrybuty opisujące element
 
-Poniższe atrybuty nie są wymagane, gdyż w przypadku ich braku wybierana jest wartość domyślna, jednak warto nad nimi panować, celem osiągnięcia zamierzonego efektu.
+Poniższe atrybuty nie są wymagane, gdyż w przypadku ich braku, wybierana jest wartość domyślna, jednak warto nad nimi panować, celem osiągnięcia zamierzonego efektu.
+
+![](imgs/example_elements_attributes.png)
 
 #### `offsetX` i `offsetY`
 
@@ -156,19 +236,25 @@ Definiują przesunięcie poziome oraz pionowe względem początku linii (w znaka
 
 Wartości domyślne dla obu atrybutów wynoszą 0 (zero)
 
+
+
 #### `width` i `height`
 
 Ustalają szerokość i wysokość generowanego elementu (w znakach)
 
 Wartościami domyślnymi dla atrybutów `width` i `height` są, szerokość i wysokość definiowanej linii. 
 
+
+
 #### `align`
 
-justowanie zawartości względem podanej szerokości elementu (atrybut `width`)
+Justowanie zawartości elementu, względem jego szerokości.
 
 Możliwe wartości to: `left`, `center`, `right`.
 
 Wartość `right` jest domyślna.
+
+
 
 #### `fillChar`
 
@@ -176,11 +262,15 @@ Określna znak, jakim będzie wypełniony element na całej jego szerokości.
 
 Domyślną wartością jest znak #32 (spacja)
 
+
+
 #### `letterCase`
 
 Pozwala na konwersję wielkości liter.
 
 Możliwe wartości: `uppercase`,`lowercase`
+
+
 
 #### `limitChars`
 
@@ -190,19 +280,27 @@ W parze z tym atrybutem jest atrybut `replaceOutsideChars`.
 
 Domyślnie akceptowane są wszystkie znaki.
 
+
+
 #### `replaceOutsideChars` 
 
 Ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak generowanego elementu nie należy do zakresu określonego w atrybucie `limitChars`.
 
 Domyślną wartością jest #32 (spacja)
 
+
+
 #### `invert` 
 
-Działa tak samo jak atrybut `invert` w sekcji `scoreList` z tą różnicą, że stosowany jest tylko do generowanego elementu.
+Działa tak samo jak atrybut `invert` w sekcji `layout` z tą różnicą, że stosowany jest tylko do generowanego elementu.
+
+
 
 #### `useAtasciiFont` 
 
 Generuje treść elementu z użyciem **AtasciiFont** (patrz dział [AtasciiFont](#AtasciiFont))
+
+
 
 #### `isEntry`
 
@@ -211,13 +309,16 @@ Atrybut wskazujący na pobranie wyniku z tablicy wyników.
 Przyjmuje dwa typy wartości:
 
 - `boolean` - określające, czy pobierać wynik z tablicy wyników (wartość `true`, czy też nie (wartość `false`).
+
 - `integer` - określająca, który wynik z tablicy wyników ma być pobrany
+
+  **UWAGA!** Atrybut nie sprawdza zakresu!
+
+
 
 Ustalenie tego atrybutu tyczy się aktualnie definiowanej linii. Po przejściu do następnej, numer miejsca wyniku jest automatycznie zwiększany o jeden. Ustawienie wartości `false` powoduje, niezwiększanie numeru miejsca dla następnej linii.
 
 Domyślną wartością jest `true`
-
-**UWAGA!** Atrybut nie sprawdza zakresu! 
 
 
 
@@ -225,56 +326,13 @@ Domyślną wartością jest `true`
 
 Spośród wszystkich elementów można wybrać takie, które mają przypisane dodatkowe atrybuty. Takimi elementami są:
 
-- `score`
 - `date`
+
 - `genTime`
+
 - `text`
 
-#### Element `score`
-
-Element wyniku `score` domyślnie interpretowana jest jako wartość 32-bitowa typu całkowitego (`longint`), przedstawiająca wynik punktowy osiągnięty przez gracza. Może być też przedstawiona jako czas, używając atrybutu `showScoreAs`
-
-##### `showScoreAs`
-
-Aby przekształcić wynik do formatu czasu, należy zdefiniować następujące atrybuty w elemencie `score`:
-
-```JSON
-{
- "showScoreAs": "time",
- "precision": 50,
- "format": "h.m.f"
-}
-```
-
-- `showScoreAs` - wartość tego atrybutu określ jako `time`
-- `precision` - określ dokładność z jaką będzie interpretowana wartość wyniku (1/n części sekundy)
-- `format` - opisz format, który będzie zastosowany w wyniku.
-
-##### `precision`
-
-Czas zapisywany jest w postaci liczby całkowitej zawierającej część ułamkową, której dokładność określa atrybut `precision` w zakresie od 2 do 100. Wartość `precision` należy rozumieć jako część sekundy (1/n). Najlepiej będzie to zrozumieć, przedstawiając to w tabeli:
-
-| wartość<br />wyniku | wartść<br />atrybutu<br />`precision` | rezultat |
-| :-----------------: | :-----------------------------------: | :------: |
-|          1          |               5 (1/5s)                |  00s.20  |
-|          5          |                                       |  01s.00  |
-|         51          |                                       |  10s.20  |
-|          1          |              50 (1/50s)               |  00s.02  |
-|          5          |                                       |  00s.10  |
-|         55          |                                       |  01s.10  |
-
-##### `format` 
-
-Jest ciągiem znaków, który opisuje jakie części czasu będą wyświetlane. Znaczenie znaków w tym ciągu jest następująca:
-
-- `h` - ilość godzin (bez zera wiodącego)
-- `Hn` - ilość godzin, gdzie `n` określa ilość zer wiodących (jedna cyfra)
-- `m` - ilość minut (z zerem wiodącym)
-- `s` - ilość sekund (z zerem wiodącym)
-- `f` - część ułamkowa sekundy (dwie cyfry)
-- `Fn` - j.w. tylko n określa ilość miejsc po przecinku.
-
-Nierozpoznane znaki w ciągu formatu zostaną przedstawione bez zmian.
+  
 
 #### Element `date`
 
@@ -284,7 +342,9 @@ Jest to ciąg znaków opisujących sposób, w jaki ma być interpretowana data p
 
 Funkcją formatującą czas jest funkcja języka PHP `date()`. Jej opis znajdziesz [tu](https://www.php.net/manual/en/function.date.php), a możliwe opcje formatowania [tu](https://www.php.net/manual/en/datetime.format.php).
 
-#### `Element `genTime`
+
+
+#### Element `genTime`
 
 Wyświetla serwerowy czas utworzenia ekranu.
 
@@ -292,11 +352,32 @@ Wyświetla serwerowy czas utworzenia ekranu.
 
 Patrz opis atrybutów elementu `date`
 
+
+
 #### Element  `text`
 
 ##### `content`
 
 Użyj atrybutu `content` celem, określenia treści generowanego tekstu. Treść jest automycznie przycinana z obu stron pod kątem białych znaków.
+
+```JSON
+...
+"lines":[
+    {
+        "x":0,
+        "y":10,
+        "height":5,
+        "text":{
+            "align":"center",
+            "content":"ATARI RULEZ",
+            "useAtasciiFont":"square-slim"
+        }
+    }
+]
+...
+```
+
+<img src="imgs/example-atasciifont.png" style="zoom:50%;" />
 
 W treści atrybutu, może być użyty parametr, np:
 
@@ -305,6 +386,7 @@ W treści atrybutu, może być użyty parametr, np:
 "text":{
     content:"%id"
 }
+...
 ```
 
 W miejscu `id` nalezy użyć identyfikatora, jaki zaostał użyty do przekazania parametrów do skryptu (patrz [Przekazywanie parametrów do HSC AAG](#Przekazywanie-parametrów-do-HSC-AAG))
@@ -375,6 +457,35 @@ Elementy i atrybuty zdefinsiowane w linii wyniku mają priorytet nad schematem, 
 
 
 
+## Sekcja `layouts` - sub layouty
+
+Sposób definiowania poszczególnych ekranów przedstawia poniższy, plik konfiguracyjny:
+
+```JSON
+{
+ "layouts":{
+  "default":{
+   ...
+  },
+  "layout_1":{
+   ...
+  },
+  "layout_1":{
+   ...
+  }
+ }
+}
+```
+
+Powyższy przykład, przedstawia poglądową definicję trzech ekranów (sub layoutów):
+
+- nazwa `default` jest zarezerwowana dla domyślnego wyglądu
+- `layout_1` i `layout_2` są dodatkowymi ekranami
+
+Atrybuty, definicje linii oraz ich elementów, pozostają takie same, jak w przypadku bazowej klasy `AtasciiGen`.
+
+
+
 ## AtasciiFont
 
 **AtasciFont** to czcionki wykorzystujące zestaw znaków Atascii z małego ATARI.
@@ -413,11 +524,13 @@ Aby użyć czcionki **AtasciFont** w pliku konfiguracyjnym, należy w definicji 
 ```JSON
 ...
 "text":{
-    "content":"ATARI RULEZ",
+    "content":"HELLO ATARIANS",
     "useAtasciiFont": "cosmic-line-2"
 }
 ...
 ```
+
+![](imgs/atascifotn-example.png)
 
 Należy też pamiętać o dobraniu wysokości linii do wysokości czcionki, gdyż skrypt nie robi tego automatycznie. W przeciwnym wypadku czcionka będzie ucięta.
 
@@ -427,7 +540,7 @@ Należy też pamiętać o dobraniu wysokości linii do wysokości czcionki, gdy�
     height:3,
     "elements":{
         "text":{
-            "content":"ATARI RULEZ",
+            "content":"HELLO ATARIANS",
             "useAtasciiFont": "cosmic-line-2"
         }
     }
@@ -492,7 +605,7 @@ Asocjacja odbywa się poprzez klucz i jego wartość, gdzie nazwa klucza jest id
 | ---------- | ------ |
 | private    | string |
 
-Zmienna przechowująca wygenerowany ekran w postaci ciągu znaków Atascii. Rozmiar ciągu ustalany jest na podstawie wartości przekazanych przez plik konfiguracyjny w atrybutach layoutu `width` i `height`.
+Zmienna przechowująca wygenerowany ekran w postaci ciągu znaków Atascii. Rozmiar ciągu ustalany jest na podstawie wartości przekazanych przez plik konfiguracyjny w atrybutach layoutu `width` i `height` i jest on równy iloczynowi tych atrybutów.
 
 ##### `$config`
 
@@ -536,11 +649,15 @@ Zawierają wymiary (szerokość `$curLineWidth` i wysokość `$curLineHeight`) a
 
 ##### `$currentLineData`
 
-| Widoczność | Typ   |
-| ---------- | ----- |
-| protected  | array |
+| Widoczność | Typ    |
+| ---------- | ------ |
+| protected  | string |
 
-Tablica ciągów znaków, której indeks reprezentuje numer przetwarzanej linii definicji layoutu.
+Bufor (ciąg znaków), przeznaczony dla każdej generowanej linii. której indeks reprezentuje numer przetwarzanej linii definicji layoutu.
+
+Jego organizacja jest liniowa i może zawierać więcej niż jedną linię, która jest częścią ekranu. Ilość zawartych w buforze linii, jest determinowana na podstawie wysokości `$this->$curLineWidth` aktualnie definiowanej linii. Podobnie jest z szerokością - tą ustala szerokość `this->$curLineHeight` aktualnie definiowanej linii.
+
+W rezultacie, rozmiar bufora to iloczyn szerokości i wysokości definiowanej linii.
 
 ##### `$elParams`
 
@@ -549,6 +666,10 @@ Tablica ciągów znaków, której indeks reprezentuje numer przetwarzanej linii 
 | private    | array |
 
 Zawiera atrybuty aktualnie przetwarzanego elementu definicji linii.
+
+Jest to tablica asocjacyjna, której kluczem są nazwy atrybutów, a wartości ich parametrem.
+
+
 
 #### Metody klasy
 
@@ -640,6 +761,12 @@ Może reagować na dwa sposoby:
 | -------------- | ----- | ---------------- |
 | `&$layoutData` | array | brak             |
 
+Metoda pomocnicza.
+
+Metoda ustalająca atrybuty layoutu. Wywoływana przed rozpoczęciem generowania ekranu (metoda `generate()`)
+
+Sprawdza istnienie atrybutów `width`, `height`,`screenData`,`screenFill` w przekazywanej referencji `$layoutData` . Przypisuje zdefiniowane wartości lub dobiera wartości domyślne dla tych atrybutów.
+
 
 
 ##### buildLineSchema
@@ -651,6 +778,12 @@ Może reagować na dwa sposoby:
 | parametr    | type  | wartość domyślna |
 | ----------- | ----- | ---------------- |
 | `&$lineDef` | array | brak             |
+
+Metoda pomocnicza.
+
+Metoda wywoływana jest na początku każdej zdefiniowanej linii i buduje schemat linii na podstawie atrybutu `useSchema`. Sprawdza jego istnienie w sekcji `lineSchemes` i dodaje atrybuty schematu do aktualnej definicji linii, której dane przekazywane są w parametrze referencyjnym `$lineDef`. Jeżeli definicja linii zawiera atrybut, który jest zawarty w schemacie, jego wartość ma pierwszeństwo.
+
+Brak definicji schematu w sekcji `lineSchemes` spowoduje wywołanie wyjątku o treści `Schema ... is not defined!`
 
 
 
@@ -664,7 +797,11 @@ Może reagować na dwa sposoby:
 | ----------------- | ----- | ---------------- |
 | `&$currentSchema` | array | brak             |
 
+Metoda pomocnicza.
 
+Sprawdza i ustawia właściwości dla generowanej linii. Atrybuty testowane są w przekazanym do metody parametrze referencyjnym `$currentSchema`i są nimi: `x`, `y`, `width`, `height`, `fillChar`, `isEntry`. 
+
+Metoda wywoływana jest tuż przed generowaniem elementów.
 
 ##### parseLineAfter
 
@@ -677,7 +814,11 @@ Może reagować na dwa sposoby:
 | `&$layoutData`    | array | brak             |
 | `&$currentSchema` | array | brak             |
 
+Metoda pomocnicza.
 
+Przekazane w parametrach metody zmienne referencyjne `$layoutData` oraz `$currentSchema` sprawdzane są pod kątem atrybutów `invert` oraz `encodeLnesAs` i przetwarzane są końcowe parmetry generowanej linii.
+
+Metoda wywoływana jest po skończeniu przetwarzania elementów zawartych w definicji linii.
 
 ##### generate
 
@@ -685,7 +826,13 @@ Może reagować na dwa sposoby:
 | ---------- |
 | public     |
 
+Generuje ekran na podstawie danych pliku konfiguracyjnego.
 
+Wykonuje metody pomocnicze w następującej kolejności:
+
+![](imgs/generate-schema.png)
+
+Każda wygenerowana linia jest wpisywana w bazowy ekran `$this->screenDef`. Na podstawie zmiennych `$this->curLineX`, `$this->curLineY`, `$this->curLineWidth` obliczny jest offset początku zapisywanych danych. Z bufora linii `$this->currentLine` zastępowane są dane w ekranie bazowym.
 
 ##### createElement
 
@@ -697,7 +844,11 @@ Może reagować na dwa sposoby:
 | -------- | ------ | ---------------- |
 | `&val`   | string | brak             |
 
+Generuje treść elementu definicji linii na podstawie zebranych przez metody pomocnicze informacji oraz przekazanego parametru `$val`, który zawiera tekst.
 
+Sprawdza istnienie atrybutów elementu `useAtasciFont`, `offsetX`, `offsetY`, `width`, `height`, `align`, `letterCase`, `fillChar`, `limitChar`, `invert`. W przypadku braku któregoś z nich, ustawia wartości domyślne.
+
+Generowany element wpisywany jest do bufora linii `$this->currentLineDef`.
 
 ##### parseElement
 
@@ -711,7 +862,13 @@ Może reagować na dwa sposoby:
 | `$scoreEntry` | array  | brak             |
 | `$label`      | string | null             |
 
+Metoda pomocnicza.
 
+Wywołuje na podstawie typu elementu zawartego w parametrze `$elType` metodę `createElement`, przekazując do niej odpowiedni ciąg znagów do wygenerowania.
+
+Parametr `$scoreEntry` zawiera dane jedenego wiersza tablicy wyników. Informacje te, pobierane są na podstawie wartości atrybutu `isEntry` definicji linii. Ten, ustalany jest w metodzie pomocniczej `parseLineBefore`
+
+Do metody przekazywany jest też przypisana do elementu etykieta (parametr `$label`)
 
 ##### makeImage
 
@@ -726,57 +883,97 @@ Może reagować na dwa sposoby:
 | `$defaultCharWidth`  | int    | DEFAULT_CHAR_WIDTH  |
 | `$defaultCharHeight` | int    | DEFAULT_CHAR_HEIGHT |
 
-Metoda tworzy na podstawie wygenerowanego ekranu (musi być wcześniej wywołana metoda `generate`) obraz PNG. Obraz jest tworzony z wykorzystaniem podanego w parametrze `$fontFile` pliku orazu czcionki w formacie PNG. Rozmiar pojedynczego znaku opisany jest parametrami `$charWidth` i `$charHeight`. Układ czcionek w pliku graficznym to 32 znaki na 8 znaków, z czego druga połowa (linie od 5-8) zawierać musi znaki w inwersie (specyfika czcionek ATARI 8-bit)
+Metoda tworzy na podstawie wygenerowanego ekranu (musi być wcześniej wywołana metoda `generate`) obraz PNG. Obraz jest tworzony z wykorzystaniem podanego w parametrze `$fontFile` pliku obrazu czcionki (także w formacie PNG). Rozmiar pojedynczego znaku opisany jest parametrami `$charWidth` i `$charHeight`. Układ czcionek w pliku graficznym to 32 znaki na 8 znaków, z czego druga połowa (linie od 5-8) zawierać musi znaki w inwersie (specyfika czcionek ATARI 8-bit)
+
+![](imgs/atari_16.png)
 
 Jeżeli nie zostanie podany parametr `$imageFile`, metoda "wyrzuci" treść wygenerowanego obrazu w formacie PNG jako echo. Można tą cechę wykorzystać do generowania obrazów na żądanie stron HTML. Trzeba poprzedzić taki wynik ustawieniem nagłówka HTTP na `Content-Type: image/png`
 
+
+
 ### Rozszerzona klasa `HSCGenerator`
+
+Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layoutów czyli, pozwala tworzyć w jednym pliku konfiguracyjnym, wiele definicji ekranów.
 
 #### Stałe klasy
 
 ##### `USER_CONFIG_PATH`
 
-="./users_configs/";
+| Widoczność | Typ    | Wartość            |
+| ---------- | ------ | ------------------ |
+| public     | string | `./users_configs/` |
 
-
+Ścieżka do plików konfiguracyjnych użytkowników.
 
 ##### `DEFAULT_CONFIG_PATH`
 
-="./default_configs/";
+| Widoczność | Typ    | Wartość              |
+| ---------- | ------ | -------------------- |
+| public     | string | `./default_configs/` |
 
-
+Ścieżka do domyślnych plików konfiguracyjnych.
 
 ##### `DEFAULT_CONFIG_FILE`
 
+| Widoczność | Typ    | Wartość    |
+| ---------- | ------ | ---------- |
+| public     | string | `defaults` |
+
 ="defaults";
 
-
+Nazwa domyślnego pliku konfiguracyjnego.
 
 ##### `CONFIG_FILE_EXTENTION`
 
+| Widoczność | Typ    | Wartość |
+| ---------- | ------ | ------- |
+| public     | string | `.json` |
+
 =".json";
 
-
+Rozszerzenie pliku konfiguracyjnego.
 
 ##### `CONFIG_LAYOUTS_DEFAULT`
 
-="default";
+| Widoczność | Typ    | Wartość   |
+| ---------- | ------ | --------- |
+| public     | string | `default` |
+
+Nazwa domyślnego ekranu
 
 
 
 #### Właściwości klasy
 
-##### private `$gameID`
+##### `$gameID`
+
+| Widoczność | Typ    |
+| ---------- | ------ |
+| private    | string |
+
+Identyfikator gry.
+
+Na jego podstawie tworzona jest nazwa pliku, który jest wyszukiwany w ścieżce podanej w parametrze `USER_CONFIG_PATH`
 
 
 
-##### private `$layoutID`
+##### `$layoutID`
+
+| Widoczność | Typ    |
+| ---------- | ------ |
+| private    | string |
+
+Identyfikator sub layoutu.
 
 
 
-##### public `$scoreboard`
+##### `$scoreboard`
 
-=[]
+| Widoczność | Typ   |
+| ---------- | ----- |
+| public     | array |
+
+Zmienna tablicowa, zwierająca tablicę wyników pobrną metodą `fetchScoreboardFromDB`
 
 
 
