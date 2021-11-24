@@ -3,7 +3,7 @@
 	"author": "PeBe for HSC",
 	"layouts": {
 		"default":{
-			"width": "narrow",
+			"width": "normal",
 			"height": 24,
 			"colors": [
 				0,
@@ -20,8 +20,8 @@
 					"height": 5,
 					"text":{
 						"align":"center",
-						"content":"%0",
-						"useAtasciiFont":"handwrite.json"
+						"content":"ATARI RULEZ",
+						"useAtasciiFont":"square-slim"
 					}
 				}
 			]
