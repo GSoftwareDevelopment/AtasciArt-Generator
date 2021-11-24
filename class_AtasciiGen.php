@@ -7,7 +7,7 @@ require_once('./class_AtasciiFont.php');
 class AtasciiGen {
 	public $confFN='';
 	private $screenDef='';
-	private $config;
+	protected $config;
 	private $schemes;
 
 	private $screenWidth,$screenHeight;
@@ -26,36 +26,17 @@ class AtasciiGen {
 		if (json_last_error()!=0) throw new Exception(json_last_error_msg()." in config file");
 		$this->confFN=$fn;
 
-		// Checking the required configuration parameters
-		// Layouts definition is required
-		if (@!$this->config[CONFIG_LAYOUTS]) throw new Exception("No layouts definition");
-		$this->layoutData=&$this->config[CONFIG_LAYOUTS];
-
 		// Optional: Check schemes definition
 		if (@$this->config[CONFIG_ELEMENTSCHAMES]) $this->schemes=&$this->config[CONFIG_ELEMENTSCHAMES];
+
+		// Checking the required configuration parameters
+		// Layouts definition is required
+		if (@!$this->config[CONFIG_LAYOUT]) throw new Exception("No layout defined");
+		$this->layoutData=&$this->config[CONFIG_LAYOUT];
 	}
 
 	function getScoreboardEntry($place) {
 		throw new Exception('Expand `AtasciGen` class and inherit method `getScoreboardEntry()`. Return associative array[place,date,nick,score]');
-	}
-
-	private function getScreenDataFromLayout() {
-		if ( isset($this->layoutData[CONFIG_LAYOUTS_SCREENDATA]) ) {
-			$this->screenDef=hexString2Data($this->layoutData[CONFIG_LAYOUTS_SCREENDATA]);
-			$isScreenDefined=(strlen($this->screenDef)>0);
-		} else {
-			$isScreenDefined=false;
-		}
-
-		if (!$isScreenDefined) {
-			if ( isset($this->layoutData[CONFIG_SCREENFILL]) ) {
-				$ch=$this->layoutData[CONFIG_SCREENFILL];
-			}	else {
-			  $ch=chr(0);
-			}
-			$len=$this->screenWidth*$this->screenHeight;
-			$this->screenDef=str_pad("",$len,$ch);
-		}
 	}
 
 	private function getParameter($val) {
@@ -100,6 +81,30 @@ class AtasciiGen {
 		}
 	}
 
+	//
+	// parsers for...
+
+	// ...attributers of layout definition
+
+	private function getScreenDataFromLayout() {
+		if ( isset($this->layoutData[CONFIG_LAYOUTS_SCREENDATA]) ) {
+			$this->screenDef=hexString2Data($this->layoutData[CONFIG_LAYOUTS_SCREENDATA]);
+			$isScreenDefined=(strlen($this->screenDef)>0);
+		} else {
+			$isScreenDefined=false;
+		}
+
+		if (!$isScreenDefined) {
+			if ( isset($this->layoutData[CONFIG_SCREENFILL]) ) {
+				$ch=$this->layoutData[CONFIG_SCREENFILL];
+			}	else {
+			  $ch=chr(0);
+			}
+			$len=$this->screenWidth*$this->screenHeight;
+			$this->screenDef=str_pad("",$len,$ch);
+		}
+	}
+
 	protected function parseLayoutBefore(&$layoutData) {
 		// check required parameters for layout
 		if ( is_int($this->parseValue(@$layoutData[ATTR_WIDTH])) ) {
@@ -123,6 +128,8 @@ class AtasciiGen {
 		$this->getScreenDataFromLayout();
 	}
 
+	// ...attributes of line schema
+
 	protected function buildLineSchema(&$lineDef) {
 		$currentSchema=[];
 
@@ -135,8 +142,10 @@ class AtasciiGen {
 				throw new Exception("Schema '".$schemaName."' is not defined!");
 			}
 		}
-		return array_merge_recursive($lineDef,$currentSchema);
+		return array_merge_recursive_distinct($currentSchema,$lineDef);
 	}
+
+	// ...attributes of line definition
 
 	protected function parseLineBefore(&$currentSchema) {
 		// Checking base parameters for element
@@ -181,11 +190,14 @@ class AtasciiGen {
 		}
 	}
 
+	//
+	// layout generator
+
 	public function generate() {
 		$this->curPlace=1;
 		$this->parseLayoutBefore($this->layoutData);
 
-		foreach ($this->layoutData[CONFIG_LAYOUTS_LINES] as $lineIndex => $lineDef) {
+		foreach ($this->layoutData[CONFIG_LAYOUT_LINES] as $lineIndex => $lineDef) {
 			$currentSchema=$this->buildLineSchema($lineDef);
 
 			$this->parseLineBefore($currentSchema);
