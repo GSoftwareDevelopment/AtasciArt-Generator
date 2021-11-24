@@ -1,8 +1,8 @@
 <?
 // config file sections and attributes
 // required section
-const CONFIG_LAYOUTS="layouts";
-const CONFIG_LAYOUTS_LINES="lines";
+const CONFIG_LAYOUT="layout";
+const CONFIG_LAYOUT_LINES="lines";
 // optional section
 const CONFIG_ELEMENTSCHAMES="lineSchemes";
 
