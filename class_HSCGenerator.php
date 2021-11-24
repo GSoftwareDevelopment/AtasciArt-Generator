@@ -45,13 +45,21 @@ class HSCGenerator extends AtasciiGen {
 		$this->fetchScoreboardFromDB();
 		$isLayout=true;
 
-		try {
-			parent::__construct($configFile);
-		} catch (\Throwable $th) {
-			if ($th->getMessage()!=="No layout defined")
-				throw new Exception($th->getMessage());
+//		try {
+		parent::__construct($configFile);
+		if ($this->err<>0) {
+			switch ($this->err) {
+				case 1: throw new Exception("Can't open config file");
+				case 2: throw new Exception(json_last_error_msg()." in config file");
+				default:
+			}
 			$isLayout=false;
 		}
+//		} catch (\Throwable $th) {
+//			if ($th->getMessage()!=="No layout defined")
+//				throw new Exception($th->getMessage());
+//			$isLayout=false;
+//		}
 
 		if (@!$this->config[self::CONFIG_LAYOUTS]) {
 			if ( !$isLayout ) {
@@ -65,7 +73,7 @@ class HSCGenerator extends AtasciiGen {
 	function fetchScoreboardFromDB() {
 		// here is place for fetchin scoreboard data from database
 		$this->scoreboard=array(
-			["date"=>0, "nick"=>"PeBe", "score"=>12345],
+			["date"=>0, "nick"=>"PeBe", "score"=>"ABC"],
 			["date"=>0, "nick"=>"", "score"=>""],
 			["date"=>0, "nick"=>"", "score"=>""],
 			["date"=>0, "nick"=>"", "score"=>""],

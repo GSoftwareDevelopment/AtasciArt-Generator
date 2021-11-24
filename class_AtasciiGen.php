@@ -17,13 +17,21 @@ class AtasciiGen {
 	private $elParams;
 
 	public $params=[];
+	public $err=0;
 
 	public function __construct($fn) {
 		$this->confFN="";
 		$configFile=@file_get_contents($fn);
-		if ( $configFile===false ) throw new Exception("Can't open config file");
+		if ( $configFile===false ) {
+			// throw new Exception("Can't open config file");
+			$this->err=1; return;
+		}
 		$this->config=json_decode($configFile,true);
-		if (json_last_error()!=0) throw new Exception(json_last_error_msg()." in config file");
+		if (json_last_error()!=0) {
+			// throw new Exception(json_last_error_msg()." in config file");
+			$this->err=2; return;
+		}
+
 		$this->confFN=$fn;
 
 		// Optional: Check schemes definition
@@ -31,7 +39,10 @@ class AtasciiGen {
 
 		// Checking the required configuration parameters
 		// Layouts definition is required
-		if (@!$this->config[CONFIG_LAYOUT]) throw new Exception("No layout defined");
+		if (@!$this->config[CONFIG_LAYOUT]) {
+			// throw new Exception("No layout defined");
+			$this->err=3; return;
+		}
 		$this->layoutData=&$this->config[CONFIG_LAYOUT];
 	}
 
