@@ -139,7 +139,7 @@ class AtasciiFont {
 						}
 						@$outLines[$offsetY+$line].=$chLine;
 					} else {
-						@$outLines[$offsetY+$line].=str_repeat($spaceCh,$curCharHeight);
+						@$outLines[$offsetY+$line].=str_repeat($spaceCh,$curCharWidth);
 					}
 
 					// letter spacing add
