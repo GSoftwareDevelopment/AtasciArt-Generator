@@ -1,6 +1,8 @@
 <?
 include('./class_AtasciiGen.php');    // general AtasciGen class - required
 
+class HSCException extends AGException {}
+
 class HSCGenerator extends AtasciiGen {
 	//
 	// path constants
@@ -45,25 +47,17 @@ class HSCGenerator extends AtasciiGen {
 		$this->fetchScoreboardFromDB();
 		$isLayout=true;
 
-//		try {
-		parent::__construct($configFile);
-		if ($this->err<>0) {
-			switch ($this->err) {
-				case 1: throw new Exception("Can't open config file");
-				case 2: throw new Exception(json_last_error_msg()." in config file");
-				default:
-			}
+		try {
+			parent::__construct($configFile);
+		} catch (AGException $th) {
+			if ($th->getMessage()!=="No layout defined")
+				throw new AGException($th->getMessage());
 			$isLayout=false;
 		}
-//		} catch (\Throwable $th) {
-//			if ($th->getMessage()!=="No layout defined")
-//				throw new Exception($th->getMessage());
-//			$isLayout=false;
-//		}
 
 		if (@!$this->config[self::CONFIG_LAYOUTS]) {
 			if ( !$isLayout ) {
-				throw new Exception("Layout(s) not defined");
+				throw new HSCException("Layout(s) not defined");
 			}
 		} else {
 			$this->layoutData=&$this->config[self::CONFIG_LAYOUTS];
@@ -100,7 +94,7 @@ class HSCGenerator extends AtasciiGen {
 			if ( isset($this->layoutData[$this->layoutID]) ) {
 				$this->layoutData=&$this->layoutData[$this->layoutID];
 			} else {
-				throw new Exception("The requested layout is not present.");
+				throw new HSCException("The requested layout is not present.");
 			}
 		}
 

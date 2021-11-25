@@ -4,6 +4,8 @@ require_once('./_polyfill.php');
 require_once('./_string_helpers.php');
 require_once('./class_AtasciiFont.php');
 
+class AGException extends Exception {}
+
 class AtasciiGen {
 	public $confFN='';
 	private $screenDef='';
@@ -22,15 +24,9 @@ class AtasciiGen {
 	public function __construct($fn) {
 		$this->confFN="";
 		$configFile=@file_get_contents($fn);
-		if ( $configFile===false ) {
-			// throw new Exception("Can't open config file");
-			$this->err=1; return;
-		}
+		if ( $configFile===false ) throw new AGException("Can't open config file");
 		$this->config=json_decode($configFile,true);
-		if (json_last_error()!=0) {
-			// throw new Exception(json_last_error_msg()." in config file");
-			$this->err=2; return;
-		}
+		if (json_last_error()!=0) throw new AGException(json_last_error_msg()." in config file");
 
 		$this->confFN=$fn;
 
@@ -39,15 +35,12 @@ class AtasciiGen {
 
 		// Checking the required configuration parameters
 		// Layouts definition is required
-		if (@!$this->config[CONFIG_LAYOUT]) {
-			// throw new Exception("No layout defined");
-			$this->err=3; return;
-		}
+		if (@!$this->config[CONFIG_LAYOUT]) throw new AGException("No layout defined");
 		$this->layoutData=&$this->config[CONFIG_LAYOUT];
 	}
 
 	function getScoreboardEntry($place) {
-		throw new Exception('Expand `AtasciGen` class and inherit method `getScoreboardEntry()`. Return associative array[place,date,nick,score]');
+		throw new AGException('Expand `AtasciGen` class and inherit method `getScoreboardEntry()`. Return associative array[place,date,nick,score]');
 	}
 
 	private function getParameter($val) {
@@ -76,7 +69,7 @@ class AtasciiGen {
 
 	private function rangeCheck($value,$min,$max,$errMsg) {
 		if ($value<$min || $value>$max)
-			throw new Exception($errMsg."! Acceptable value is between {$min} and {$max})");
+			throw new AGException($errMsg."! Acceptable value is between {$min} and {$max})");
 		return $value;
 	}
 
@@ -85,7 +78,7 @@ class AtasciiGen {
 			if ( $default!==null ) {
 				return $default;
 			} else {
-				throw new Exception($errMsg);
+				throw new AGException($errMsg);
 			}
 		} else {
 			return $value;
@@ -128,7 +121,7 @@ class AtasciiGen {
 				case 'normal': $this->screenWidth=40; break;
 				case 'wide':   $this->screenWidth=48; break;
 				default:
-					throw new Exception("Screen width value not recognized");
+					throw new AGException("Screen width value not recognized");
 			}
 		}
 		$this->screenHeight=$this->rangeCheck(
@@ -150,7 +143,7 @@ class AtasciiGen {
 			if ( @isset($this->schemes[$schemaName]) ) {
 				$currentSchema=$this->schemes[$schemaName];
 			} else {
-				throw new Exception("Schema '".$schemaName."' is not defined!");
+				throw new AGException("Schema '".$schemaName."' is not defined!");
 			}
 		}
 		return array_merge_recursive_distinct($currentSchema,$lineDef);
