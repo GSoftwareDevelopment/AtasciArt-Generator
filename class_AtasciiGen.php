@@ -19,6 +19,7 @@ class AtasciiGen {
 	private $elParams;
 
 	public $params=[];
+	public $palette=[];
 	public $colorReg=["708"=>0,"709"=>15,"710"=>0,"711"=>0,"712"=>0];
 
 	public function __construct($fn) {
@@ -455,8 +456,6 @@ class AtasciiGen {
 		imagedestroy($img);
 		imagedestroy($fnt);
 	}
-
-	public $palette=null;
 
 	public function loadPalette($fn) {
 		$palData=@file_get_contents($fn);
