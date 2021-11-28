@@ -669,6 +669,36 @@ Zawiera atrybuty aktualnie przetwarzanego elementu definicji linii.
 
 Jest to tablica asocjacyjna, której kluczem są nazwy atrybutów, a wartości ich parametrem.
 
+##### `$palette`
+
+| Widoczność | Typ   |
+| ---------- | ----- |
+| public     | array |
+
+Tablica której zawartość ustala metoda `$this->loadPalette()`.
+
+Składa się z 256 indeksów w których są zapisane wartości RGB dla każdego indeksu:
+
+```JSON
+{
+    0:[0,0,0],
+    1:[0,0,0],
+    ...
+}
+```
+
+
+
+##### `$colorReg`
+
+| Widoczność | Typ   |
+| ---------- | ----- |
+| public     | array |
+
+Tablica zawierająca wartości rejestrów (zgodnie z systemem ATARI 8-bit). Kluczem tablicy jest numer rejestru od 708 do 712, wartością wartość koloru.
+
+Tablic ustawiana jest przez metodę `$this->getLayoutColorsData()` a ta, wywoływana jest przez `$this->generate()`
+
 
 
 #### Metody klasy
@@ -751,6 +781,8 @@ Może reagować na dwa sposoby:
 - generować wyjątek z komunikatem określonym w parametrze `$errMsg`. Ten sposób dostępny jest gdy, parametr `$default`
 - przypisywać wartość `$default`, jeżeli `$value` 
 
+
+
 ##### parseLayoutBefore
 
 | Widoczność |
@@ -830,7 +862,28 @@ Generuje ekran na podstawie danych pliku konfiguracyjnego.
 
 Wykonuje metody pomocnicze w następującej kolejności:
 
-![](imgs/generate-schema.png)
+```mermaid
+flowchart TB
+	A("START") --> A'[["getLayoutColorsData"]]
+	A' --> B[["parseLayoutBefore"]]
+	B --> C[/"for each line definition"/]
+	C --> D[["buildLineSchema"]]
+	D --> E[["parseLineBefore"]]
+	E --> F[/"for each elements in line definition"/]
+	F --> G[["parseElement"]]
+	G --> H{"It is last element?"} -- No --> F
+	H --> I[["parseLineAfter"]]
+	I --> J{"It is last line?"} -- No --> C
+	J --> K(END)
+	
+	click a' "#getLayoutColorsData"
+	click B "#parseLayoutBefore"
+	click D "#buildLineSchema"
+	click E "#parseLineBefore"
+	click G "#parseElement"
+	click I "#parseLineAfter"
+	
+```
 
 Każda wygenerowana linia jest wpisywana w bazowy ekran `$this->screenDef`. Na podstawie zmiennych `$this->curLineX`, `$this->curLineY`, `$this->curLineWidth` obliczny jest offset początku zapisywanych danych. Z bufora linii `$this->currentLine` zastępowane są dane w ekranie bazowym.
 
@@ -883,11 +936,41 @@ Do metody przekazywany jest też przypisana do elementu etykieta (parametr `$lab
 | `$defaultCharWidth`  | int    | DEFAULT_CHAR_WIDTH  |
 | `$defaultCharHeight` | int    | DEFAULT_CHAR_HEIGHT |
 
-Metoda tworzy na podstawie wygenerowanego ekranu (musi być wcześniej wywołana metoda `generate`) obraz PNG. Obraz jest tworzony z wykorzystaniem podanego w parametrze `$fontFile` pliku obrazu czcionki (także w formacie PNG). Rozmiar pojedynczego znaku opisany jest parametrami `$charWidth` i `$charHeight`. Układ czcionek w pliku graficznym to 32 znaki na 8 znaków, z czego druga połowa (linie od 5-8) zawierać musi znaki w inwersie (specyfika czcionek ATARI 8-bit)
+Metoda tworzy na podstawie wygenerowanego ekranu obraz PNG (musi być wcześniej wywołana metoda `generate`) . Obraz jest tworzony z wykorzystaniem podanego w parametrze `$fontFile` pliku obrazu czcionki (także w formacie PNG). Rozmiar pojedynczego znaku opisany jest parametrami `$charWidth` i `$charHeight`. Układ czcionek w pliku graficznym to 32 znaki na 8 znaków, z czego druga połowa (linie od 5-8) zawierać musi znaki w inwersie (specyfika czcionek ATARI 8-bit)
 
 ![](imgs/atari_16.png)
 
 Jeżeli nie zostanie podany parametr `$imageFile`, metoda "wyrzuci" treść wygenerowanego obrazu w formacie PNG jako echo. Można tą cechę wykorzystać do generowania obrazów na żądanie stron HTML. Trzeba poprzedzić taki wynik ustawieniem nagłówka HTTP na `Content-Type: image/png`
+
+
+
+##### loadPalette
+
+| Widoczność |
+| ---------- |
+| public     |
+
+| parametr | type   | wartość domyślna |
+| -------- | ------ | ---------------- |
+| `$fn`    | string | null             |
+
+Wczytuje definicję palety kolorów.
+
+Paleta używana jest przy generowaniu obrazu PNG (metoda `$this->makeImage()`)
+
+
+
+##### getLayoutColorsData
+
+| Widoczność |
+| ---------- |
+| public     |
+
+Metoda spełnia trzy zadania:
+
+- sprawdza, czy istnieje atrybut `colors` w definicji layoutu
+- pobiera zawartość atrybutu `colors` - powinna być to tablica wartości, reprezentująca stan rejestrów kolorów w ATARI (rejestry od 708 do 712). Pobrane informacje umieszczane są w tablicy asocjacyjnej `$this->colorReg[]`
+- zwraca ciąg znaków, zawierający wartości zdefiniowanych w atrybucie `colors` wartości rejestrów kolorów (jeden bajt/znak=jeden rejestr)
 
 
 
