@@ -10,7 +10,7 @@ try {
 // for default layout of dedicated config file.
 // If the game has no dedicated configuration file
 // default configuration file is specified in HSCGenerator::DEFAULT_CONFIG_FILE
-	$gen=new HSCGenerator("1");
+	$gen=new HSCGenerator("1","3");
 
 // for specified layout (name 'game') of dedicated config file
 //	$gen=new HSCGenerator(109,'game');
@@ -31,8 +31,24 @@ try {
 // generate screen - its needed for make image process
 	$gen->generate();
 
-// lets generate PNG image
+// the following line, takes the color register settings (708-712) and
+//  puts them in a text string (one byte/character=one register)
+	$colorRegs=$gen->getLayoutColorsData();
+
+// lets generate PNG image...
+// First, load palette
+	$gen->loadPalette('./palette/altirra.act');
+// At the end, make PNG image
+// by default, use 16x16 character set font
 	$gen->makeImage('test.png');
+
+// You can set, font file to use
+// as the secound parameter, specifie font image to use (only PNG)
+// next parameters, defines character size (width and height) in font image
+// INFO: Font image file, it must have a layout of 32x8 characters,
+// of which lines 5-8 must be in Invers mode.
+// $gen->makeImage('test.png','./atari-8.png',8,8);
+
 } catch (Exception $th) {
 	echo "Error: ".$th->getMessage();
 }
