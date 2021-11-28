@@ -19,7 +19,7 @@ class AtasciiGen {
 	private $elParams;
 
 	public $params=[];
-	public $err=0;
+	public $colorReg=["708"=>0,"709"=>15,"710"=>0,"711"=>0,"712"=>0];
 
 	public function __construct($fn) {
 		$this->confFN="";
@@ -199,6 +199,7 @@ class AtasciiGen {
 
 	public function generate() {
 		$this->curPlace=1;
+		$this->getLayoutColorsData();
 		$this->parseLayoutBefore($this->layoutData);
 
 		foreach ($this->layoutData[CONFIG_LAYOUT_LINES] as $lineIndex => $lineDef) {
@@ -394,10 +395,42 @@ class AtasciiGen {
 	//
 	//
 
+	function loadFontPNG($fn) {
+		$fnt=@imagecreatefrompng($fn);
+		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
+
+		$w = imagesx($fnt);
+    $h = imagesy($fnt);
+
+		$col709=$this->palette[$this->colorReg['709']];
+		$col710=$this->palette[$this->colorReg['710']];
+		$index709 = imagecolorallocatealpha($fnt, $col709[0], $col709[1], $col709[2], 1);
+		$index710 = imagecolorallocatealpha($fnt, $col710[0], $col710[1], $col710[2], 1);
+
+    // Work through pixels
+    for($y=0;$y<$h;$y++) {
+        for($x=0;$x<$w;$x++) {
+            // Apply new color + Alpha
+            $rgb = imagecolorsforindex($fnt, imagecolorat($fnt, $x, $y));
+
+						$gray = floor(0.299*$rgb['red'] + 0.587*$rgb['green'] + 0.114*$rgb['blue']);
+						if ($gray<128) {
+							imagesetpixel ($fnt, $x, $y, $index710);
+						} else {
+							imagesetpixel ($fnt, $x, $y, $index709);
+						}
+        }
+    }
+
+		return $fnt;
+	}
+
 	public function makeImage($imageFile=null, $fontFile=DEFAULT_FONT_FILE,
 	                          $defaultCharWidth=DEFAULT_CHAR_WIDTH,$defaultCharHeight=DEFAULT_CHAR_HEIGHT) {
-		$fnt=@imagecreatefrompng($fontFile);
-		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
+
+		$fnt=$this->LoadFontPNG($fontFile);
+//		$this->remapColors($fnt);
+
 		$width=$this->screenWidth;
 		$height=$this->screenHeight;
 		$img=@imagecreate(($width*$defaultCharWidth),($height*$defaultCharHeight))
@@ -421,6 +454,34 @@ class AtasciiGen {
 		}
 		imagedestroy($img);
 		imagedestroy($fnt);
+	}
+
+	public $palette=null;
+
+	public function loadPalette($fn) {
+		$palData=@file_get_contents($fn);
+		if ( $palData===false ) throw new AGException("Can't open palette file");
+
+		unset($this->palette); $this->palette=[];
+		for ($nCol=0;$nCol<256;$nCol++) {
+			$colOfs=$nCol*3;
+			$rVal=ord($palData[$colOfs+0]);
+			$gVal=ord($palData[$colOfs+1]);
+			$bVal=ord($palData[$colOfs+2]);
+			$this->palette[$nCol]=array($rVal,$gVal,$bVal);
+		}
+	}
+
+	public function getLayoutColorsData() {
+		if ( !isset($this->layoutData['colors']) ) {
+			return null;
+		}
+		$out=""; $reg=708;
+		foreach ($this->layoutData['colors'] as $colId => $colVal) {
+			$this->colorReg[$reg++]=$colVal;
+			$out.=chr($colVal);
+		}
+		return $out;
 	}
 }
 ?>
