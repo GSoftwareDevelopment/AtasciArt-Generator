@@ -19,6 +19,7 @@ class AtasciiGen {
 	private $elParams;
 
 	public $params=[];
+	public $usePalette=DEFAULT_PALETTE_FILE;
 	public $palette=[];
 	public $colorReg=["708"=>0,"709"=>15,"710"=>0,"711"=>0,"712"=>0];
 
@@ -33,6 +34,7 @@ class AtasciiGen {
 
 		// Optional: Check schemes definition
 		if (@$this->config[CONFIG_ELEMENTSCHAMES]) $this->schemes=&$this->config[CONFIG_ELEMENTSCHAMES];
+		$this->usePalette=$this->checkExist($this->config[ATTR_USEPALETTE],DEFAULT_PALETTE_FILE);
 
 		// Checking the required configuration parameters
 		// Layouts definition is required
@@ -125,6 +127,7 @@ class AtasciiGen {
 					throw new AGException("Screen width value not recognized");
 			}
 		}
+		$this->usePalette=$this->checkExist(@$this->layoutData[ATTR_USEPALETTE],$this->usePalette);
 		$this->screenHeight=$this->rangeCheck(
 			$this->checkExist($this->parseValue($layoutData[ATTR_HEIGHT]),24),
 			1,30,'Layout height is out of range.');
@@ -200,7 +203,6 @@ class AtasciiGen {
 
 	public function generate() {
 		$this->curPlace=1;
-		$this->getLayoutColorsData();
 		$this->parseLayoutBefore($this->layoutData);
 
 		foreach ($this->layoutData[CONFIG_LAYOUT_LINES] as $lineIndex => $lineDef) {
@@ -400,6 +402,8 @@ class AtasciiGen {
 		$fnt=@imagecreatefrompng($fn);
 		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
 
+		if ( !isset($this->layoutData['colors']) ) return $fnt;
+
 		$w = imagesx($fnt);
     $h = imagesy($fnt);
 
@@ -411,15 +415,7 @@ class AtasciiGen {
     // Work through pixels
     for($y=0;$y<$h;$y++) {
         for($x=0;$x<$w;$x++) {
-            // Apply new color + Alpha
-            $rgb = imagecolorsforindex($fnt, imagecolorat($fnt, $x, $y));
-
-						$gray = floor(0.299*$rgb['red'] + 0.587*$rgb['green'] + 0.114*$rgb['blue']);
-						if ($gray<128) {
-							imagesetpixel ($fnt, $x, $y, $index710);
-						} else {
-							imagesetpixel ($fnt, $x, $y, $index709);
-						}
+            imagesetpixel ($fnt, $x, $y, (imagecolorat($fnt, $x, $y)===0)?$index710:$index709);
         }
     }
 
@@ -429,6 +425,8 @@ class AtasciiGen {
 	public function makeImage($imageFile=null, $fontFile=DEFAULT_FONT_FILE,
 	                          $defaultCharWidth=DEFAULT_CHAR_WIDTH,$defaultCharHeight=DEFAULT_CHAR_HEIGHT) {
 
+		$this->setLayoutColors();
+		$this->loadPalette(DEFAULT_PALETTE_PATH.$this->usePalette.'.act');
 		$fnt=$this->LoadFontPNG($fontFile);
 //		$this->remapColors($fnt);
 
@@ -457,7 +455,7 @@ class AtasciiGen {
 		imagedestroy($fnt);
 	}
 
-	public function loadPalette($fn) {
+	private function loadPalette($fn) {
 		$palData=@file_get_contents($fn);
 		if ( $palData===false ) throw new AGException("Can't open palette file");
 
@@ -471,15 +469,40 @@ class AtasciiGen {
 		}
 	}
 
-	public function getLayoutColorsData() {
+	private function setLayoutColors() {
 		if ( !isset($this->layoutData['colors']) ) {
-			return null;
+			return false;
 		}
-		$out=""; $reg=708;
+		$reg=708;
 		foreach ($this->layoutData['colors'] as $colId => $colVal) {
+			if ($reg>712) break;
 			$this->colorReg[$reg++]=$colVal;
+		}
+		return true;
+	}
+
+	public function getLayoutColorsData() {
+		$out="";
+		foreach ($this->colorReg as $colReg => $colVal) {
 			$out.=chr($colVal);
 		}
+		return $out;
+	}
+
+	public function getLayoutInfoData() {
+		$out="";
+		$graphMode=0;
+		$encode=0; // 0 - antic; 1 - atasci
+
+		$out.=chr($graphMode);
+		$out.=chr($encode);
+		$out.=chr($this->layoutData['width']);
+		$out.=chr($this->layoutData['height']);
+		$out.=$this->getLayoutColorsData();
+		$out.=leftStr(( !isset($this->params['title'] ) )?" ":$this->params['title'],40);
+		$out.=leftStr(( !isset($this->params['mode'] ) )?" ":$this->params['mode'],40);
+		$out.=leftStr(( !isset($this->config['author'] ) )?" ":$this->config['author'],40);
+
 		return $out;
 	}
 }
