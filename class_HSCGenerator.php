@@ -100,5 +100,20 @@ class HSCGenerator extends AtasciiGen {
 
 		return parent::generate();
 	}
+
+	function getLayoutsList($includeAuthor=true) {
+		$list=[];
+		if ( isset($this->config[self::CONFIG_LAYOUTS]) ) {
+			$generalAuthor=(isset($this->config['author']))?$this->config['author']:'';
+			foreach ($this->config[self::CONFIG_LAYOUTS] as $subId => $layout) {
+				if ( isset($layout['unlisted']) ) continue;
+				$layoutName=(isset($layout['name']))?$layout['name']:$subId;
+				$layoutAuthor=(isset($layout['author']))?$layout['author']:$generalAuthor;
+				$list[$subId]=$layoutName.($includeAuthor?' ('.$layoutAuthor.')':'');
+			}
+
+		}
+		return json_encode($list);
+	}
 }
 ?>
