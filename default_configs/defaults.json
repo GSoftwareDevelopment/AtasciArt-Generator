@@ -1,5 +1,5 @@
 {
-	"name": "Default - simple #1",
+	"name": "Default schemas for HSC",
 	"author": "PeBe for HSC",
 	"lineSchemes": {
 		"default": {
@@ -90,15 +90,9 @@
 	},
 	"layouts": {
 		"default": {
+			"name":"Default",
 			"width": 40,
 			"height": 24,
-			"colors": [
-				0,
-				15,
-				0,
-				0,
-				0
-			],
 			"encodeLinesAs": "antic",
 			"lines": [
 				{
@@ -192,6 +186,7 @@
 			]
 		},
 		"1":{
+			"name":"Adventure",
 			"width": 40,
 			"height": 24,
 			"colors": [
@@ -205,11 +200,15 @@
 			"lines":[
 				{
 					"y": 4,
-					"useSchema": "title"
+					"useSchema": "title",
+					"text":{
+						"useAtasciiFont": "handwrite"
+					}
 				},
 				{
 					"y": 8,
-					"useSchema": "gameMode"
+					"useSchema": "gameMode",
+					"invert": false
 				},
 				{
 					"y": 12,
@@ -254,12 +253,12 @@
 				},
 				{
 					"isEntry": false,
-					"x": 9,
+					"x": 6,
 					"y": 23,
-					"width": 22,
+					"width": 28,
 					"genTime":{
 						"offsetX": 0,
-						"width": 22,
+						"width": 28,
 						"align": "center",
 						"format": "Y.m.d  H:i:s"
 					},
@@ -294,6 +293,7 @@
 			]
 		},
 		"2":{
+			"name":"Race",
 			"width": 40,
 			"height": 24,
 			"colors": [
@@ -398,15 +398,9 @@
 			]
 		},
 		"3":{
+			"name":"Cosmic",
 			"width": 40,
 			"height": 24,
-			"colors": [
-				0,
-				15,
-				0,
-				0,
-				0
-			],
 			"encodeLinesAs": "antic",
 			"lines":[
 				{
@@ -508,6 +502,7 @@
 			]
 		},
 		"!!!ERROR":{
+			"unlisted": true,
 			"width": 40,
 			"height": 24,
 			"colors": [

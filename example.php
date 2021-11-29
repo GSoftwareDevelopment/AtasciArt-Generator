@@ -10,7 +10,7 @@ try {
 // for default layout of dedicated config file.
 // If the game has no dedicated configuration file
 // default configuration file is specified in HSCGenerator::DEFAULT_CONFIG_FILE
-	$gen=new HSCGenerator("1","3");
+	$gen=new HSCGenerator("","1");
 
 // for specified layout (name 'game') of dedicated config file
 //	$gen=new HSCGenerator(109,'game');
@@ -33,12 +33,11 @@ try {
 
 // the following line, takes the color register settings (708-712) and
 //  puts them in a text string (one byte/character=one register)
-	$colorRegs=$gen->getLayoutColorsData();
+	echo $gen->getLayoutColorsData().PHP_EOL;
+	echo $gen->getLayoutInfoData().PHP_EOL;
+	echo $gen->getLayoutsList().PHP_EOL;
 
-// lets generate PNG image...
-// First, load palette
-	$gen->loadPalette('./palette/altirra.act');
-// At the end, make PNG image
+// Make PNG image
 // by default, use 16x16 character set font
 	$gen->makeImage('test.png');
 

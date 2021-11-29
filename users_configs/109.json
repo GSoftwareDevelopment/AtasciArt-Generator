@@ -1,6 +1,6 @@
 {
 	"name": "Kret",
-	"author": "PeBe",
+	"author": "PeBe GSD",
 	"lineSchemes": {
 		"default": {
 			"x": 9,
@@ -92,13 +92,6 @@
 		"default": {
 			"width": 40,
 			"height": 24,
-			"colors": [
-				0,
-				15,
-				0,
-				0,
-				0
-			],
 			"encodeLinesAs": "antic",
 			"lines": [
 				{
