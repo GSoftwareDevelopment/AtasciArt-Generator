@@ -4,7 +4,7 @@
 
 ## Krótko, czym jest HSC
 
-**High Score Cafe** (HSC) jest usługą udostępnioną przez *Krzysztofa XXL Dudka*, która gromadzi i prezentuje listy wyników użytkowników z gier, przeznaczonych na 8-bitowe komputery ATARI.
+**Hi Score Cafe** (HSC) jest usługą udostępnioną przez *Krzysztofa XXL Dudka*, która gromadzi i prezentuje listy wyników użytkowników z gier, przeznaczonych na 8-bitowe komputery ATARI.
 
 Przesyłanie wyników odbywa się na trzy różne sposoby:
 
@@ -12,11 +12,11 @@ Przesyłanie wyników odbywa się na trzy różne sposoby:
 - kod **QR** generowany w grze na małym ATARI
 - **API HSC**, korzystające z urządzenia **FujiNet**.
 
-Więcej na temat serwisu pod linkiem [High Score Cafe](https://xxl.atari.pl/hsc/)
+Więcej na temat serwisu pod linkiem [Hi Score Cafe](https://xxl.atari.pl/hsc/)
 
 
 
-## Czym jest HSC AtasciArt Generator?
+## Czym jest HSC AtasciiArt Generator?
 
 Jest to skrypt rozszerzający możliwości HSC. Dodaje możliwość generowania ekranów dla komputera ATARI z listą wyników danej gry oraz grafiką **AtasciiArt**.
 
@@ -36,7 +36,7 @@ Atutem takiego rozwiązania są:
 
 # Dokumentacja
 
-Niniejsza dokumentacja zawiera podstawowe informacje dotyczące tworzenia pliku konfiguracyjnego dla rozszerzenia **HSC AtasciArt Generator** (HSC AAG).
+Niniejsza dokumentacja zawiera podstawowe informacje dotyczące tworzenia pliku konfiguracyjnego dla rozszerzenia **HSC AtasciiArt Generator** (HSC AAG).
 
 
 
@@ -52,9 +52,76 @@ Jest to plik w formacie JSON. Opisuje on właściwości i elementy generowanego 
 
 
 
+## Główna sekcja pliku
+
+Tu zaczyna się przygoda z plikiem konfiguracyjnym.
+
+Ogólny zarys tej sekcji przedstawia poniższy kod:
+
+```JSON
+{
+    ?atributes,
+    ?lineSchemes,
+    !layout/!layouts
+}
+```
+
+### Atrybuty
+
+Są one w większości czysto informacyjne i nie muszą być umieszczone w pliku konfiguracyjnym.
+
+#### `name`
+
+Wartość tego atrybutu zawiera nazwę dla pliku konfiguracyjnego.
+
+#### `author`
+
+Definiuje autora pliku
+
+#### `usePalette`
+
+Ustawia (globalnie) użytą paletę podczas generowania obrazu PNG 
+
+Dostępne są palety:
+
+| Nazwa palety      |
+| ----------------- |
+| altirra           |
+| atari800winplus   |
+| g2f               |
+| gray              |
+| green             |
+| jakub             |
+| laoo              |
+| olivierp          |
+| real              |
+| rocky_real_atari2 |
+| rocky_super_atari |
+| xformer           |
+
+### Sekcje
+
+#### `lineSchemes`
+
+Zawiera definicje schematów generowanych linii, patrz [Sekcja `lineSchemes' - Schematy definicji linii](#Sekcja-lineSchemes---Schematy-definicji-linii)
+
+Ta sekcja nie jest wymagana.
+
+#### `layout`
+
+Sekcja definiuje layout, patrz [Sekcja `layout` - Definicja layoutu](#Sekcja-layout---Definicja-layoutu)
+
+#### `layouts`
+
+Umożliwia zdefiniowanie kilku layoutów, tzw. sub layoutów, patrz [Sekcja `layouts` - sub layouty](#Sekcja-layouts---sub-layouty)
+
+<u>W przypadku zdefiniowania także sekcji `layout` ta sekcja ma nad nią priorytet!</u>
+
+
+
 ## Sekcja `layout` - Definicja layoutu
 
-Z punktu widzenia formatu JSON, `layout` jest obiektem opisującym ekran bazowy. Umieszczone są atrybuty layoutu, definicje generowanych linii oraz ich elementów.
+Z punktu widzenia formatu JSON, `layout` jest obiektem opisującym ekran bazowy. Umieszczone są w nim atrybuty layoutu, definicje generowanych linii oraz ich elementów.
 
 ```JSON
 {
@@ -88,64 +155,94 @@ Powyższy przykład, przedstawia schemat definicji layoutu (ekranu). W jego skł
 
 ### Atrybuty layoutu
 
-__Atrybuty wymagane:__
+#### Atrybuty wymagane
 
-- `width`, `height` - szerokość i wysokość całkowita w znakach
+##### `width`, `height` 
 
-  Domyślna wartość to 40 znaków.
+Okresla szerokość i wysokość całkowitą generowanego ekranu w znakach
 
-  Wartości `width` z zakresu od 1 do 48. Można też używać predefiniowanych wartości:
+Domyślna wartość to 40 znaków.
 
-  - `narrow` - szerokość 32 znaki
-  - `normal` - szerokość 40 znaków
-  - `wide` - szerokość 48
+Wartości `width` z zakresu od 1 do 48. Można też używać predefiniowanych wartości:
 
-  Wartość `height` od 1 do 30.
+- `narrow` - szerokość 32 znaki
+- `normal` - szerokość 40 znaków
+- `wide` - szerokość 48
 
-- `lines` - tablica obiektów opisująca generowane linie (patrz [Sekcja `lines - Definicje linii`](#Sekcja-lines---Definicje-linii))
+Wartość `height` od 1 do 30.
 
-__Opcjonalne atrybuty:__
+##### `lines` 
 
-- `colors` - tablica reprezentująca ustawienia kolorów (wartości dla rejestrów od 708 do 712)
+Tablica obiektów opisująca generowane linie (patrz [Sekcja `lines - Definicje linii`](#Sekcja-lines---Definicje-linii))
 
-- `encodeLinesAs` - sposób wyjściowego kodowania treści generowanych linii
+#### Opcjonalne atrybuty
 
-  Z natury rzeczy, ekran bazowy to nic innego jak ekran komputera Atari. Jest on standardowo kodowany z użyciem kodów ANTIC. Jednak można go też opisać używając standatu ATASCII.
+##### `name` 
 
-  W tym celu, należy zaznaczyć w jaki sposób będą kodowane, generowane linie.
+Nazwa dla layoutu.
 
-  Dostępne wartości: `atascii`,`antic`
+##### `author`
 
-  Domyślna wartość: `antic`
+Twórca layoutu.
 
-- `screenData` - tablica ciągów heksadecymalnych.
+##### `colors` 
 
-  Atrybut ten zawiera opis ekranu bazowego. Standardowo można zapisać cały ekran w postaci jednego ciągu znaków hexa, np.
+Tablica reprezentująca ustawienia kolorów dla wartości rejestrów kolorów ATARI (od 708 do 712)
 
-  ```JSON
-  ...
-  layout:{
-      screenData:["0049494949494949494949494949494949494949494949494949494949494949494949494949490049004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C494C00D9C9CF5980D580D9C9C...
-  0000000000000000000000000000000000000000000000000000000000000000000494C494C494949494949494949494949494949494949494949494949494949494949494949494949004C00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"]
-  }
-  ```
+##### `usePalette` 
 
-  Jednak trudno się odnieść do tak zapisanych danych. Można sobie trochę pomóc, formatując dane w postaci wielu linii:
+Ustawia paletę kolorów dla generowanego obrazu PNG.  Jezeli atrybut nie jest określony, zastosowana zostanie paleta zdefiniowana w głównej sekcji pliku konfiguracyjnego.
 
-  ```json
-  "screenData": [
-  "00494949494949494949494949494949494949494949494949494949494949494949494949494900",
-  "49004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00",
-  "494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C",
-  ...
-  "494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
-  "494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
-  "494C494949494949494949494949494949494949494949494949494949494949494949494949004C",
-  "00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"
-  ]
-  ```
+##### `encodeLinesAs` 
 
-- `screenFill` - znak, jakim będzie wypełniony ekran bazowy w przypadku, braku atrybutu `screenData`
+Określa sposób wyjściowego kodowania treści generowanych linii
+
+---
+
+Z natury rzeczy, ekran bazowy to nic innego jak ekran komputera Atari. Jest on standardowo kodowany z użyciem kodów ANTIC. Jednak można go też opisać używając standatu ATASCII.
+
+W tym celu, należy zaznaczyć w jaki sposób będą kodowane, generowane linie.
+
+---
+
+Dostępne wartości: `atascii`, `antic`
+
+Domyślna wartość: `antic`
+
+##### `screenData` 
+
+Tablica ciągów heksadecymalnych.
+
+Atrybut ten zawiera opis ekranu bazowego. Standardowo można zapisać cały ekran w postaci jednego ciągu znaków hexa, np.
+
+```JSON
+...
+layout:{
+    screenData:["0049494949494949494949494949494949494949494949494949494949494949494949494949490049004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C494C00D9C9CF5980D580D9C9C...
+0000000000000000000000000000000000000000000000000000000000000000000494C494C494949494949494949494949494949494949494949494949494949494949494949494949004C00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"]
+}
+```
+
+Jednak trudno się odnieść do tak ułożonych danych. Można sobie trochę pomóc, formatując dane w postaci wielu linii:
+
+```json
+"screenData": [
+"00494949494949494949494949494949494949494949494949494949494949494949494949494900",
+"49004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00",
+"494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C",
+...
+"494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
+"494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
+"494C494949494949494949494949494949494949494949494949494949494949494949494949004C",
+"00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"
+]
+```
+
+
+
+##### `screenFill`
+
+Definiuje znak, jakim będzie wypełniony ekran bazowy w przypadku, braku atrybutu `screenData`
 
 
 
@@ -153,23 +250,31 @@ __Opcjonalne atrybuty:__
 
 Jest to tablica obiektów (w rozumieniu pliku JSON). Każdy obiekt w tej sekcji, definiuje osobną, generowaną linię w ekranie bazowym.
 
-__Atrybuty wymagane:__
-
-- `x` i `y` - określające początkowe położenie linii w ekranie bazowym
-
-__Opcjonalne atrybuty:__
-
-- `width` oraz `height` - szerokość i wysokość linii.
-
-  Domyślne wartości to: `height` = 1. Jeśli chodzi o `width` to ta wartość domyślnie dobierana jest na podstawie różnicy szerkości generowanego ekranu, a wartości X połoźenia linii.
-
-- `invert`, ustawiony na `true`, dokonuje inwersji (operacja XOR na 7 bicie każdego znaku)  w wynikowej linii
-
 Treść generowanej linii jest obcinana do jej szerokości oraz wysokości.
 
 W sekcji tej, definiowane są też elementy wchodzące w skład linii.
 
 ![](imgs/example_lines_elements.png)
+
+#### Atrybuty wymagane
+
+##### `x` i `y` 
+
+Określają początkowe położenie linii w ekranie bazowym
+
+#### Opcjonalne atrybuty
+
+##### `width` oraz `height` 
+
+Definiuje szerokość i wysokość linii.
+
+Domyślne wartości to: `height` = 1. Jeśli chodzi o `width` to ta wartość domyślnie dobierana jest na podstawie różnicy szerkości generowanego ekranu, a wartości X połoźenia linii.
+
+##### `invert`
+
+Ustawiony na `true`, dokonuje inwersji (operacja XOR na 7 bicie każdego znaku)  w wynikowej linii
+
+
 
 ### Elementy linii
 
@@ -201,12 +306,29 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu obiektu opisującego ge
 
 ### Rodzaje elementów
 
-- `place` - miejsce z tablicy wyników
-- `nick` - nazwę gracza (jego nick)
-- `score` - osiągnięty wynik
-- `date` - datę rejestracji wyniku
-- `text` - generuje dowolny tekst
-- `genTime` - generuje czas utworzenia ekranu
+#### `place` 
+
+Miejsce z tablicy wyników
+
+#### `nick` 
+
+Nazwę gracza (jego nick)
+
+#### `score` 
+
+Osiągnięty wynik
+
+#### `date` 
+
+Data rejestracji wyniku
+
+#### `text`
+
+Generuje dowolny tekst
+
+#### `genTime` 
+
+Generuje czas utworzenia ekranu
 
 
 
@@ -393,13 +515,13 @@ W miejscu `id` nalezy użyć identyfikatora, jaki zaostał użyty do przekazania
 
 
 
-## Sekcja `lineScheme` - Schematy definicji elementów
+## Sekcja `lineSchemes` - Schematy definicji linii
 
-Aby ułatwić projektowanie schematu oraz zwiększyć czytelność pliku konfiguracyjnego, można stosować **schematy definicji elementów**.
+Aby ułatwić projektowanie layoutu oraz zwiększyć czytelność pliku konfiguracyjnego, można stosować **schematy definicji linii**.
 
-Ich definicje opisuje się w głównej części pliku konfiguracyjnego w sekcji `lineSchemes` i jest ona obiektem (JSON) w którym zawarte są poszczególne schematy.
+Ich definicje opisuje się w głównej części pliku konfiguracyjnego w sekcji `lineSchemes` i jest ona obiektem w którym zawarte są poszczególne schematy.
 
-Każdy schemat jest obiektem (JSON) i musi być nazwany, np:
+Każdy schemat jest obiektem i musi być nazwany, np:
 
 ```JSON
 {
@@ -482,7 +604,7 @@ Powyższy przykład, przedstawia poglądową definicję trzech ekranów (sub lay
 - nazwa `default` jest zarezerwowana dla domyślnego wyglądu
 - `layout_1` i `layout_2` są dodatkowymi ekranami
 
-Atrybuty, definicje linii oraz ich elementów, pozostają takie same, jak w przypadku bazowej klasy `AtasciiGen`.
+Atrybuty layoutu, definicje linii oraz ich elementów, pozostają takie same, jak w przypadku [sekcji `layout`](#Atrybuty-layoutu).
 
 
 
@@ -948,7 +1070,7 @@ Jeżeli nie zostanie podany parametr `$imageFile`, metoda "wyrzuci" treść wyge
 
 | Widoczność |
 | ---------- |
-| public     |
+| privte     |
 
 | parametr | type   | wartość domyślna |
 | -------- | ------ | ---------------- |
@@ -960,17 +1082,50 @@ Paleta używana jest przy generowaniu obrazu PNG (metoda `$this->makeImage()`)
 
 
 
+##### setLayoutColors
+
+| Widoczność |
+| ---------- |
+| private    |
+
+Metoda sprawdza, czy istnieje atrybut `colors` w definicji layoutu, jeżeli jest zdefiniowany, pobiera zawartość atrybutu `colors` - powinna być to tablica wartości, reprezentująca stan rejestrów kolorów w ATARI (rejestry od 708 do 712). Pobrane informacje umieszczane są w tablicy asocjacyjnej `$this->colorReg[]`
+
+Zwraca wartość logiczną `true`, jeżeli rejestry zostały ustawione. W przeciwnym wypadku `false`
+
+
+
 ##### getLayoutColorsData
 
 | Widoczność |
 | ---------- |
 | public     |
 
-Metoda spełnia trzy zadania:
+Metoda generuje block danych (ciąg znaków), zawierający wartości zdefiniowanych w atrybucie `colors` wartości rejestrów kolorów (jeden bajt/znak=jeden rejestr).
 
-- sprawdza, czy istnieje atrybut `colors` w definicji layoutu
-- pobiera zawartość atrybutu `colors` - powinna być to tablica wartości, reprezentująca stan rejestrów kolorów w ATARI (rejestry od 708 do 712). Pobrane informacje umieszczane są w tablicy asocjacyjnej `$this->colorReg[]`
-- zwraca ciąg znaków, zawierający wartości zdefiniowanych w atrybucie `colors` wartości rejestrów kolorów (jeden bajt/znak=jeden rejestr)
+Ilość danych w bloku wynosi 5 bajtów.
+
+
+
+##### getLayoutInfo
+
+| Widoczność |
+| ---------- |
+| public     |
+
+Metoda generuje block danych (ciąg znaków), zawierający informacje dotyczące layoutu.
+
+| offset | typ                  | opis                                                |
+| ------ | -------------------- | --------------------------------------------------- |
+| 0      | byte                 | rodzaj wykorzystanego trybu graficznego (rozwojowa) |
+| 1      | byte                 | typ zastosowanego kodowania ekranu wynikowego       |
+| 2      | byte                 | szerokość definiowanego ekranu (w bajtach)          |
+| 3      | byte                 | j.w. tylko wysokość (w bajtach)                     |
+| 4      | array[0..4] of byte  | dane rejestrów kolorów                              |
+| 9      | array[0..39] of char | nazwa gry (kodowanie ASCII)                         |
+| 49     | array[0..39] of char | typ rozgrywki (kodowanie ASCII)                     |
+| 89     | array[0..39] of char | autor pliku konfiguracyjnego                        |
+
+Łącznie długość bloku wynosi 130 bajtów.
 
 
 
@@ -1122,6 +1277,34 @@ return [
 
 
 
+##### generate
+
+| Widoczność |
+| ---------- |
+| public     |
+
+Podobnie jak metoda nadrzęda, generuje ekran na podstawie danych z wczytanego pliku koniguracyjnego.
+
+Dodatkowo sprawdza i ustawia wybrany sub layout przed wywołanie nadrzędnej metody `parent::generate()`.
+
+
+
+##### getLayoutsList
+
+| Widoczność |
+| ---------- |
+| public     |
+
+| parametr         | type | wartość domyślna |
+| ---------------- | ---- | ---------------- |
+| `$includeAuthor` | bool | `true`           |
+
+Generuje blok danych w formacie JSON, zawierający listę zdefiniowanych w pliku konfiguracyjnym sub layoutów.
+
+Informacje zwracane w pliku JSON, są tablicą asocjacyjną, gdzie klucz odpowiada identyfikatorowi sub layoutu, a wartość to treść atrybutu `name` zdefiniowanego w sub layoucie. Dodatkowo może zawierać, jeżeli parametr `includeAuthor` jest `true`, wartość atrybutu `author` zawarta w definicji sub layoutu, lub wartość definicji atrybutu `author` w głównej sekcji pliku konfiguracyjnego.
+
+
+
 ### Przekazywanie parametrów do HSC AAG
 
 Do skryptu można przekazywać parametry. Aby to uczynić, należy po zainicjowaniu nowej instancji `AtasciiGen` ale przed wygenerowanie ekranu dodać do zmiennej tablicowej `params` instanji wartości, np.
@@ -1161,6 +1344,8 @@ W takim przypadku, parametry będą dostępne pod nazwami `line1`,`line2`,`line3
 ### Tworzenie obrazów
 
 TODO
+
+
 
 
 
