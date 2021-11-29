@@ -147,4 +147,8 @@ function formatTime($format,$seconds,$fraction) {
 	return $out;
 }
 
+function leftStr($str,$length) {
+	$left=substr($str,0,$length);
+	return $left.str_repeat(' ',40-strlen($left));
+}
 ?>
