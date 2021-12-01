@@ -34,7 +34,7 @@ class AtasciiGen {
 
 		// Optional: Check schemes definition
 		if (@$this->config[CONFIG_ELEMENTSCHAMES]) $this->schemes=&$this->config[CONFIG_ELEMENTSCHAMES];
-		$this->usePalette=$this->checkExist($this->config[ATTR_USEPALETTE],DEFAULT_PALETTE_FILE);
+		$this->usePalette=$this->checkExist(@$this->config[ATTR_USEPALETTE],DEFAULT_PALETTE_FILE);
 
 		// Checking the required configuration parameters
 		// Layouts definition is required
@@ -398,41 +398,60 @@ class AtasciiGen {
 	//
 	//
 
-	function loadFontPNG($fn) {
+	function loadFontPNG($fn,$charW,$charH) {
 		$fnt=@imagecreatefrompng($fn);
 		if ( $fnt===false ) die('Cannot load Atascii Fontset image');
 
 		if ( !isset($this->layoutData['colors']) ) return $fnt;
 
-		$w = imagesx($fnt);
-    $h = imagesy($fnt);
+		// before colorize, make table of used characters
+		$usedChars=[];
+		for ($scrOfs=0;$scrOfs<strlen($this->screenDef);$scrOfs++) {
+			$ch=ord($this->screenDef[$scrOfs]);
+			if ( !isset($usedChars[$ch]) ) {
+				$usedChars[$ch]=true;
+			}
+		}
+
+//		$w = imagesx($fnt);
+//    $h = imagesy($fnt);
 
 		$col709=$this->palette[$this->colorReg['709']];
 		$col710=$this->palette[$this->colorReg['710']];
-		$index709 = imagecolorallocatealpha($fnt, $col709[0], $col709[1], $col709[2], 1);
-		$index710 = imagecolorallocatealpha($fnt, $col710[0], $col710[1], $col710[2], 1);
 
-    // Work through pixels
-    for($y=0;$y<$h;$y++) {
-        for($x=0;$x<$w;$x++) {
-            imagesetpixel ($fnt, $x, $y, (imagecolorat($fnt, $x, $y)===0)?$index710:$index709);
-        }
-    }
+//		$index710 = imagecolorallocatealpha($fnt, $col710[0], $col710[1], $col710[2], 1);
+//		$index709 = imagecolorallocatealpha($fnt, $col709[0], $col709[1], $col709[2], 1);
 
+		$col[0] = imagecolorallocatealpha($fnt, $col710[0], $col710[1], $col710[2], 1);
+		$col[1] = imagecolorallocatealpha($fnt, $col709[0], $col709[1], $col709[2], 1);
+
+// colorize only used characters
+		foreach ($usedChars as $char=>$set) {
+			$xofs=($char & 0x1f)*$charW;
+			$yofs=($char >> 5)*$charH;
+
+			// Work through pixels
+			for($y=$yofs;$y<$yofs+$charH;$y++) {
+					for($x=$xofs;$x<$xofs+$charW;$x++) {
+							imagesetpixel ($fnt, $x, $y, $col[imagecolorat($fnt, $x, $y)]);
+		//            imagesetpixel ($fnt, $x, $y, (imagecolorat($fnt, $x, $y)===0)?$index710:$index709);
+					}
+			}
+		}
 		return $fnt;
 	}
 
 	public function makeImage($imageFile=null, $fontFile=DEFAULT_FONT_FILE,
-	                          $defaultCharWidth=DEFAULT_CHAR_WIDTH,$defaultCharHeight=DEFAULT_CHAR_HEIGHT) {
+	                          $charWidth=DEFAULT_CHAR_WIDTH,$charHeight=DEFAULT_CHAR_HEIGHT) {
 
 		$this->setLayoutColors();
 		$this->loadPalette(DEFAULT_PALETTE_PATH.$this->usePalette.'.act');
-		$fnt=$this->LoadFontPNG($fontFile);
+		$fnt=$this->LoadFontPNG($fontFile,$charWidth,$charHeight);
 //		$this->remapColors($fnt);
 
 		$width=$this->screenWidth;
 		$height=$this->screenHeight;
-		$img=@imagecreate(($width*$defaultCharWidth),($height*$defaultCharHeight))
+		$img=@imagecreate(($width*$charWidth),($height*$charHeight))
 			or die("Cannot Initialize new GD image stream");
 		for ($y=0;$y<$height;$y++) {
 			$offset=$y*$width;
@@ -441,9 +460,9 @@ class AtasciiGen {
 				$chx=$ch & 0x1f;
 				$chy=$ch >> 5;
 				imagecopy($img,$fnt,
-				          $x*$defaultCharWidth,$y*$defaultCharHeight,
-				          $chx*$defaultCharWidth,$chy*$defaultCharHeight,
-				          $defaultCharWidth,$defaultCharHeight);
+				          $x*$charWidth,$y*$charHeight,
+				          $chx*$charWidth,$chy*$charHeight,
+				          $charWidth,$charHeight);
 			}
 		}
 		if ($imageFile!==null) {
