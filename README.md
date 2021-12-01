@@ -1,5 +1,7 @@
 # High Score Cafe AtasciiArt Generator
 
+Spis treści
+
 [TOC]
 
 
@@ -62,9 +64,10 @@ Ogólny zarys tej sekcji przedstawia poniższy kod:
 
 ```JSON
 {
-    ?atributes,
-    ?lineSchemes,
-    !layout/!layouts
+    atributes,
+    lineSchemes,
+    layout,
+    layouts
 }
 ```
 
@@ -72,13 +75,19 @@ Ogólny zarys tej sekcji przedstawia poniższy kod:
 
 Są one w większości czysto informacyjne i nie muszą być umieszczone w pliku konfiguracyjnym.
 
+
+
 #### `name`
 
 Wartość tego atrybutu zawiera nazwę dla pliku konfiguracyjnego.
 
+
+
 #### `author`
 
 Definiuje autora pliku
+
+
 
 #### `usePalette`
 
@@ -101,6 +110,8 @@ Dostępne są palety:
 | rocky_super_atari |
 | xformer           |
 
+
+
 ### Sekcje
 
 #### `lineSchemes`
@@ -109,15 +120,23 @@ Zawiera definicje schematów generowanych linii, patrz [Sekcja `lineSchemes' - S
 
 Ta sekcja nie jest wymagana.
 
+
+
 #### `layout`
 
 Sekcja definiuje layout, patrz [Sekcja `layout` - Definicja layoutu](#Sekcja-layout---Definicja-layoutu)
+
+
 
 #### `layouts`
 
 Umożliwia zdefiniowanie kilku layoutów, tzw. sub layoutów, patrz [Sekcja `layouts` - sub layouty](#Sekcja-layouts---sub-layouty)
 
-<u>W przypadku zdefiniowania także sekcji `layout` ta sekcja ma nad nią priorytet!</u>
+---
+
+**W przypadku zdefiniowania także sekcji `layout` ta sekcja ma nad nią priorytet!**
+
+---
 
 
 
@@ -173,9 +192,13 @@ Wartości `width` z zakresu od 1 do 48. Można też używać predefiniowanych wa
 
 Wartość `height` od 1 do 30.
 
+
+
 ##### `lines` 
 
 Tablica obiektów opisująca generowane linie (patrz [Sekcja `lines - Definicje linii`](#Sekcja-lines---Definicje-linii))
+
+
 
 #### Opcjonalne atrybuty
 
@@ -183,17 +206,25 @@ Tablica obiektów opisująca generowane linie (patrz [Sekcja `lines - Definicje 
 
 Nazwa dla layoutu.
 
+
+
 ##### `author`
 
 Twórca layoutu.
+
+
 
 ##### `colors` 
 
 Tablica reprezentująca ustawienia kolorów dla wartości rejestrów kolorów ATARI (od 708 do 712)
 
+
+
 ##### `usePalette` 
 
 Ustawia paletę kolorów dla generowanego obrazu PNG.  Jezeli atrybut nie jest określony, zastosowana zostanie paleta zdefiniowana w głównej sekcji pliku konfiguracyjnego.
+
+
 
 ##### `encodeLinesAs` 
 
@@ -210,6 +241,8 @@ W tym celu, należy zaznaczyć w jaki sposób będą kodowane, generowane linie.
 Dostępne wartości: `atascii`, `antic`
 
 Domyślna wartość: `antic`
+
+
 
 ##### `screenData` 
 
@@ -244,7 +277,7 @@ Jednak trudno się odnieść do tak ułożonych danych. Można sobie trochę pom
 
 ##### `screenFill`
 
-Definiuje znak, jakim będzie wypełniony ekran bazowy w przypadku, braku atrybutu `screenData`
+Definiuje znak, jakim będzie wypełniqony ekran bazowy w przypadku, braku atrybutu `screenData`
 
 
 
@@ -263,6 +296,8 @@ W sekcji tej, definiowane są też elementy wchodzące w skład linii.
 ##### `x` i `y` 
 
 Określają początkowe położenie linii w ekranie bazowym
+
+
 
 #### Opcjonalne atrybuty
 
@@ -616,6 +651,8 @@ Atrybuty layoutu, definicje linii oraz ich elementów, pozostają takie same, ja
 
 W połączeniu z **HSC AtasciiArt Generator** zwiększają one możliwości kreowania ekranów i można je wykorzystać w każdym aspekcie na jaki pozwala HSC AAG.
 
+
+
 ## Dostępne czcionki
 
 Obecnie stworzonych jest 8 czcionek.
@@ -703,7 +740,7 @@ Na projekt HSC AAG składają się następujące katalogi i pliki:
 
 ### Właściwości klasy
 
-###  `$confFN`
+####  `$confFN`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -711,7 +748,9 @@ Na projekt HSC AAG składają się następujące katalogi i pliki:
 
 Przechowuje nazwę otwartego pliku konfiguracyjnego.
 
-### `$params`
+
+
+#### `$params`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -723,7 +762,7 @@ Asocjacja odbywa się poprzez klucz i jego wartość, gdzie nazwa klucza jest id
 
 
 
-### `$screenDef`
+#### `$screenDef`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -731,7 +770,9 @@ Asocjacja odbywa się poprzez klucz i jego wartość, gdzie nazwa klucza jest id
 
 Zmienna przechowująca wygenerowany ekran w postaci ciągu znaków Atascii. Rozmiar ciągu ustalany jest na podstawie wartości przekazanych przez plik konfiguracyjny w atrybutach layoutu `width` i `height` i jest on równy iloczynowi tych atrybutów.
 
-### `$config`
+
+
+#### `$config`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -739,7 +780,9 @@ Zmienna przechowująca wygenerowany ekran w postaci ciągu znaków Atascii. Rozm
 
 Zawiera zdekodowany do referencyjnej tablicy asocjacyjnej plik konfiguracyjny JSON.
 
-### `$schemes`
+
+
+#### `$schemes`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -747,7 +790,9 @@ Zawiera zdekodowany do referencyjnej tablicy asocjacyjnej plik konfiguracyjny JS
 
 Referencja do obiektu `$config['linesScheme']` zawierająca definicje schematów linii.
 
-### `$screenWidth` i `$screenHeight`;
+
+
+#### `$screenWidth` i `$screenHeight`
 
 | Widoczność | Typ     |
 | ---------- | ------- |
@@ -755,7 +800,9 @@ Referencja do obiektu `$config['linesScheme']` zawierająca definicje schematów
 
 Szerokość `$screenWidth` i wysokość `$screenHeight` generowanego ekranu. Wartości tych zmiennych ustalane są z definicji layoutu pliku konfiguracyjnego
 
-### `$curLineX` i`$curLineY`
+
+
+#### `$curLineX` i`$curLineY`
 
 | Widoczność | Typ     |
 | ---------- | ------- |
@@ -763,7 +810,9 @@ Szerokość `$screenWidth` i wysokość `$screenHeight` generowanego ekranu. War
 
 Zmienne zawierają położenie lewego górnego rogu (kolumnę `$curLineX` i wiersz `$curLineY`) aktualnie przetwarzanej linii definicji layoutu.
 
-### `$curLineWidth` i `$curLineHeight`
+
+
+#### `$curLineWidth` i `$curLineHeight`
 
 | Widoczność | Typ     |
 | ---------- | ------- |
@@ -771,7 +820,9 @@ Zmienne zawierają położenie lewego górnego rogu (kolumnę `$curLineX` i wier
 
 Zawierają wymiary (szerokość `$curLineWidth` i wysokość `$curLineHeight`) aktualnie przetwarzanej linii definicji layoutu.
 
-### `$currentLineData`
+
+
+#### `$currentLineData`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -783,7 +834,9 @@ Jego organizacja jest liniowa i może zawierać więcej niż jedną linię, któ
 
 W rezultacie, rozmiar bufora to iloczyn szerokości i wysokości definiowanej linii.
 
-### `$elParams`
+
+
+#### `$elParams`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -793,7 +846,9 @@ Zawiera atrybuty aktualnie przetwarzanego elementu definicji linii.
 
 Jest to tablica asocjacyjna, której kluczem są nazwy atrybutów, a wartości ich parametrem.
 
-### `$palette`
+
+
+#### `$palette`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -813,7 +868,7 @@ Składa się z 256 indeksów w których są zapisane wartości RGB dla każdego 
 
 
 
-### `$colorReg`
+#### `$colorReg`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -841,6 +896,8 @@ Konstruktor, wczytujący i dekodujący plik konfiguracyjny w formacie JSON. W pr
 
 Ustala też tablicę layoutów oraz schematów linii.
 
+
+
 #### getScoreboardEntry
 
 | Widoczność |
@@ -855,7 +912,9 @@ Metoda którą trzeba nadpisać poprzez rozszerzenie klasy `AtasciiGen`. Jej wyw
 
 Funkcja jaką pełni to, pobieranie pojedynczego wyniki z tablicy wyników.
 
-### getScreenDataFromLayout
+
+
+#### getScreenDataFromLayout
 
 | Widoczność |
 | ---------- |
@@ -865,7 +924,9 @@ Metoda generująca ekran bazowy na podstawie atrybutów definicji layoutu `scree
 
 `screenData` może być ciągiem znaków lub tablicą ciągów znaków. Treść ciągów to 8-bitowe wartości zapisane w systemie szesnastkowym opisujące znak po znaku (w jednym z dwóch standardów ATASCI lub ANTIC) ekran bazowy. 
 
-### rangeCheck
+
+
+#### rangeCheck
 
 | Widoczność |
 | ---------- |
@@ -884,7 +945,7 @@ Metoda generuje wyjątek w przypadku przekroczenia zakresu, a treść tego wyją
 
 
 
-### checkExist
+#### checkExist
 
 | Widoczność |
 | ---------- |
@@ -909,7 +970,7 @@ Może reagować na dwa sposoby:
 
 
 
-### parseLayoutBefore
+#### parseLayoutBefore
 
 | Widoczność |
 | ---------- |
@@ -927,7 +988,7 @@ Sprawdza istnienie atrybutów `width`, `height`,`screenData`,`screenFill` w prze
 
 
 
-### buildLineSch#ema
+#### buildLineSch#ema
 
 | Widoczność |
 | ---------- |
@@ -945,7 +1006,7 @@ Brak definicji schematu w sekcji `lineSchemes` spowoduje wywołanie wyjątku o t
 
 
 
-### parseLineBefore
+#### parseLineBefore
 
 | Widoczność |
 | ---------- |
@@ -961,7 +1022,9 @@ Sprawdza i ustawia właściwości dla generowanej linii. Atrybuty testowane są 
 
 Metoda wywoływana jest tuż przed generowaniem elementów.
 
-### parseLineAfter
+
+
+#### parseLineAfter
 
 | Widoczność |
 | ---------- |
@@ -978,7 +1041,9 @@ Przekazane w parametrach metody zmienne referencyjne `$layoutData` oraz `$curren
 
 Metoda wywoływana jest po skończeniu przetwarzania elementów zawartych w definicji linii.
 
-### generate
+
+
+#### generate
 
 | Widoczność |
 | ---------- |
@@ -1013,7 +1078,9 @@ flowchart TB
 
 Każda wygenerowana linia jest wpisywana w bazowy ekran `$this->screenDef`. Na podstawie zmiennych `$this->curLineX`, `$this->curLineY`, `$this->curLineWidth` obliczny jest offset początku zapisywanych danych. Z bufora linii `$this->currentLine` zastępowane są dane w ekranie bazowym.
 
-### createElement
+
+
+#### createElement
 
 | Widoczność |
 | ---------- |
@@ -1029,7 +1096,9 @@ Sprawdza istnienie atrybutów elementu `useAtasciFont`, `offsetX`, `offsetY`, `w
 
 Generowany element wpisywany jest do bufora linii `$this->currentLineDef`.
 
-### parseElement
+
+
+#### parseElement
 
 | Widoczność |
 | ---------- |
@@ -1049,7 +1118,9 @@ Parametr `$scoreEntry` zawiera dane jedenego wiersza tablicy wyników. Informacj
 
 Do metody przekazywany jest też przypisana do elementu etykieta (parametr `$label`)
 
-### makeImage
+
+
+#### makeImage
 
 | Widoczność |
 | ---------- |
@@ -1070,7 +1141,7 @@ Jeżeli nie zostanie podany parametr `$imageFile`, metoda "wyrzuci" treść wyge
 
 
 
-### loadPalette
+#### loadPalette
 
 | Widoczność |
 | ---------- |
@@ -1086,7 +1157,7 @@ Paleta używana jest przy generowaniu obrazu PNG (metoda `$this->makeImage()`)
 
 
 
-### setLayoutColors
+#### setLayoutColors
 
 | Widoczność |
 | ---------- |
@@ -1098,7 +1169,7 @@ Zwraca wartość logiczną `true`, jeżeli rejestry zostały ustawione. W przeci
 
 
 
-### getLayoutColorsData
+#### getLayoutColorsData
 
 | Widoczność |
 | ---------- |
@@ -1110,7 +1181,7 @@ Ilość danych w bloku wynosi 5 bajtów.
 
 
 
-### getLayoutInfo
+#### getLayoutInfo
 
 | Widoczność |
 | ---------- |
@@ -1147,6 +1218,8 @@ Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layout
 
 Ścieżka do plików konfiguracyjnych użytkowników.
 
+
+
 #### `DEFAULT_CONFIG_PATH`
 
 | Widoczność | Typ    | Wartość              |
@@ -1154,6 +1227,8 @@ Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layout
 | public     | string | `./default_configs/` |
 
 Ścieżka do domyślnych plików konfiguracyjnych.
+
+
 
 #### `DEFAULT_CONFIG_FILE`
 
@@ -1165,6 +1240,8 @@ Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layout
 
 Nazwa domyślnego pliku konfiguracyjnego.
 
+
+
 #### `CONFIG_FILE_EXTENTION`
 
 | Widoczność | Typ    | Wartość |
@@ -1174,6 +1251,8 @@ Nazwa domyślnego pliku konfiguracyjnego.
 =".json";
 
 Rozszerzenie pliku konfiguracyjnego.
+
+
 
 #### `CONFIG_LAYOUTS_DEFAULT`
 
