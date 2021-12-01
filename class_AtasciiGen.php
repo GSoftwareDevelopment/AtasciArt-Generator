@@ -413,19 +413,15 @@ class AtasciiGen {
 			}
 		}
 
-//		$w = imagesx($fnt);
-//    $h = imagesy($fnt);
-
+		// get RGB values for registers
 		$col709=$this->palette[$this->colorReg['709']];
 		$col710=$this->palette[$this->colorReg['710']];
 
-//		$index710 = imagecolorallocatealpha($fnt, $col710[0], $col710[1], $col710[2], 1);
-//		$index709 = imagecolorallocatealpha($fnt, $col709[0], $col709[1], $col709[2], 1);
-
+		// create new colors
 		$col[0] = imagecolorallocatealpha($fnt, $col710[0], $col710[1], $col710[2], 1);
 		$col[1] = imagecolorallocatealpha($fnt, $col709[0], $col709[1], $col709[2], 1);
 
-// colorize only used characters
+		// colorize only used characters
 		foreach ($usedChars as $char=>$set) {
 			$xofs=($char & 0x1f)*$charW;
 			$yofs=($char >> 5)*$charH;
@@ -434,7 +430,6 @@ class AtasciiGen {
 			for($y=$yofs;$y<$yofs+$charH;$y++) {
 					for($x=$xofs;$x<$xofs+$charW;$x++) {
 							imagesetpixel ($fnt, $x, $y, $col[imagecolorat($fnt, $x, $y)]);
-		//            imagesetpixel ($fnt, $x, $y, (imagecolorat($fnt, $x, $y)===0)?$index710:$index709);
 					}
 			}
 		}
