@@ -494,30 +494,5 @@ class AtasciiGen {
 		}
 		return true;
 	}
-
-	public function getLayoutColorsData() {
-		$out="";
-		foreach ($this->colorReg as $colReg => $colVal) {
-			$out.=chr($colVal);
-		}
-		return $out;
-	}
-
-	public function getLayoutInfoData() {
-		$out="";
-		$graphMode=0;
-		$encode=0; // 0 - antic; 1 - atasci
-
-		$out.=chr($graphMode);
-		$out.=chr($encode);
-		$out.=chr($this->layoutData['width']);
-		$out.=chr($this->layoutData['height']);
-		$out.=$this->getLayoutColorsData();
-		$out.=leftStr(( !isset($this->params['title'] ) )?" ":$this->params['title'],40);
-		$out.=leftStr(( !isset($this->params['mode'] ) )?" ":$this->params['mode'],40);
-		$out.=leftStr(( !isset($this->config['author'] ) )?" ":$this->config['author'],40);
-
-		return $out;
-	}
 }
 ?>
