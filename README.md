@@ -1,5 +1,7 @@
 # High Score Cafe AtasciiArt Generator
 
+[TOC]
+
 
 
 ## Krótko, czym jest HSC
@@ -608,13 +610,13 @@ Atrybuty layoutu, definicje linii oraz ich elementów, pozostają takie same, ja
 
 
 
-## AtasciiFont
+# AtasciiFont
 
 **AtasciFont** to czcionki wykorzystujące zestaw znaków Atascii z małego ATARI.
 
 W połączeniu z **HSC AtasciiArt Generator** zwiększają one możliwości kreowania ekranów i można je wykorzystać w każdym aspekcie na jaki pozwala HSC AAG.
 
-### Dostępne czcionki
+## Dostępne czcionki
 
 Obecnie stworzonych jest 8 czcionek.
 
@@ -639,7 +641,7 @@ Zobacz [katalog podglądu czcionek](./AtasciiFonts/png_preview/), aby zobaczyć,
 
 
 
-### Jak korzystać z czcionek AtasciiFont w HSC AAG?
+## Jak korzystać z czcionek AtasciiFont w HSC AAG?
 
 Aby użyć czcionki **AtasciFont** w pliku konfiguracyjnym, należy w definicji elementu umieści atrybut `useAtasciiFont`. W jego parametrze należy podać nazwę pliku czcionki bez rozszerzenia `.json`, np.
 
@@ -674,7 +676,7 @@ Wszelkie atrybuty dostosowujące treść elementu są akceptowane dla **AtasciiF
 
 
 
-## Dla deweloperów
+# Dla deweloperów
 
 Na projekt HSC AAG składają się następujące katalogi i pliki:
 
@@ -697,11 +699,11 @@ Na projekt HSC AAG składają się następujące katalogi i pliki:
 
 
 
-### Budowa klasy `AtasciiGen`
+## Budowa klasy `AtasciiGen`
 
-#### Właściwości klasy
+### Właściwości klasy
 
-#####  `$confFN`
+###  `$confFN`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -709,7 +711,7 @@ Na projekt HSC AAG składają się następujące katalogi i pliki:
 
 Przechowuje nazwę otwartego pliku konfiguracyjnego.
 
-##### `$params`
+### `$params`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -721,7 +723,7 @@ Asocjacja odbywa się poprzez klucz i jego wartość, gdzie nazwa klucza jest id
 
 
 
-##### `$screenDef`
+### `$screenDef`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -729,7 +731,7 @@ Asocjacja odbywa się poprzez klucz i jego wartość, gdzie nazwa klucza jest id
 
 Zmienna przechowująca wygenerowany ekran w postaci ciągu znaków Atascii. Rozmiar ciągu ustalany jest na podstawie wartości przekazanych przez plik konfiguracyjny w atrybutach layoutu `width` i `height` i jest on równy iloczynowi tych atrybutów.
 
-##### `$config`
+### `$config`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -737,7 +739,7 @@ Zmienna przechowująca wygenerowany ekran w postaci ciągu znaków Atascii. Rozm
 
 Zawiera zdekodowany do referencyjnej tablicy asocjacyjnej plik konfiguracyjny JSON.
 
-##### `$schemes`
+### `$schemes`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -745,7 +747,7 @@ Zawiera zdekodowany do referencyjnej tablicy asocjacyjnej plik konfiguracyjny JS
 
 Referencja do obiektu `$config['linesScheme']` zawierająca definicje schematów linii.
 
-##### `$screenWidth` i `$screenHeight`;
+### `$screenWidth` i `$screenHeight`;
 
 | Widoczność | Typ     |
 | ---------- | ------- |
@@ -753,7 +755,7 @@ Referencja do obiektu `$config['linesScheme']` zawierająca definicje schematów
 
 Szerokość `$screenWidth` i wysokość `$screenHeight` generowanego ekranu. Wartości tych zmiennych ustalane są z definicji layoutu pliku konfiguracyjnego
 
-##### `$curLineX` i`$curLineY`
+### `$curLineX` i`$curLineY`
 
 | Widoczność | Typ     |
 | ---------- | ------- |
@@ -761,7 +763,7 @@ Szerokość `$screenWidth` i wysokość `$screenHeight` generowanego ekranu. War
 
 Zmienne zawierają położenie lewego górnego rogu (kolumnę `$curLineX` i wiersz `$curLineY`) aktualnie przetwarzanej linii definicji layoutu.
 
-##### `$curLineWidth` i `$curLineHeight`
+### `$curLineWidth` i `$curLineHeight`
 
 | Widoczność | Typ     |
 | ---------- | ------- |
@@ -769,7 +771,7 @@ Zmienne zawierają położenie lewego górnego rogu (kolumnę `$curLineX` i wier
 
 Zawierają wymiary (szerokość `$curLineWidth` i wysokość `$curLineHeight`) aktualnie przetwarzanej linii definicji layoutu.
 
-##### `$currentLineData`
+### `$currentLineData`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -781,7 +783,7 @@ Jego organizacja jest liniowa i może zawierać więcej niż jedną linię, któ
 
 W rezultacie, rozmiar bufora to iloczyn szerokości i wysokości definiowanej linii.
 
-##### `$elParams`
+### `$elParams`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -791,7 +793,7 @@ Zawiera atrybuty aktualnie przetwarzanego elementu definicji linii.
 
 Jest to tablica asocjacyjna, której kluczem są nazwy atrybutów, a wartości ich parametrem.
 
-##### `$palette`
+### `$palette`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -811,7 +813,7 @@ Składa się z 256 indeksów w których są zapisane wartości RGB dla każdego 
 
 
 
-##### `$colorReg`
+### `$colorReg`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -823,9 +825,9 @@ Tablic ustawiana jest przez metodę `$this->getLayoutColorsData()` a ta, wywoły
 
 
 
-#### Metody klasy
+### Metody klasy
 
-#####  __construct
+####  __construct
 
 | Widoczność |
 | ---------- |
@@ -839,7 +841,7 @@ Konstruktor, wczytujący i dekodujący plik konfiguracyjny w formacie JSON. W pr
 
 Ustala też tablicę layoutów oraz schematów linii.
 
-##### getScoreboardEntry
+#### getScoreboardEntry
 
 | Widoczność |
 | ---------- |
@@ -853,7 +855,7 @@ Metoda którą trzeba nadpisać poprzez rozszerzenie klasy `AtasciiGen`. Jej wyw
 
 Funkcja jaką pełni to, pobieranie pojedynczego wyniki z tablicy wyników.
 
-##### getScreenDataFromLayout
+### getScreenDataFromLayout
 
 | Widoczność |
 | ---------- |
@@ -863,7 +865,7 @@ Metoda generująca ekran bazowy na podstawie atrybutów definicji layoutu `scree
 
 `screenData` może być ciągiem znaków lub tablicą ciągów znaków. Treść ciągów to 8-bitowe wartości zapisane w systemie szesnastkowym opisujące znak po znaku (w jednym z dwóch standardów ATASCI lub ANTIC) ekran bazowy. 
 
-##### rangeCheck
+### rangeCheck
 
 | Widoczność |
 | ---------- |
@@ -880,7 +882,9 @@ Metoda do kontroli zakresu wartości liczbowej, przekazywanej w parametrze `$val
 
 Metoda generuje wyjątek w przypadku przekroczenia zakresu, a treść tego wyjątku jest podawana w parametrze `$errMsg`. Do treści wyjątku "doklejana" jest informacja o oczekiwanym zakresie.
 
-##### checkExist
+
+
+### checkExist
 
 | Widoczność |
 | ---------- |
@@ -905,7 +909,7 @@ Może reagować na dwa sposoby:
 
 
 
-##### parseLayoutBefore
+### parseLayoutBefore
 
 | Widoczność |
 | ---------- |
@@ -923,7 +927,7 @@ Sprawdza istnienie atrybutów `width`, `height`,`screenData`,`screenFill` w prze
 
 
 
-##### buildLineSchema
+### buildLineSch#ema
 
 | Widoczność |
 | ---------- |
@@ -941,7 +945,7 @@ Brak definicji schematu w sekcji `lineSchemes` spowoduje wywołanie wyjątku o t
 
 
 
-##### parseLineBefore
+### parseLineBefore
 
 | Widoczność |
 | ---------- |
@@ -957,7 +961,7 @@ Sprawdza i ustawia właściwości dla generowanej linii. Atrybuty testowane są 
 
 Metoda wywoływana jest tuż przed generowaniem elementów.
 
-##### parseLineAfter
+### parseLineAfter
 
 | Widoczność |
 | ---------- |
@@ -974,7 +978,7 @@ Przekazane w parametrach metody zmienne referencyjne `$layoutData` oraz `$curren
 
 Metoda wywoływana jest po skończeniu przetwarzania elementów zawartych w definicji linii.
 
-##### generate
+### generate
 
 | Widoczność |
 | ---------- |
@@ -1009,7 +1013,7 @@ flowchart TB
 
 Każda wygenerowana linia jest wpisywana w bazowy ekran `$this->screenDef`. Na podstawie zmiennych `$this->curLineX`, `$this->curLineY`, `$this->curLineWidth` obliczny jest offset początku zapisywanych danych. Z bufora linii `$this->currentLine` zastępowane są dane w ekranie bazowym.
 
-##### createElement
+### createElement
 
 | Widoczność |
 | ---------- |
@@ -1025,7 +1029,7 @@ Sprawdza istnienie atrybutów elementu `useAtasciFont`, `offsetX`, `offsetY`, `w
 
 Generowany element wpisywany jest do bufora linii `$this->currentLineDef`.
 
-##### parseElement
+### parseElement
 
 | Widoczność |
 | ---------- |
@@ -1045,7 +1049,7 @@ Parametr `$scoreEntry` zawiera dane jedenego wiersza tablicy wyników. Informacj
 
 Do metody przekazywany jest też przypisana do elementu etykieta (parametr `$label`)
 
-##### makeImage
+### makeImage
 
 | Widoczność |
 | ---------- |
@@ -1066,7 +1070,7 @@ Jeżeli nie zostanie podany parametr `$imageFile`, metoda "wyrzuci" treść wyge
 
 
 
-##### loadPalette
+### loadPalette
 
 | Widoczność |
 | ---------- |
@@ -1082,7 +1086,7 @@ Paleta używana jest przy generowaniu obrazu PNG (metoda `$this->makeImage()`)
 
 
 
-##### setLayoutColors
+### setLayoutColors
 
 | Widoczność |
 | ---------- |
@@ -1094,7 +1098,7 @@ Zwraca wartość logiczną `true`, jeżeli rejestry zostały ustawione. W przeci
 
 
 
-##### getLayoutColorsData
+### getLayoutColorsData
 
 | Widoczność |
 | ---------- |
@@ -1106,7 +1110,7 @@ Ilość danych w bloku wynosi 5 bajtów.
 
 
 
-##### getLayoutInfo
+### getLayoutInfo
 
 | Widoczność |
 | ---------- |
@@ -1129,13 +1133,13 @@ Metoda generuje block danych (ciąg znaków), zawierający informacje dotyczące
 
 
 
-### Rozszerzona klasa `HSCGenerator`
+## Rozszerzona klasa `HSCGenerator`
 
 Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layoutów czyli, pozwala tworzyć w jednym pliku konfiguracyjnym, wiele definicji ekranów.
 
-#### Stałe klasy
+### Stałe klasy
 
-##### `USER_CONFIG_PATH`
+#### `USER_CONFIG_PATH`
 
 | Widoczność | Typ    | Wartość            |
 | ---------- | ------ | ------------------ |
@@ -1143,7 +1147,7 @@ Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layout
 
 Ścieżka do plików konfiguracyjnych użytkowników.
 
-##### `DEFAULT_CONFIG_PATH`
+#### `DEFAULT_CONFIG_PATH`
 
 | Widoczność | Typ    | Wartość              |
 | ---------- | ------ | -------------------- |
@@ -1151,7 +1155,7 @@ Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layout
 
 Ścieżka do domyślnych plików konfiguracyjnych.
 
-##### `DEFAULT_CONFIG_FILE`
+#### `DEFAULT_CONFIG_FILE`
 
 | Widoczność | Typ    | Wartość    |
 | ---------- | ------ | ---------- |
@@ -1161,7 +1165,7 @@ Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layout
 
 Nazwa domyślnego pliku konfiguracyjnego.
 
-##### `CONFIG_FILE_EXTENTION`
+#### `CONFIG_FILE_EXTENTION`
 
 | Widoczność | Typ    | Wartość |
 | ---------- | ------ | ------- |
@@ -1171,7 +1175,7 @@ Nazwa domyślnego pliku konfiguracyjnego.
 
 Rozszerzenie pliku konfiguracyjnego.
 
-##### `CONFIG_LAYOUTS_DEFAULT`
+#### `CONFIG_LAYOUTS_DEFAULT`
 
 | Widoczność | Typ    | Wartość   |
 | ---------- | ------ | --------- |
@@ -1181,9 +1185,9 @@ Nazwa domyślnego ekranu
 
 
 
-#### Właściwości klasy
+### Właściwości klasy
 
-##### `$gameID`
+#### `$gameID`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -1195,7 +1199,7 @@ Na jego podstawie tworzona jest nazwa pliku, który jest wyszukiwany w ścieżce
 
 
 
-##### `$layoutID`
+#### `$layoutID`
 
 | Widoczność | Typ    |
 | ---------- | ------ |
@@ -1205,7 +1209,7 @@ Identyfikator sub layoutu.
 
 
 
-##### `$scoreboard`
+#### `$scoreboard`
 
 | Widoczność | Typ   |
 | ---------- | ----- |
@@ -1215,9 +1219,9 @@ Zmienna tablicowa, zwierająca tablicę wyników pobrną metodą `fetchScoreboar
 
 
 
-#### Metody klasy
+### Metody klasy
 
-##### public _construct
+#### public _construct
 
 | Widoczność |
 | ---------- |
@@ -1238,13 +1242,13 @@ W przypadku nieznalezienia identyfikatora `$layoutID` konstruktor zwraca wyjąte
 
 
 
-##### public fetchScoreboardFromDB
+#### public fetchScoreboardFromDB
 
 Metoda pobierająca tablicę wyników z bazy danych. Wywoływana jest z poziomu konstruktora.
 
 
 
-##### public getScoreboardEntry
+#### public getScoreboardEntry
 
 | Widoczność |
 | ---------- |
@@ -1277,7 +1281,7 @@ return [
 
 
 
-##### generate
+#### generate
 
 | Widoczność |
 | ---------- |
@@ -1289,7 +1293,7 @@ Dodatkowo sprawdza i ustawia wybrany sub layout przed wywołanie nadrzędnej met
 
 
 
-##### getLayoutsList
+#### getLayoutsList
 
 | Widoczność |
 | ---------- |
@@ -1305,7 +1309,7 @@ Informacje zwracane w pliku JSON, są tablicą asocjacyjną, gdzie klucz odpowia
 
 
 
-### Przekazywanie parametrów do HSC AAG
+## Przekazywanie parametrów do HSC AAG
 
 Do skryptu można przekazywać parametry. Aby to uczynić, należy po zainicjowaniu nowej instancji `AtasciiGen` ale przed wygenerowanie ekranu dodać do zmiennej tablicowej `params` instanji wartości, np.
 
@@ -1341,7 +1345,7 @@ $gen->generate();
 
 W takim przypadku, parametry będą dostępne pod nazwami `line1`,`line2`,`line3`.
 
-### Tworzenie obrazów
+## Tworzenie obrazów
 
 TODO
 
@@ -1349,15 +1353,15 @@ TODO
 
 
 
-# Podziękowania
+## Podziękowania
 
 Chciałem tu szczególnie podziękować osobom które wspierały ten projekt. Bez nich, prawdopodobnie nic by z niego nie było.
 
-## XXL
+### XXL
 
 Twórca serwisu **High Score Cafe**. Cierpliwie wdraża każdą moją aktualizację. Wspiera w utrzymaniu rozszerzenia oraz podaje świetne pomysły.
 
-## KAZ
+### KAZ
 
 Twórca serwisu **AtariOnLine**. Pomocna dusza ;) Udzielił dostępu do serwisu, celem utworzenia artykułu o HSC. Dostarcza nie lada emocji, widząc ciekawe rzeczy (m.in. HSC AAG) - to budujące!
 
