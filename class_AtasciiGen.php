@@ -1,5 +1,5 @@
 <?
-include('./_constants.php');
+require_once('./_constants.php');
 require_once('./_polyfill.php');
 require_once('./_string_helpers.php');
 require_once('./class_AtasciiFont.php');
