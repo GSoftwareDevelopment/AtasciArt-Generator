@@ -908,9 +908,14 @@ Ustala też tablicę layoutów oraz schematów linii.
 | -------- | ------- | ---------------- |
 | `$place` | integer | brak             |
 
-Metoda którą trzeba nadpisać poprzez rozszerzenie klasy `AtasciiGen`. Jej wywołanie wyrzuca wyjątek.
-
 Funkcja jaką pełni to, pobieranie pojedynczego wyniki z tablicy wyników.
+
+---
+
+**Wywołanie bez implementacji powoduje "wyrzucenie" wyjątku!** 
+**Musi być zaimplementowana poprzez rozszerzenie klasy `AtasciiGen`.**  Patrz [Przyklad implementacji](#Przykład-implementacji)
+
+----
 
 
 
@@ -1169,42 +1174,7 @@ Zwraca wartość logiczną `true`, jeżeli rejestry zostały ustawione. W przeci
 
 
 
-#### getLayoutColorsData
-
-| Widoczność |
-| ---------- |
-| public     |
-
-Metoda generuje block danych (ciąg znaków), zawierający wartości zdefiniowanych w atrybucie `colors` wartości rejestrów kolorów (jeden bajt/znak=jeden rejestr).
-
-Ilość danych w bloku wynosi 5 bajtów.
-
-
-
-#### getLayoutInfo
-
-| Widoczność |
-| ---------- |
-| public     |
-
-Metoda generuje block danych (ciąg znaków), zawierający informacje dotyczące layoutu.
-
-| offset | typ                  | opis                                                |
-| ------ | -------------------- | --------------------------------------------------- |
-| 0      | byte                 | rodzaj wykorzystanego trybu graficznego (rozwojowa) |
-| 1      | byte                 | typ zastosowanego kodowania ekranu wynikowego       |
-| 2      | byte                 | szerokość definiowanego ekranu (w bajtach)          |
-| 3      | byte                 | j.w. tylko wysokość (w bajtach)                     |
-| 4      | array[0..4] of byte  | dane rejestrów kolorów                              |
-| 9      | array[0..39] of char | nazwa gry (kodowanie ASCII)                         |
-| 49     | array[0..39] of char | typ rozgrywki (kodowanie ASCII)                     |
-| 89     | array[0..39] of char | autor pliku konfiguracyjnego                        |
-
-Łącznie długość bloku wynosi 130 bajtów.
-
-
-
-## Rozszerzona klasa `HSCGenerator`
+## Rozszerzona klasa `MultiAtasciiGen`
 
 Rozszerza podstawową klasę `AtasciiArt` o możliwość definiowania sub layoutów czyli, pozwala tworzyć w jednym pliku konfiguracyjnym, wiele definicji ekranów.
 
@@ -1300,7 +1270,7 @@ Zmienna tablicowa, zwierająca tablicę wyników pobrną metodą `fetchScoreboar
 
 ### Metody klasy
 
-#### public _construct
+#### _construct
 
 | Widoczność |
 | ---------- |
@@ -1321,42 +1291,20 @@ W przypadku nieznalezienia identyfikatora `$layoutID` konstruktor zwraca wyjąte
 
 
 
-#### public fetchScoreboardFromDB
-
-Metoda pobierająca tablicę wyników z bazy danych. Wywoływana jest z poziomu konstruktora.
-
-
-
-#### public getScoreboardEntry
+#### fetchScoreboardFromDB
 
 | Widoczność |
 | ---------- |
 | public     |
 
-| parametr | type | wartość domyślna |
-| -------- | ---- | ---------------- |
-| `$place` | int  | brak             |
+Metoda pobierająca tablicę wyników z bazy danych. Wywoływana jest z poziomu konstruktora.
 
-Metoda pobierająca jeden wpis z tablicy wyników. Parametr `$place` zawiera miejsce w tablicy wyników liczone od 1.
+---
 
-Metoda MUSI zwrócić tablicę asocjacyjną o kluczach:
+**Wywołanie bez implementacji powoduje "wyrzucenie" wyjątku!** 
+**Musi być zaimplementowana poprzez rozszerzenie klasy `MultiAtasciiGen`.**  Patrz [Przyklad implementacji](#Przykład-implementacji)
 
-| nazwa klucza | typ wartości |
-| ------------ | ------------ |
-| `place`      | int          |
-| `nick`       | string       |
-| `score`      | int          |
-| `date`       | int          |
-
-np.
-
-~~~php
-return [
-	"place"=>$place,
-	"nick"=>$this->scoreboard[$place-1]["nick"],
-	"score"=>$this->scoreboard[$place-1]["score"]
-	];
-~~~
+----
 
 
 
@@ -1369,6 +1317,41 @@ return [
 Podobnie jak metoda nadrzęda, generuje ekran na podstawie danych z wczytanego pliku koniguracyjnego.
 
 Dodatkowo sprawdza i ustawia wybrany sub layout przed wywołanie nadrzędnej metody `parent::generate()`.
+
+
+
+#### getLayoutColorsData
+
+| Widoczność |
+| ---------- |
+| public     |
+
+Metoda generuje block danych (ciąg znaków), zawierający wartości zdefiniowanych w atrybucie `colors` wartości rejestrów kolorów (jeden bajt/znak=jeden rejestr).
+
+Ilość danych w bloku wynosi 5 bajtów.
+
+
+
+#### getLayoutInfo
+
+| Widoczność |
+| ---------- |
+| public     |
+
+Metoda generuje block danych (ciąg znaków), zawierający informacje dotyczące layoutu.
+
+| offset | typ                  | opis                                                |
+| ------ | -------------------- | --------------------------------------------------- |
+| 0      | byte                 | rodzaj wykorzystanego trybu graficznego (rozwojowa) |
+| 1      | byte                 | typ zastosowanego kodowania ekranu wynikowego       |
+| 2      | byte                 | szerokość definiowanego ekranu (w bajtach)          |
+| 3      | byte                 | j.w. tylko wysokość (w bajtach)                     |
+| 4      | array[0..4] of byte  | dane rejestrów kolorów                              |
+| 9      | array[0..39] of char | nazwa gry (kodowanie ASCII)                         |
+| 49     | array[0..39] of char | typ rozgrywki (kodowanie ASCII)                     |
+| 89     | array[0..39] of char | autor pliku konfiguracyjnego                        |
+
+Łącznie długość bloku wynosi 130 bajtów.
 
 
 
