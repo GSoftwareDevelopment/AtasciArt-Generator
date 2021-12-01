@@ -1,5 +1,5 @@
 <?
-include('./class_HSCGenerator.php'); // class implementation - this is required to use
+require_once('./example_implementation.php'); // class implementation - this is required to use
 
 //
 // Run
@@ -10,7 +10,7 @@ try {
 // for default layout of dedicated config file.
 // If the game has no dedicated configuration file
 // default configuration file is specified in HSCGenerator::DEFAULT_CONFIG_FILE
-	$gen=new HSCGenerator("","1");
+	$gen=new HSCGenerator("1","1");
 
 // for specified layout (name 'game') of dedicated config file
 //	$gen=new HSCGenerator(109,'game');
@@ -32,14 +32,16 @@ try {
 	$gen->generate();
 
 // the following line, takes the color register settings (708-712) and
-//  puts them in a text string (one byte/character=one register)
+// puts them in a text string (one byte/character=one register)
 	echo $gen->getLayoutColorsData().PHP_EOL;
 	echo $gen->getLayoutInfoData().PHP_EOL;
 	echo $gen->getLayoutsList().PHP_EOL;
 
 // Make PNG image
 // by default, use 16x16 character set font
+//	$start=microtime(true);
 	$gen->makeImage('test.png');
+// echo microtime(true)-$start;
 
 // You can set, font file to use
 // as the secound parameter, specifie font image to use (only PNG)
