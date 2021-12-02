@@ -65,7 +65,7 @@ Ogólny zarys tej sekcji przedstawia poniższy kod:
 ```JSON
 {
     atributes,
-    lineSchemes,
+    lineSchemas,
     layout,
     layouts
 }
@@ -91,7 +91,7 @@ Definiuje autora pliku
 
 #### `usePalette`
 
-Ustawia (globalnie) użytą paletę podczas generowania obrazu PNG 
+Ustawia (globalnie) użytą paletę podczas generowania obrazu PNG
 
 Dostępne są palety:
 
@@ -114,9 +114,9 @@ Dostępne są palety:
 
 ### Sekcje
 
-#### `lineSchemes`
+#### `lineSchemas`
 
-Zawiera definicje schematów generowanych linii, patrz [Sekcja `lineSchemes' - Schematy definicji linii](#Sekcja-lineSchemes---Schematy-definicji-linii)
+Zawiera definicje schematów generowanych linii, patrz [Sekcja `lineSchemas' - Schematy definicji linii](#Sekcja-lineSchemes---Schematy-definicji-linii)
 
 Ta sekcja nie jest wymagana.
 
@@ -178,7 +178,7 @@ Powyższy przykład, przedstawia schemat definicji layoutu (ekranu). W jego skł
 
 #### Atrybuty wymagane
 
-##### `width`, `height` 
+##### `width`, `height`
 
 Okresla szerokość i wysokość całkowitą generowanego ekranu w znakach
 
@@ -194,7 +194,7 @@ Wartość `height` od 1 do 30.
 
 
 
-##### `lines` 
+##### `lines`
 
 Tablica obiektów opisująca generowane linie (patrz [Sekcja `lines - Definicje linii`](#Sekcja-lines---Definicje-linii))
 
@@ -202,7 +202,7 @@ Tablica obiektów opisująca generowane linie (patrz [Sekcja `lines - Definicje 
 
 #### Opcjonalne atrybuty
 
-##### `name` 
+##### `name`
 
 Nazwa dla layoutu.
 
@@ -214,19 +214,19 @@ Twórca layoutu.
 
 
 
-##### `colors` 
+##### `colors`
 
 Tablica reprezentująca ustawienia kolorów dla wartości rejestrów kolorów ATARI (od 708 do 712)
 
 
 
-##### `usePalette` 
+##### `usePalette`
 
 Ustawia paletę kolorów dla generowanego obrazu PNG.  Jezeli atrybut nie jest określony, zastosowana zostanie paleta zdefiniowana w głównej sekcji pliku konfiguracyjnego.
 
 
 
-##### `encodeLinesAs` 
+##### `encodeAs`
 
 Określa sposób wyjściowego kodowania treści generowanych linii
 
@@ -244,7 +244,7 @@ Domyślna wartość: `antic`
 
 
 
-##### `screenData` 
+##### `screenData`
 
 Tablica ciągów heksadecymalnych.
 
@@ -253,7 +253,7 @@ Atrybut ten zawiera opis ekranu bazowego. Standardowo można zapisać cały ekra
 ```JSON
 ...
 layout:{
-    screenData:["0049494949494949494949494949494949494949494949494949494949494949494949494949490049004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C494C00D9C9CF5980D580D9C9C...
+    "screenData":["0049494949494949494949494949494949494949494949494949494949494949494949494949490049004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C494C00D9C9CF5980D580D9C9C...
 0000000000000000000000000000000000000000000000000000000000000000000494C494C494949494949494949494949494949494949494949494949494949494949494949494949004C00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"]
 }
 ```
@@ -262,14 +262,14 @@ Jednak trudno się odnieść do tak ułożonych danych. Można sobie trochę pom
 
 ```json
 "screenData": [
-"00494949494949494949494949494949494949494949494949494949494949494949494949494900",
-"49004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00",
-"494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C",
-...
-"494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
-"494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
-"494C494949494949494949494949494949494949494949494949494949494949494949494949004C",
-"00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"
+    "00494949494949494949494949494949494949494949494949494949494949494949494949494900",
+    "49004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00",
+    "494C004955550049554F0055550055554F4955554F49554F495555000000494F0049554F0000494C",
+    ...
+    "494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
+    "494C000000000000000000000000000000000000000000000000000000000000000000000000494C",
+    "494C494949494949494949494949494949494949494949494949494949494949494949494949004C",
+	"00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"
 ]
 ```
 
@@ -293,7 +293,7 @@ W sekcji tej, definiowane są też elementy wchodzące w skład linii.
 
 #### Atrybuty wymagane
 
-##### `x` i `y` 
+##### `x` i `y`
 
 Określają początkowe położenie linii w ekranie bazowym
 
@@ -301,11 +301,13 @@ Określają początkowe położenie linii w ekranie bazowym
 
 #### Opcjonalne atrybuty
 
-##### `width` oraz `height` 
+##### `width` oraz `height`
 
 Definiuje szerokość i wysokość linii.
 
 Domyślne wartości to: `height` = 1. Jeśli chodzi o `width` to ta wartość domyślnie dobierana jest na podstawie różnicy szerkości generowanego ekranu, a wartości X połoźenia linii.
+
+
 
 ##### `invert`
 
@@ -327,10 +329,10 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu obiektu opisującego ge
      "y": 1,
      "width": 20,
      "element_type": {
-      {element_attributes}
+      element_attributes
      },
      "element_type": {
-      {element_attributes}
+      element_attributes
      },...
     },...
    ]
@@ -343,19 +345,19 @@ Typ generowanego elementu zawarty jest w nazwie atrybutu obiektu opisującego ge
 
 ### Rodzaje elementów
 
-#### `place` 
+#### `place`
 
 Miejsce z tablicy wyników
 
-#### `nick` 
+#### `nick`
 
 Nazwę gracza (jego nick)
 
-#### `score` 
+#### `score`
 
 Osiągnięty wynik
 
-#### `date` 
+#### `date`
 
 Data rejestracji wyniku
 
@@ -363,7 +365,7 @@ Data rejestracji wyniku
 
 Generuje dowolny tekst
 
-#### `genTime` 
+#### `genTime`
 
 Generuje czas utworzenia ekranu
 
@@ -401,7 +403,7 @@ Wartości domyślne dla obu atrybutów wynoszą 0 (zero)
 
 Ustalają szerokość i wysokość generowanego elementu (w znakach)
 
-Wartościami domyślnymi dla atrybutów `width` i `height` są, szerokość i wysokość definiowanej linii. 
+Wartościami domyślnymi dla atrybutów `width` i `height` są, szerokość i wysokość definiowanej linii.
 
 
 
@@ -419,7 +421,7 @@ Wartość `right` jest domyślna.
 
 Określna znak, jakim będzie wypełniony element na całej jego szerokości.
 
-Domyślną wartością jest znak #32 (spacja)
+Domyślną wartością jest znak spacji
 
 
 
@@ -441,7 +443,7 @@ Domyślnie akceptowane są wszystkie znaki.
 
 
 
-#### `replaceOutsideChars` 
+#### `replaceOutsideChars`
 
 Ten atrybut określa znak, jaki będzie wstawiany w przypadku, gdy znak generowanego elementu nie należy do zakresu określonego w atrybucie `limitChars`.
 
@@ -449,13 +451,13 @@ Domyślną wartością jest #32 (spacja)
 
 
 
-#### `invert` 
+#### `invert`
 
 Działa tak samo jak atrybut `invert` w sekcji `layout` z tą różnicą, że stosowany jest tylko do generowanego elementu.
 
 
 
-#### `useAtasciiFont` 
+#### `useAtasciiFont`
 
 Generuje treść elementu z użyciem **AtasciiFont** (patrz dział [AtasciiFont](#AtasciiFont))
 
@@ -491,7 +493,7 @@ Spośród wszystkich elementów można wybrać takie, które mają przypisane do
 
 - `text`
 
-  
+
 
 #### Element `date`
 
@@ -517,7 +519,7 @@ Patrz opis atrybutów elementu `date`
 
 ##### `content`
 
-Użyj atrybutu `content` celem, określenia treści generowanego tekstu. Treść jest automycznie przycinana z obu stron pod kątem białych znaków.
+Użyj atrybutu `content` celem, określenia treści generowanego tekstu.
 
 ```JSON
 ...
@@ -543,7 +545,7 @@ W treści atrybutu, może być użyty parametr, np:
 ```JSON
 ...
 "text":{
-    content:"%id"
+    "content":"%id"
 }
 ...
 ```
@@ -585,11 +587,11 @@ Użycie schematu jest banalnie proste. W definicji linii wyniku wstawiamy atrybu
    "width": 20,
    "place": {
     "shift": 1,
-    "width": 2
-    "align": right
+    "width": 2,
+    "align": "right"
    },
    ...
-   "invertLine": false
+   "invert": false
   }
  ],
  "layouts": {
@@ -699,7 +701,7 @@ Należy też pamiętać o dobraniu wysokości linii do wysokości czcionki, gdy�
 ```JSON
 ...
 "lines":{
-    height:3,
+    "height":3,
     "elements":{
         "text":{
             "content":"HELLO ATARIANS",
@@ -718,22 +720,24 @@ Wszelkie atrybuty dostosowujące treść elementu są akceptowane dla **AtasciiF
 
 Na projekt HSC AAG składają się następujące katalogi i pliki:
 
-| Nazwa                     | Opis                                                         |
-| ------------------------- | ------------------------------------------------------------ |
-| `/AtasciiFonts`           | definicje czcionek **AtasciiFont** oraz ich źródła i obrazy poglądowe |
-| `/config_files_examples`  | przykłady i źródła plików konfiguracyjnych                   |
-| `/default_configs`        | katalog z definicjami domyślnych plików konfiguracyjnych     |
-| `/user_configs`           | zawiera pliki konfiguracyjne użytkowników                    |
-| `_constants.php`          | definicje stałych dla klasy `AtasciiGen`                     |
-| `_polyfill.php`           | funkcje zapewniające kompatybilność ze starszymi wersjami PHP |
-| `_string_helpers.php`     | funkcje pomocnicze do operowania na ciągach znaków           |
-| `class_AtasciiFont.php`   | klasa generująca tekst z użyciem czcionek **AtasciiFont**    |
-| `class_AtasciiGen.php`    | klasa bazowa, generująca ekrany **AtasciArt**                |
-| `class_HSCGenerator.php`  | rozszerzenie klasy bazowej, dostosowyujące do wymogów **HSC** |
-| `example-AtasciiFont.php` | przykład użycia klasy `AtasciiFont`                          |
-| `example.php`             | przykad użycia klasy `HSCGenerator`                          |
-| `atari_8.png`             | obraz z graficzną reprezentacją znaków Atascii (rozmiar piksela 1x1) |
-| `atari_16.png`            | j.w. (rozmiar piksela 2x2)                                   |
+| Nazwa                        | Opis                                                         |
+| ---------------------------- | ------------------------------------------------------------ |
+| `/AtasciiFonts`              | definicje czcionek **AtasciiFont** oraz ich źródła i obrazy poglądowe |
+| `/config_files_examples`     | przykłady i źródła plików konfiguracyjnych                   |
+| `/default_configs`           | katalog z definicjami domyślnych plików konfiguracyjnych     |
+| `/user_configs`              | zawiera pliki konfiguracyjne użytkowników                    |
+| `/palette`                   | pliki definicji palet kolorystycznych                        |
+| `_constants.php`             | definicje stałych dla klasy `AtasciiGen`                     |
+| `_polyfill.php`              | funkcje zapewniające kompatybilność ze starszymi wersjami PHP |
+| `_string_helpers.php`        | funkcje pomocnicze do operowania na ciągach znaków           |
+| `class_AtasciiFont.php`      | klasa generująca tekst z użyciem czcionek **AtasciiFont**    |
+| `class_AtasciiGen.php`       | klasa bazowa, generująca ekrany **AtasciArt**                |
+| `class_MultiAtasciiGen.php`  | rozszerzenie klasy bazowej, dające dostęp do definiowania sub layoutów |
+| `example-AtasciiFont.php`    | przykład użycia klasy `AtasciiFont`                          |
+| `example_implementation.php` | Klasa `ExampleGenerator`. Przykład implementacji klasy `MultiAtasciGen` |
+| `example.php`                | przykad użycia klasy `ExampleGenerator`                      |
+| `atari_8.png`                | obraz z graficzną reprezentacją znaków Atascii (rozmiar piksela 1x1) |
+| `atari_16.png`               | j.w. (rozmiar piksela 2x2)                                   |
 
 
 
@@ -913,7 +917,7 @@ Funkcja jaką pełni to, pobieranie pojedynczego wyniki z tablicy wyników.
 
 ---
 
-**Wywołanie bez implementacji powoduje "wyrzucenie" wyjątku!** 
+**Wywołanie bez implementacji powoduje "wyrzucenie" wyjątku!**
 **Musi być zaimplementowana poprzez rozszerzenie klasy `AtasciiGen`.**  Patrz [Przyklad implementacji](#Przykład-implementacji)
 
 ----
@@ -928,7 +932,7 @@ Funkcja jaką pełni to, pobieranie pojedynczego wyniki z tablicy wyników.
 
 Metoda generująca ekran bazowy na podstawie atrybutów definicji layoutu `screenData` oraz `screenFill`.
 
-`screenData` może być ciągiem znaków lub tablicą ciągów znaków. Treść ciągów to 8-bitowe wartości zapisane w systemie szesnastkowym opisujące znak po znaku (w jednym z dwóch standardów ATASCI lub ANTIC) ekran bazowy. 
+`screenData` może być ciągiem znaków lub tablicą ciągów znaków. Treść ciągów to 8-bitowe wartości zapisane w systemie szesnastkowym opisujące znak po znaku (w jednym z dwóch standardów ATASCI lub ANTIC) ekran bazowy.
 
 
 
@@ -972,7 +976,7 @@ $this>checkExist(@$this->config['name'], null);
 Może reagować na dwa sposoby:
 
 - generować wyjątek z komunikatem określonym w parametrze `$errMsg`. Ten sposób dostępny jest gdy, parametr `$default`
-- przypisywać wartość `$default`, jeżeli `$value` 
+- przypisywać wartość `$default`, jeżeli `$value`
 
 
 
@@ -1024,7 +1028,7 @@ Brak definicji schematu w sekcji `lineSchemes` spowoduje wywołanie wyjątku o t
 
 Metoda pomocnicza.
 
-Sprawdza i ustawia właściwości dla generowanej linii. Atrybuty testowane są w przekazanym do metody parametrze referencyjnym `$currentSchema`i są nimi: `x`, `y`, `width`, `height`, `fillChar`, `isEntry`. 
+Sprawdza i ustawia właściwości dla generowanej linii. Atrybuty testowane są w przekazanym do metody parametrze referencyjnym `$currentSchema`i są nimi: `x`, `y`, `width`, `height`, `fillChar`, `isEntry`.
 
 Metoda wywoływana jest tuż przed generowaniem elementów.
 
@@ -1072,14 +1076,14 @@ flowchart TB
 	H --> I[["parseLineAfter"]]
 	I --> J{"It is last line?"} -- No --> C
 	J --> K(END)
-	
+
 	click a' "#getLayoutColorsData"
 	click B "#parseLayoutBefore"
 	click D "#buildLineSchema"
 	click E "#parseLineBefore"
 	click G "#parseElement"
 	click I "#parseLineAfter"
-	
+
 ```
 
 Każda wygenerowana linia jest wpisywana w bazowy ekran `$this->screenDef`. Na podstawie zmiennych `$this->curLineX`, `$this->curLineY`, `$this->curLineWidth` obliczny jest offset początku zapisywanych danych. Z bufora linii `$this->currentLine` zastępowane są dane w ekranie bazowym.
@@ -1302,7 +1306,7 @@ Metoda pobierająca tablicę wyników z bazy danych. Wywoływana jest z poziomu 
 
 ---
 
-**Wywołanie bez implementacji powoduje "wyrzucenie" wyjątku!** 
+**Wywołanie bez implementacji powoduje "wyrzucenie" wyjątku!**
 **Musi być zaimplementowana poprzez rozszerzenie klasy `MultiAtasciiGen`.**  Patrz [Przyklad implementacji](#Przykład-implementacji)
 
 ----
