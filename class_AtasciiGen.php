@@ -33,13 +33,13 @@ class AtasciiGen {
 		$this->confFN=$fn;
 
 		// Optional: Check schemes definition
-		if (@$this->config[CONFIG_ELEMENTSCHAMES]) $this->schemes=&$this->config[CONFIG_ELEMENTSCHAMES];
+		if (@$this->config[SECTION_ELEMENTSCHAMES]) $this->schemes=&$this->config[SECTION_ELEMENTSCHAMES];
 		$this->usePalette=$this->checkExist(@$this->config[ATTR_USEPALETTE],DEFAULT_PALETTE_FILE);
 
 		// Checking the required configuration parameters
 		// Layouts definition is required
-		if (@!$this->config[CONFIG_LAYOUT]) throw new AGException("No layout defined");
-		$this->layoutData=&$this->config[CONFIG_LAYOUT];
+		if (@!$this->config[SECTION_LAYOUT]) throw new AGException("No layout defined");
+		$this->layoutData=&$this->config[SECTION_LAYOUT];
 	}
 
 	function getScoreboardEntry($place) {
@@ -54,7 +54,7 @@ class AtasciiGen {
 			if ( isset($this->params[$paramID]) ) {
 				$val=$this->params[$paramID];
 			} else {
-				$val="%param%";
+				$val="%PARAM%";
 			}
 		}
 		return $val;
@@ -94,19 +94,20 @@ class AtasciiGen {
 	// ...attributers of layout definition
 
 	private function getScreenDataFromLayout() {
-		if ( isset($this->layoutData[CONFIG_LAYOUTS_SCREENDATA]) ) {
-			$this->screenDef=hexString2Data($this->layoutData[CONFIG_LAYOUTS_SCREENDATA]);
+		if ( isset($this->layoutData[ATTR_SCREENDATA]) ) {
+			$this->screenDef=hexString2Data($this->layoutData[ATTR_SCREENDATA]);
 			$isScreenDefined=(strlen($this->screenDef)>0);
 		} else {
 			$isScreenDefined=false;
 		}
 
 		if (!$isScreenDefined) {
-			if ( isset($this->layoutData[CONFIG_SCREENFILL]) ) {
-				$ch=$this->layoutData[CONFIG_SCREENFILL];
-			}	else {
-			  $ch=chr(0);
-			}
+			$ch=$this->checkExist(
+				$this->parseValue(
+					$this->elParams[ATTR_SCREENFILL]
+				),chr(0)
+			);
+
 			$len=$this->screenWidth*$this->screenHeight;
 			$this->screenDef=str_pad("",$len,$ch);
 		}
@@ -116,10 +117,10 @@ class AtasciiGen {
 		// check required parameters for layout
 		if ( is_int($this->parseValue(@$layoutData[ATTR_WIDTH])) ) {
 			$this->screenWidth=$this->rangeCheck(
-				$this->checkExist($this->parseValue($this->layoutData[ATTR_WIDTH]),40),
+				$this->checkExist(@$this->parseValue(@$this->layoutData[ATTR_WIDTH]),40),
 				1,48,'Layout width is out of range.');
 		} else {
-			switch ( $this->parseValue($layoutData[ATTR_WIDTH]) ) {
+			switch ( $this->parseValue(@$layoutData[ATTR_WIDTH]) ) {
 				case 'narrow': $this->screenWidth=32; break;
 				case 'normal': $this->screenWidth=40; break;
 				case 'wide':   $this->screenWidth=48; break;
@@ -129,7 +130,7 @@ class AtasciiGen {
 		}
 		$this->usePalette=$this->checkExist(@$this->layoutData[ATTR_USEPALETTE],$this->usePalette);
 		$this->screenHeight=$this->rangeCheck(
-			$this->checkExist($this->parseValue($layoutData[ATTR_HEIGHT]),24),
+			$this->checkExist(@$this->parseValue(@$layoutData[ATTR_HEIGHT]),24),
 			1,30,'Layout height is out of range.');
 
 		// get optional screen data or screen fill character
@@ -188,11 +189,11 @@ class AtasciiGen {
 
 	protected function parseLineAfter(&$layoutData,&$currentSchema) {
 		// general parameters
-		if (@$this->parseValue($currentSchema[ATTR_INVERS])) { strInvert($this->currentLineData); }
+		if ($this->parseValue(@$currentSchema[ATTR_INVERS])) { strInvert($this->currentLineData); }
 
 		// global parameters
 		// Conversion of entry lines into ANTIC codes (if specified in the configuration)
-		switch ($this->parseValue($this->layoutData[CONFIG_LAYOUTS_ENCODEELEMENTAS])) {
+		switch ($this->parseValue(@$this->layoutData[ATTR_ENCODEAS])) {
 			case 'antic': strASCII2ANTIC($this->currentLineData); break;
 			default:
 		}
@@ -205,7 +206,7 @@ class AtasciiGen {
 		$this->curPlace=1;
 		$this->parseLayoutBefore($this->layoutData);
 
-		foreach ($this->layoutData[CONFIG_LAYOUT_LINES] as $lineIndex => $lineDef) {
+		foreach ($this->layoutData[SECTION_LINES] as $lineIndex => $lineDef) {
 			$currentSchema=$this->buildLineSchema($lineDef);
 
 			$this->parseLineBefore($currentSchema);
@@ -243,8 +244,8 @@ class AtasciiGen {
 //
 
 	private function createElement($val) {
-		if ( @($this->elParams[ATTR_USEATASCIFONT]) ) {
-			$fontName=$this->parseValue($this->elParams[ATTR_USEATASCIFONT]);
+		$fontName=$this->parseValue(@$this->elParams[ATTR_USEATASCIFONT]);
+		if ( $fontName!==null ) {
 			$AFnt=new AtasciiFont($fontName);
 			$useAtasciiFont=true;
 		} else {
@@ -281,14 +282,19 @@ class AtasciiGen {
 
 		if ( @($this->elParams[ATTR_LIMITCHAR]) ) {
 			$val=limitChars($val,$this->parseValue($this->elParams[ATTR_LIMITCHAR]),
-				isset($this->elParams[ATTR_REPLACEOUTSIDECHAR])
-					?$this->parseValue($this->elParams[ATTR_REPLACEOUTSIDECHAR])
-					:' ');
+				$this->checkExist(
+					$this->parseValue(
+						@$this->elParams[ATTR_REPLACEOUTSIDECHAR]
+					)," "
+				)
+			);
 		}
 
-		$fillChar=!isset($this->elParams[ATTR_FILLCHAR])
-			?' '
-			:$this->parseValue($this->elParams[ATTR_FILLCHAR]);
+		$fillChar=$this->checkExist(
+			$this->parseValue(
+				@$this->elParams[ATTR_FILLCHAR]
+			)," "
+		);
 
 		if ( $useAtasciiFont ) {
 			$textLines=$AFnt->makeText($val,ENCODE_ATASCII);
@@ -323,29 +329,28 @@ class AtasciiGen {
 	// content parsers
 
 	private function parseGenerationTime() {
-		if ( @($this->elParams[ATTR_FORMAT]) ) {
-			$format=$this->parseValue($this->elParams[ATTR_FORMAT]);
-		} else {
-			$format=DEFAULT_GENTIME_FORMAT;
-		}
+		$format=$this->checkExist(
+			$this->parseValue(
+				$this->elParams[ATTR_FORMAT]
+			),DEFAULT_GENTIME_FORMAT
+		);
 		return date($format);
 	}
 
 	private function parseText() {
-		if ( @($this->elParams[ATTR_CONTENT]) ) {
-			$val=$this->parseValue($this->elParams[ATTR_CONTENT]);
-			return $val;
-		} else {
-			return "";
-		}
+		return $this->checkExist(
+			$this->parseValue(
+				$this->elParams[ATTR_CONTENT]
+			),""
+		);
 	}
 
 	private function parseScore($val) {
-		if (isset($this->elParams[ATTR_SHOWSCOREAS])) {
-			$type=$this->parseValue($this->elParams[ATTR_SHOWSCOREAS]);
-		} else {
-			$type="score";
-		}
+		$type=$this->checkExist(
+			$this->parseValue(
+				$this->elParams[ATTR_SHOWSCOREAS]
+			),"score"
+		);
 
 		switch ( $type ) {
 			case 'score': return $val; break;
@@ -377,7 +382,7 @@ class AtasciiGen {
 					}
 					return formatTime($format,$seconds,$fraction);
 				} else {
-					return "#type#";
+					return "!TYPE!";
 				}
 			break;
 		}
@@ -385,13 +390,14 @@ class AtasciiGen {
 
 	private function parseDate($date) {
 		if ( is_int($date) ) {
-			if ( isset($this->elParams[ATTR_FORMAT]) ) {
-				return date($this->parseValue($this->elParams[ATTR_FORMAT]),$date);
-			} else {
-				return date(DEFAULT_DATEFORMAT,$date);
-			}
+			$format=$this->checkExist(
+				$this->parseValue(
+					$this->elParams[ATTR_FORMAT]
+				),DEFAULT_DATEFORMAT
+			);
+			return date($format,$date);
 		} else {
-			return "";
+			return "!TYPE!";
 		}
 	}
 
