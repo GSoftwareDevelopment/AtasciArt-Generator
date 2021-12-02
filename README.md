@@ -655,10 +655,11 @@ W połączeniu z **HSC AtasciiArt Generator** zwiększają one możliwości kreo
 
 ## Dostępne czcionki
 
-Obecnie stworzonych jest 8 czcionek.
+Obecnie stworzonych jest 9 czcionek.
 
 | Nazwa pliku        | Nazwa czcionki     | Rozmiar |                        Przykład                        |
 | ------------------ | ------------------ | :-----: | :----------------------------------------------------: |
+| 3x5                | Mini 3x5           |   2x3   |      <img src="imgs/3x5.png" style="zoom:50%;" />      |
 | cosmic-line-2.json | Cosmic SquareLined |   3x3   | <img src="imgs/cosmic-line-2.png" style="zoom:50%;" /> |
 | cosmic-line.json   | Cosmic Lined       |   3x4   |  <img src="imgs/cosmic-line.png" style="zoom:50%;" />  |
 | cosmic.json        | Cosmic             | 3(4)x3  |    <img src="imgs/cosmic.png" style="zoom:50%;" />     |
@@ -680,7 +681,7 @@ Zobacz [katalog podglądu czcionek](./AtasciiFonts/png_preview/), aby zobaczyć,
 
 ## Jak korzystać z czcionek AtasciiFont w HSC AAG?
 
-Aby użyć czcionki **AtasciFont** w pliku konfiguracyjnym, należy w definicji elementu umieści atrybut `useAtasciiFont`. W jego parametrze należy podać nazwę pliku czcionki bez rozszerzenia `.json`, np.
+Aby użyć czcionki **AtasciFont** w pliku konfiguracyjnym, należy w definicji elementu umieści atrybut `useAtasciiFont`. W jego parametrze należy podać nazwę pliku czcionki (bez rozszerzenia `.json`), np.
 
 ```JSON
 ...
