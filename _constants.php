@@ -1,16 +1,10 @@
 <?
 // config file sections and attributes
 // required section
-const CONFIG_LAYOUT="layout";
-const CONFIG_LAYOUT_LINES="lines";
+const SECTION_LAYOUT="layout";
+const SECTION_LINES="lines";
 // optional section
-const CONFIG_ELEMENTSCHAMES="lineSchemes";
-
-// layout section
-// attributes in layout section
-const CONFIG_LAYOUTS_SCREENDATA="screenData";
-const CONFIG_LAYOUTS_ENCODEELEMENTAS="encodeLinesAs";
-const CONFIG_SCREENFILL="screenFill";
+const SECTION_ELEMENTSCHAMES="lineSchemas";
 
 // default elements tags
 const ELEMENT_DATE="date";
@@ -21,6 +15,11 @@ const ELEMENT_SCORE="score";
 const ELEMENT_TEXT="text";
 // separator sign for element labeling
 const LABEL_SEPARATOR=".";
+
+// attributes in layout section
+const ATTR_SCREENDATA="screenData";
+const ATTR_ENCODEAS="encodeAs";
+const ATTR_SCREENFILL="screenFill";
 
 // required attributes, used in layers and elements section
 const ATTR_HEIGHT="height";
