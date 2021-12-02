@@ -1,9 +1,7 @@
 <?
 require_once('./class_MultiAtasciiGen.php');    // general AtasciGen class - required
 
-class HSCException extends AGException {}
-
-class HSCGenerator extends MultiAtasciiGen {
+class ExampleGenerator extends MultiAtasciiGen {
 
 	function fetchScoreboardFromDB() {
 		// here is place for fetchin scoreboard data from database

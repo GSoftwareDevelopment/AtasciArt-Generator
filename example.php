@@ -10,7 +10,7 @@ try {
 // for default layout of dedicated config file.
 // If the game has no dedicated configuration file
 // default configuration file is specified in HSCGenerator::DEFAULT_CONFIG_FILE
-	$gen=new HSCGenerator("1","1");
+	$gen=new ExampleGenerator("1","3");
 
 // for specified layout (name 'game') of dedicated config file
 //	$gen=new HSCGenerator(109,'game');
@@ -33,9 +33,25 @@ try {
 
 // the following line, takes the color register settings (708-712) and
 // puts them in a text string (one byte/character=one register)
-	echo $gen->getLayoutColorsData().PHP_EOL;
-	echo $gen->getLayoutInfoData().PHP_EOL;
-	echo $gen->getLayoutsList().PHP_EOL;
+// CAUTION! __MUST BE execute__ after generate screen.
+$colorsBlock=$gen->getLayoutColorsData();
+
+// Get information about current sub layout.
+// return: string block data.
+// Block data includes:
+// - graphics mode[1]
+// - encode[1]
+// - screen dimensions[2]
+// - colors[5]
+// - game title[40]
+// - game mode[40]
+// - sublayout author[40]
+	$infoBlock=$gen->getLayoutInfoData();
+// CAUTION! __MUST BE execute__ after generate screen.
+
+// take list of available sub layouts.
+// method return JSON string
+	$listBlock=$gen->getLayoutsList();
 
 // Make PNG image
 // by default, use 16x16 character set font
