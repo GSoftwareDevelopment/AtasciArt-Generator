@@ -73,7 +73,8 @@
 			"height": 9,
 			"text":{
 				"align": "center",
-				"useAtasciiFont": "square-slim",
+				"letterCase": "uppercase",
+				"useAtasciiFont": "3x5",
 				"content": "%title"
 			}
 		},
