@@ -1,7 +1,7 @@
 {
 	"name": "Default schemas for HSC",
 	"author": "PeBe for HSC",
-	"lineSchemes": {
+	"lineSchemas": {
 		"default": {
 			"x": 5,
 			"width": 30,
@@ -71,7 +71,7 @@
 			"x": 2,
 			"width": 36,
 			"height": 9,
-			"text":{
+			"text": {
 				"align": "center",
 				"letterCase": "uppercase",
 				"useAtasciiFont": "3x5",
@@ -82,7 +82,7 @@
 			"isEntry": false,
 			"x": 2,
 			"width": 36,
-			"text":{
+			"text": {
 				"align": "center",
 				"content": "%mode"
 			},
@@ -91,10 +91,10 @@
 	},
 	"layouts": {
 		"default": {
-			"name":"Default",
+			"name": "Default",
 			"width": 40,
 			"height": 24,
-			"encodeLinesAs": "antic",
+			"encodeAs": "antic",
 			"lines": [
 				{
 					"y": 4,
@@ -150,7 +150,7 @@
 					"x": 9,
 					"y": 23,
 					"width": 22,
-					"genTime":{
+					"genTime": {
 						"offsetX": 0,
 						"width": 22,
 						"align": "center",
@@ -186,8 +186,8 @@
 				"54524D524E4E524D4D524E4E524D4D524E4E524D4D524E4E524D4D524E4E524D4D524E4E524D5254"
 			]
 		},
-		"1":{
-			"name":"Adventure",
+		"1": {
+			"name": "Adventure",
 			"width": 40,
 			"height": 24,
 			"colors": [
@@ -197,12 +197,12 @@
 				212,
 				0
 			],
-			"encodeLinesAs": "antic",
-			"lines":[
+			"encodeAs": "antic",
+			"lines": [
 				{
 					"y": 4,
 					"useSchema": "title",
-					"text":{
+					"text": {
 						"useAtasciiFont": "handwrite"
 					}
 				},
@@ -257,7 +257,7 @@
 					"x": 6,
 					"y": 23,
 					"width": 28,
-					"genTime":{
+					"genTime": {
 						"offsetX": 0,
 						"width": 28,
 						"align": "center",
@@ -293,8 +293,8 @@
 				"80CB4E55CDCD554E4E55CDCD554E4E55CDCD554E4E55CDCD554E4E55CDCD554E4E55CDCD554ECC80"
 			]
 		},
-		"2":{
-			"name":"Race",
+		"2": {
+			"name": "Race",
 			"width": 40,
 			"height": 24,
 			"colors": [
@@ -304,8 +304,8 @@
 				0,
 				0
 			],
-			"encodeLinesAs": "antic",
-			"lines":[
+			"encodeAs": "antic",
+			"lines": [
 				{
 					"y": 2,
 					"height": 4,
@@ -362,7 +362,7 @@
 					"x": 9,
 					"y": 23,
 					"width": 22,
-					"genTime":{
+					"genTime": {
 						"offsetX": 0,
 						"width": 22,
 						"align": "center",
@@ -398,19 +398,19 @@
 				"00004C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C4C00"
 			]
 		},
-		"3":{
-			"name":"Cosmic",
+		"3": {
+			"name": "Cosmic",
 			"width": 40,
 			"height": 24,
-			"encodeLinesAs": "antic",
-			"lines":[
+			"encodeAs": "antic",
+			"lines": [
 				{
 					"x": 0,
 					"y": 1,
-					"width":40,
+					"width": 40,
 					"height": 3,
 					"useSchema": "title",
-					"text":{
+					"text": {
 						"useAtasciiFont": "cosmic-line-2",
 						"letterCase": "uppercase"
 					},
@@ -466,7 +466,7 @@
 					"x": 19,
 					"y": 23,
 					"width": 22,
-					"genTime":{
+					"genTime": {
 						"offsetX": 0,
 						"width": 21,
 						"align": "center",
@@ -502,7 +502,7 @@
 				"4E4E5555CDCDCD808080808080808080808080808080808080808080808080808080808080808080"
 			]
 		},
-		"!!!ERROR":{
+		"!!!ERROR": {
 			"unlisted": true,
 			"width": 40,
 			"height": 24,
@@ -513,20 +513,20 @@
 				0,
 				0
 			],
-			"encodeLinesAs": "antic",
-			"lines":[
+			"encodeAs": "antic",
+			"lines": [
 				{
-					"x":0,
-					"y":14,
+					"x": 0,
+					"y": 14,
 					"height": 8,
-					"text":{
-						"align":"center",
+					"text": {
+						"align": "center",
 						"useAtasciiFont": "square-slim",
-						"content":"Sorry\nGame not exist"
+						"content": "Sorry\nGame not exist"
 					}
 				}
 			],
-			"screenData":[
+			"screenData": [
 				"00000000000000000000000000000000000000000000000000000000000000000000000000000000",
 				"00000000000000000000000000000000000000000000000000000000000000000000000000000000",
 				"00000000000000000000000000000000000000000000000000000000000000000000000000000000",

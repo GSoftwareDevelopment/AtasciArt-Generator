@@ -2,7 +2,7 @@
 	"name": "AtasciiFont Test",
 	"author": "PeBe for HSC",
 	"layouts": {
-		"default":{
+		"default": {
 			"width": "normal",
 			"height": 24,
 			"colors": [
@@ -12,16 +12,16 @@
 				0,
 				0
 			],
-			"encodeLinesAs": "antic",
-			"lines":[
+			"encodeAs": "antic",
+			"lines": [
 				{
 					"x": 0,
 					"y": 10,
 					"height": 5,
-					"text":{
-						"align":"center",
-						"content":"ATARI RULEZ",
-						"useAtasciiFont":"square-slim"
+					"text": {
+						"align": "center",
+						"content": "ATARI RULEZ",
+						"useAtasciiFont": "square-slim"
 					}
 				}
 			]

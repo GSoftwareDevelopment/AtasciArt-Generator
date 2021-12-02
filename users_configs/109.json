@@ -1,7 +1,7 @@
 {
 	"name": "Kret",
 	"author": "PeBe GSD",
-	"lineSchemes": {
+	"lineSchemas": {
 		"default": {
 			"x": 9,
 			"width": 27,
@@ -56,7 +56,7 @@
 		"game": {
 			"width": 20,
 			"height": 7,
-			"encodeElementsAs": "atasci",
+			"encodeAs": "atasci",
 			"screenFill": " ",
 			"lines": [
 				{
@@ -92,7 +92,7 @@
 		"default": {
 			"width": 40,
 			"height": 24,
-			"encodeLinesAs": "antic",
+			"encodeAs": "antic",
 			"lines": [
 				{
 					"y": 6,
