@@ -18,6 +18,7 @@ class MultiAtasciiGen extends AtasciiGen {
 	private $layoutID=null;
 
 	public $singleLayout;
+	public $subLayouts=[];
 	public $scoreboard=[];
 
 	public function __construct($gameID = null, $layoutID = self::CONFIG_LAYOUTS_DEFAULT) {
@@ -61,7 +62,12 @@ class MultiAtasciiGen extends AtasciiGen {
 				throw new MAGException("Layout(s) not defined");
 			}
 		} else {
-			$this->layoutData=&$this->config[self::CONFIG_LAYOUTS];
+//			$this->layoutData=&$this->config[self::CONFIG_LAYOUTS];
+
+			foreach ($this->config[self::CONFIG_LAYOUTS] as $subId => $layout) {
+				if ( isset($layout['unlisted']) ) continue;
+				$this->subLayouts[]=$subId;
+			}
 		}
 	}
 
@@ -70,11 +76,17 @@ class MultiAtasciiGen extends AtasciiGen {
 	}
 
 	function generate() {
-		if ($this->layoutID!==null) {
+		if ( $this->layoutID!==null ) {
 			if ( isset($this->config[self::CONFIG_LAYOUTS][$this->layoutID]) ) {
 				$this->layoutData=&$this->config[self::CONFIG_LAYOUTS][$this->layoutID];
 			} else {
-				throw new MAGException("The requested layout is not present.");
+				throw new MAGException("Sub layout is not present.");
+			}
+		} else {
+			if ( isset($this->config[CONFIG_LAYOUT]) ) {
+				$this->layoutData=&$this->config[CONFIG_LAYOUT];
+			} else {
+				throw new MAGException("Layout section is not dafined.");
 			}
 		}
 
@@ -88,9 +100,7 @@ class MultiAtasciiGen extends AtasciiGen {
 	public function getLayoutColorsData() {
 		$this->layoutData=&$this->config[self::CONFIG_LAYOUTS][$this->layoutID];
 		$out="";
-		$reg=708;
-		foreach ($this->layoutData['colors'] as $colId => $colVal) {
-			if ($reg>712) break;
+		foreach ($this->colorReg as $colId => $colVal) {
 			$out.=chr($colVal);
 		}
 		return $out;
