@@ -216,10 +216,10 @@ class AtasciiGen {
 				$label=null;
 				$labelPos=strpos($elType,LABEL_SEPARATOR);
 				if ($labelPos!==false) {
-					$elType=substr($elType,0,$labelPos-1);
+					$elType=substr($elType,0,$labelPos);
 					$label=substr($elType,$labelPos+1);
 				}
-				$this->parseElement($elType,@$this->curEntry,$label);
+				$this->parseElement($elType,$label);
 			}
 
 			$this->parseLineAfter($this->layoutData,$currentSchema);
@@ -285,7 +285,7 @@ class AtasciiGen {
 				$this->checkExist(
 					$this->parseValue(
 						@$this->elParams[ATTR_REPLACEOUTSIDECHAR]
-					)," "
+					),""
 				)
 			);
 		}
@@ -314,12 +314,22 @@ class AtasciiGen {
 
 	}
 
-	protected function parseElement($elType,$scoreEntry,$label=null) {
+	protected function parseElement($elType, $labelName) {
 		switch ($elType) {
-			case ELEMENT_PLACE: $this->createElement($scoreEntry['place']); break;
-			case ELEMENT_NICK: $this->createElement($scoreEntry['nick']); break;
-			case ELEMENT_SCORE: $this->createElement($scoreEntry['score']); break;
-			case ELEMENT_DATE: $this->createElement($this->parseDate($scoreEntry['date'])); break;
+			case ELEMENT_PLACE: $this->createElement(
+					$this->checkExist(@$this->curEntry['place'],"")
+				); break;
+			case ELEMENT_NICK: $this->createElement(
+					$this->checkExist(@$this->curEntry['nick'],"")
+				); break;
+			case ELEMENT_SCORE: $this->createElement(
+					$this->checkExist(@$this->curEntry['score'],"")
+				); break;
+			case ELEMENT_DATE: $this->createElement(
+					$this->parseDate(
+						$this->checkExist(@$this->curEntry['date'],"")
+					)
+				); break;
 			case ELEMENT_TEXT: $this->createElement($this->parseText()); break;
 			case ELEMENT_GENTIME:	$this->createElement($this->parseGenerationTime()); break;
 		}

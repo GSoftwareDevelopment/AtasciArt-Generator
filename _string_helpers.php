@@ -86,10 +86,19 @@ function putStr($src,&$dst,$index) {
 }
 
 function limitChars($value,$limitChars,$replaceChar) {
-	for ($i=0;$i<strlen($value);$i++) {
-		$ch=$value[$i];
+	$ofs=0;
+	while (1) {
+		if ( $ofs>=strlen($value) ) break;
+		$ch=$value[$ofs];
 		if ( strpos($limitChars,$ch)===false ) {
-			$value[$i]=$replaceChar[0];
+			if ($replaceChar!==null && strlen($replaceChar)>0) {
+				$value[$ofs]=$replaceChar[0];
+				$ofs++;
+			} else {
+				$value=substr($value,0,$ofs).substr($value,$ofs+1,strlen($value)-$ofs-1);
+			}
+		} else {
+			$ofs++;
 		}
 	}
 	return $value;
