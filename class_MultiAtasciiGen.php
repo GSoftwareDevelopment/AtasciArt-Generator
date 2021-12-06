@@ -83,8 +83,8 @@ class MultiAtasciiGen extends AtasciiGen {
 				throw new MAGException("Sub layout is not present.");
 			}
 		} else {
-			if ( isset($this->config[CONFIG_LAYOUT]) ) {
-				$this->layoutData=&$this->config[CONFIG_LAYOUT];
+			if ( isset($this->config[SECTION_LAYOUT]) ) {
+				$this->layoutData=&$this->config[SECTION_LAYOUT];
 			} else {
 				throw new MAGException("Layout section is not dafined.");
 			}
